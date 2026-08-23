@@ -6,6 +6,7 @@ import opportunityRoutes from '../modules/opportunities/opportunity.routes';
 import connectionRoutes from '../modules/connections/connection.routes';
 import projectRoutes from '../modules/projects/project.routes';
 import moderationRoutes from '../modules/moderation/moderation.routes';
+import notificationsRoutes from '../modules/notifications/notifications.routes';
 
 const router = Router();
 
@@ -15,6 +16,7 @@ router.use('/opportunities', opportunityRoutes);
 router.use('/connections', connectionRoutes);
 router.use('/projects', projectRoutes);
 router.use('/moderation', moderationRoutes);
+router.use('/notifications', notificationsRoutes);
 
 router.get('/health', (req, res) => {
   sendSuccess(res, { status: 'ok', timestamp: new Date().toISOString() });

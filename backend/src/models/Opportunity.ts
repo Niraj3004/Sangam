@@ -10,6 +10,7 @@ export interface IOpportunity extends Document {
   location?: string;
   isExternal: boolean;
   externalLink?: string;
+  endDate?: Date;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -25,6 +26,7 @@ const OpportunitySchema: Schema = new Schema(
     location: { type: String, default: '' },
     isExternal: { type: Boolean, default: false },
     externalLink: { type: String, default: '' },
+    endDate: { type: Date },
   },
   { timestamps: true }
 );
@@ -33,5 +35,6 @@ const OpportunitySchema: Schema = new Schema(
 OpportunitySchema.index({ title: 'text', description: 'text', tags: 'text' });
 // Sorting and filtering index
 OpportunitySchema.index({ createdAt: -1, status: 1, type: 1 });
+OpportunitySchema.index({ endDate: 1 });
 
 export const Opportunity = mongoose.model<IOpportunity>('Opportunity', OpportunitySchema);

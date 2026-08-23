@@ -3,6 +3,8 @@ import { connectDB } from '../config/db';
 import { extractStructuredData } from '../config/ai';
 import { ReviewQueueItem } from '../models/ReviewQueueItem';
 import { Opportunity } from '../models/Opportunity';
+import { processDeadlineReminders } from './reminders';
+import { processWeeklyDigests } from './digest';
 
 const runRadarEngine = async () => {
   console.log('[WORKER] Starting Radar Engine fetch cycle...');
@@ -54,10 +56,19 @@ const bootWorker = async () => {
   await connectDB();
   console.log('[WORKER] Connected to DB. Worker is running.');
 
-  // Schedule to run every hour (e.g., '0 * * * *')
-  // For demonstration/testing, run every 5 minutes: '*/5 * * * *'
+  // Schedule Radar Engine
   cron.schedule('*/5 * * * *', () => {
     runRadarEngine();
+  });
+
+  // Schedule Deadline Reminders (Daily at 9:00 AM)
+  cron.schedule('0 9 * * *', () => {
+    processDeadlineReminders();
+  });
+
+  // Schedule Weekly Digests (Sunday at 9:00 AM)
+  cron.schedule('0 9 * * 0', () => {
+    processWeeklyDigests();
   });
 };
 
