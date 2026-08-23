@@ -1,0 +1,6 @@
+docs/
+*.pdf
+*.md
+!README.md
+node_modules/
+dist/
