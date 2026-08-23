@@ -10,6 +10,7 @@ import notificationsRoutes from '../modules/notifications/notifications.routes';
 import discoverRoutes from '../modules/discover/discover.routes';
 import ideasRoutes from '../modules/ideas/ideas.routes';
 import matchRoutes from '../modules/match/match.routes';
+import messagesRoutes from '../modules/messages/messages.routes';
 
 const router = Router();
 
@@ -23,6 +24,7 @@ router.use('/notifications', notificationsRoutes);
 router.use('/discover', discoverRoutes);
 router.use('/ideas', ideasRoutes);
 router.use('/match', matchRoutes);
+router.use('/messages', messagesRoutes);
 
 router.get('/health', (req, res) => {
   sendSuccess(res, { status: 'ok', timestamp: new Date().toISOString() });
