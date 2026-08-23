@@ -6,6 +6,8 @@ export interface IVerificationRequest extends Document {
   tierRequested: VerifyTier;
   evidence: string;
   status: 'pending' | 'approved' | 'rejected';
+  notes?: string;
+  reviewedBy?: mongoose.Types.ObjectId;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -16,6 +18,8 @@ const VerificationRequestSchema: Schema = new Schema(
     tierRequested: { type: String, enum: Object.values(VERIFY_TIERS), required: true },
     evidence: { type: String, required: true },
     status: { type: String, enum: ['pending', 'approved', 'rejected'], default: 'pending' },
+    notes: { type: String },
+    reviewedBy: { type: Schema.Types.ObjectId, ref: 'User' },
   },
   { timestamps: true }
 );

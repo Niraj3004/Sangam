@@ -42,4 +42,8 @@ router.delete(
   asyncErrorHandler(opportunityController.deleteOpportunity)
 );
 
+// Save / Unsave
+router.post('/:id/save', asyncErrorHandler(opportunityController.saveOpportunity));
+router.post('/:id/unsave', asyncErrorHandler(opportunityController.unsaveOpportunity));
+
 export default router;

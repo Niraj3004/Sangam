@@ -1,4 +1,5 @@
 import { Opportunity, IOpportunity } from '../../models/Opportunity';
+import { SavedItem } from '../../models/SavedItem';
 
 export const createOpportunity = async (userId: string, data: Partial<IOpportunity>) => {
   const opportunity = await Opportunity.create({ ...data, posterId: userId });
@@ -72,4 +73,45 @@ export const deleteOpportunity = async (id: string) => {
     throw error;
   }
   return opportunity;
+};
+
+export const saveOpportunity = async (userId: string, opportunityId: string) => {
+  // Ensure it exists first
+  const opportunity = await Opportunity.findById(opportunityId);
+  if (!opportunity) {
+    const error: any = new Error('Opportunity not found');
+    error.statusCode = 404;
+    throw error;
+  }
+
+  try {
+    const saved = await SavedItem.create({
+      userId,
+      entityId: opportunityId,
+      entityModel: 'Opportunity'
+    });
+    return saved;
+  } catch (error: any) {
+    if (error.code === 11000) {
+      // Already saved
+      return await SavedItem.findOne({ userId, entityId: opportunityId });
+    }
+    throw error;
+  }
+};
+
+export const unsaveOpportunity = async (userId: string, opportunityId: string) => {
+  const deleted = await SavedItem.findOneAndDelete({
+    userId,
+    entityId: opportunityId,
+    entityModel: 'Opportunity'
+  });
+  
+  if (!deleted) {
+    const error: any = new Error('Saved item not found');
+    error.statusCode = 404;
+    throw error;
+  }
+
+  return { message: 'Unsaved successfully' };
 };

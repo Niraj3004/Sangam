@@ -30,3 +30,21 @@ export const getMe = async (req: Request, res: Response) => {
   const user = await authService.getMe(req.user!.userId);
   sendSuccess(res, user, 200);
 };
+
+export const submitVerificationRequest = async (req: Request, res: Response) => {
+  const { evidence, tierRequested } = req.body;
+  const request = await authService.submitVerificationRequest(req.user!.userId, evidence, tierRequested);
+  sendSuccess(res, request, 201);
+};
+
+export const getVerificationRequests = async (req: Request, res: Response) => {
+  const requests = await authService.getVerificationRequests();
+  sendSuccess(res, requests, 200);
+};
+
+export const resolveVerificationRequest = async (req: Request, res: Response) => {
+  const id = req.params.id as string;
+  const { action, notes } = req.body;
+  const request = await authService.resolveVerificationRequest(id, action, notes);
+  sendSuccess(res, request, 200);
+};

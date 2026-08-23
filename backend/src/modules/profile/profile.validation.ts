@@ -9,7 +9,7 @@ export const patchProfileSchema = z.object({
       level: z.string().optional(),
     })).optional(),
     interests: z.array(z.string()).optional(),
-    lookingFor: z.array(z.string()).optional(),
+    lookingFor: z.array(z.enum(['co-founder', 'teammates', 'internship', 'mentor', 'project', 'networking'])).optional(),
     availability: z.string().optional(),
     location: z.string().optional(),
     studyDestination: z.string().optional(),

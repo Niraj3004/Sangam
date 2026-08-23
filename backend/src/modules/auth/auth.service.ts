@@ -2,6 +2,7 @@ import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import { OAuth2Client } from 'google-auth-library';
 import { User, IUser } from '../../models/User';
+import { VerificationRequest } from '../../models/VerificationRequest';
 import { env } from '../../config/env.config';
 import { VERIFY_TIERS, ROLES, VerifyTier } from '../../constants/roles';
 import { JwtPayload } from '../../middlewares/auth';
@@ -132,4 +133,53 @@ export const getMe = async (userId: string) => {
     throw error;
   }
   return user;
+};
+
+export const submitVerificationRequest = async (userId: string, evidence: string, tierRequested: string) => {
+  const existing = await VerificationRequest.findOne({ userId, status: 'pending' });
+  if (existing) {
+    const error: any = new Error('You already have a pending verification request');
+    error.statusCode = 400;
+    throw error;
+  }
+
+  const request = await VerificationRequest.create({
+    userId,
+    evidence,
+    tierRequested: tierRequested as VerifyTier,
+    status: 'pending',
+  });
+
+  return request;
+};
+
+export const getVerificationRequests = async () => {
+  const requests = await VerificationRequest.find({ status: 'pending' })
+    .populate('userId', 'email role verifyTier');
+  return requests;
+};
+
+export const resolveVerificationRequest = async (requestId: string, action: 'approve' | 'reject', notes?: string) => {
+  const request = await VerificationRequest.findById(requestId);
+  if (!request) {
+    const error: any = new Error('Request not found');
+    error.statusCode = 404;
+    throw error;
+  }
+  
+  if (request.status !== 'pending') {
+    const error: any = new Error('Request is already resolved');
+    error.statusCode = 400;
+    throw error;
+  }
+
+  request.status = action === 'approve' ? 'approved' : 'rejected';
+  if (notes) request.notes = notes;
+  await request.save();
+
+  if (action === 'approve') {
+    await User.findByIdAndUpdate(request.userId, { verifyTier: request.tierRequested });
+  }
+
+  return request;
 };
