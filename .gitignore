@@ -1,6 +1,12 @@
-docs/
+docs/pdfs/
 *.pdf
-*.md
-!README.md
+/*.md
+!/README.md
+!/AGENTS.md
 node_modules/
 dist/
+.env
+*.log   
+.zip
+.env.example
+
