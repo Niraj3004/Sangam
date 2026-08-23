@@ -30,8 +30,3 @@ export const getPendingRequests = async (req: Request, res: Response) => {
   const requests = await connectionService.getPendingRequests(req.user!.userId);
   sendSuccess(res, requests, 200);
 };
-
-export const getSuggestions = async (req: Request, res: Response) => {
-  const suggestions = await connectionService.getSuggestions(req.user!.userId);
-  sendSuccess(res, suggestions, 200);
-};

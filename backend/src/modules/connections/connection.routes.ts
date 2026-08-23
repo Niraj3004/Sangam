@@ -13,7 +13,6 @@ router.use(auth);
 // Feeds
 router.get('/', asyncErrorHandler(connectionController.getMyConnections));
 router.get('/pending', asyncErrorHandler(connectionController.getPendingRequests));
-router.get('/suggestions', asyncErrorHandler(connectionController.getSuggestions));
 
 // Actions
 router.post('/request/:userId', validate(connectionValidation.userIdParamSchema), asyncErrorHandler(connectionController.requestConnection));
