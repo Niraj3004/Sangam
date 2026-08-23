@@ -2,7 +2,7 @@ import { Connection } from '../../models/Connection';
 import { Profile } from '../../models/Profile';
 import mongoose from 'mongoose';
 
-export const requestConnection = async (requesterId: string, recipientId: string) => {
+export const requestConnection = async (requesterId: string, recipientId: string, purpose?: string, note?: string) => {
   if (requesterId === recipientId) {
     const error: any = new Error('Cannot connect with yourself');
     error.statusCode = 400;
@@ -23,7 +23,7 @@ export const requestConnection = async (requesterId: string, recipientId: string
     throw error;
   }
 
-  const connection = await Connection.create({ requesterId, recipientId, status: 'pending' });
+  const connection = await Connection.create({ requesterId, recipientId, status: 'pending', purpose, note });
   return connection;
 };
 

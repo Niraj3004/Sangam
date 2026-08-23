@@ -4,7 +4,8 @@ import { sendSuccess } from '../../utils/response';
 
 export const requestConnection = async (req: Request, res: Response) => {
   const userId = req.params.userId as string;
-  const connection = await connectionService.requestConnection(req.user!.userId, userId);
+  const { purpose, note } = req.body;
+  const connection = await connectionService.requestConnection(req.user!.userId, userId, purpose, note);
   sendSuccess(res, connection, 201);
 };
 

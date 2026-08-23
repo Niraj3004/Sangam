@@ -33,3 +33,24 @@ export const deleteProject = async (req: Request, res: Response) => {
   const project = await projectService.deleteProject(id);
   sendSuccess(res, project, 200);
 };
+
+export const applyToRole = async (req: Request, res: Response) => {
+  const projectId = req.params.id as string;
+  const { roleTitle, message } = req.body;
+  const application = await projectService.applyToRole(req.user!.userId, projectId, roleTitle, message);
+  sendSuccess(res, application, 201);
+};
+
+export const getApplications = async (req: Request, res: Response) => {
+  const projectId = req.params.id as string;
+  const applications = await projectService.getApplications(projectId);
+  sendSuccess(res, applications, 200);
+};
+
+export const resolveApplication = async (req: Request, res: Response) => {
+  const id = req.params.id as string;
+  const appId = req.params.appId as string;
+  const { status } = req.body;
+  const application = await projectService.resolveApplication(id, appId, status);
+  sendSuccess(res, application, 200);
+};

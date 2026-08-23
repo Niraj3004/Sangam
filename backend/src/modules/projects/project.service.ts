@@ -1,6 +1,7 @@
 import { Project, IProject } from '../../models/Project';
 import { Profile } from '../../models/Profile';
 import { Connection } from '../../models/Connection';
+import { ProjectApplication } from '../../models/ProjectApplication';
 
 export const createProject = async (userId: string, data: Partial<IProject>) => {
   // Check if contributors are actually connected with the owner (for V1 constraint)
@@ -97,4 +98,66 @@ export const deleteProject = async (id: string) => {
     throw error;
   }
   return project;
+};
+
+export const applyToRole = async (userId: string, projectId: string, roleTitle: string, message?: string) => {
+  const project = await Project.findById(projectId);
+  if (!project) {
+    const error: any = new Error('Project not found');
+    error.statusCode = 404;
+    throw error;
+  }
+
+  const role = project.openRoles?.find(r => r.title === roleTitle);
+  if (!role) {
+    const error: any = new Error('Role not found on this project');
+    error.statusCode = 404;
+    throw error;
+  }
+
+  if (role.isFilled) {
+    const error: any = new Error('This role is already filled');
+    error.statusCode = 400;
+    throw error;
+  }
+
+  const application = await ProjectApplication.create({
+    userId,
+    projectId,
+    roleTitle,
+    message
+  });
+
+  return application;
+};
+
+export const getApplications = async (projectId: string) => {
+  return await ProjectApplication.find({ projectId }).populate('userId', 'email verifyTier role');
+};
+
+export const resolveApplication = async (projectId: string, appId: string, status: 'accepted' | 'rejected') => {
+  const application = await ProjectApplication.findOneAndUpdate(
+    { _id: appId, projectId, status: 'pending' },
+    { status },
+    { new: true }
+  );
+
+  if (!application) {
+    const error: any = new Error('Pending application not found');
+    error.statusCode = 404;
+    throw error;
+  }
+
+  if (status === 'accepted') {
+    // Add user to contributors and mark role as filled
+    await Project.updateOne(
+      { _id: projectId, 'openRoles.title': application.roleTitle },
+      { 
+        $addToSet: { contributors: application.userId },
+        $set: { 'openRoles.$.isFilled': true }
+      }
+    );
+  }
+
+  return application;
 };

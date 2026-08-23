@@ -4,6 +4,8 @@ export interface IConnection extends Document {
   requesterId: mongoose.Types.ObjectId;
   recipientId: mongoose.Types.ObjectId;
   status: 'pending' | 'accepted' | 'rejected';
+  purpose?: string;
+  note?: string;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -13,6 +15,8 @@ const ConnectionSchema: Schema = new Schema(
     requesterId: { type: Schema.Types.ObjectId, ref: 'User', required: true },
     recipientId: { type: Schema.Types.ObjectId, ref: 'User', required: true },
     status: { type: String, enum: ['pending', 'accepted', 'rejected'], default: 'pending' },
+    purpose: { type: String, enum: ['collaboration', 'idea', 'startup', 'job', 'academic', 'open_source', 'networking'] },
+    note: { type: String },
   },
   { timestamps: true }
 );

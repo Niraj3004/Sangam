@@ -40,4 +40,24 @@ router.delete(
   asyncErrorHandler(projectController.deleteProject)
 );
 
+// Applications
+router.post(
+  '/:id/apply',
+  validate(projectValidation.applyToRoleSchema),
+  asyncErrorHandler(projectController.applyToRole)
+);
+
+router.get(
+  '/:id/applications',
+  ownership(getProjectOwnerId),
+  asyncErrorHandler(projectController.getApplications)
+);
+
+router.post(
+  '/:id/applications/:appId/resolve',
+  ownership(getProjectOwnerId),
+  validate(projectValidation.resolveApplicationSchema),
+  asyncErrorHandler(projectController.resolveApplication)
+);
+
 export default router;
