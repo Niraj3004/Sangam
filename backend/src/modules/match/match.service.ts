@@ -2,7 +2,10 @@ import { Profile } from '../../models/Profile';
 import { Connection } from '../../models/Connection';
 import mongoose from 'mongoose';
 
-export const getMatchSuggestions = async (userId: string) => {
+import { Idea } from '../../models/Idea';
+import { Project } from '../../models/Project';
+
+export const getPeopleMatches = async (userId: string) => {
   // Find all users I've already interacted with
   const existingConnections = await Connection.find({
     $or: [{ requesterId: userId }, { recipientId: userId }]
@@ -79,4 +82,69 @@ export const getMatchSuggestions = async (userId: string) => {
   scoredProfiles.sort((a, b) => b.matchScore - a.matchScore);
   
   return scoredProfiles.slice(0, 20);
+};
+
+export const getProjectMatches = async (userId: string) => {
+  const myProfile = await Profile.findOne({ userId });
+  if (!myProfile) return [];
+
+  const mySkills = new Set((myProfile.skills || []).map(s => s.name.toLowerCase()));
+  
+  const projects = await Project.find({ status: 'active' }).populate('ownerId', 'email').lean();
+  
+  const scoredProjects = projects.map(project => {
+    let score = 0;
+    const reasons: string[] = [];
+
+    const projectLookingFor = new Set((project.lookingFor || []).map(l => l.toLowerCase()));
+    
+    // Check if user has skills the project is looking for
+    const matchedSkills = (project.technologies || []).filter(t => mySkills.has(t.toLowerCase()));
+    if (matchedSkills.length > 0) {
+      score += matchedSkills.length * 10;
+      reasons.push(`Complementary skills: You know ${matchedSkills.join(', ')}`);
+    }
+
+    if (project.remote && myProfile.availability === 'remote') {
+      score += 5;
+      reasons.push('Matches remote preference');
+    }
+
+    return { ...project, matchScore: score, reasons };
+  });
+
+  scoredProjects.sort((a, b) => b.matchScore - a.matchScore);
+  return scoredProjects.slice(0, 20);
+};
+
+export const getIdeaMatches = async (userId: string) => {
+  const myProfile = await Profile.findOne({ userId });
+  if (!myProfile) return [];
+
+  const mySkills = new Set((myProfile.skills || []).map(s => s.name.toLowerCase()));
+  const myInterests = new Set((myProfile.interests || []).map(i => i.toLowerCase()));
+
+  const ideas = await Idea.find({ collaborationStatus: 'open' }).populate('authorId', 'email').lean();
+
+  const scoredIdeas = ideas.map(idea => {
+    let score = 0;
+    const reasons: string[] = [];
+
+    const matchedSkills = (idea.skillsRequired || []).filter(s => mySkills.has(s.toLowerCase()));
+    if (matchedSkills.length > 0) {
+      score += matchedSkills.length * 10;
+      reasons.push(`You have required skills: ${matchedSkills.join(', ')}`);
+    }
+
+    const matchedInterests = (idea.tags || []).filter(t => myInterests.has(t.toLowerCase()));
+    if (matchedInterests.length > 0) {
+      score += matchedInterests.length * 5;
+      reasons.push(`Matches your interests: ${matchedInterests.join(', ')}`);
+    }
+
+    return { ...idea, matchScore: score, reasons };
+  });
+
+  scoredIdeas.sort((a, b) => b.matchScore - a.matchScore);
+  return scoredIdeas.slice(0, 20);
 };

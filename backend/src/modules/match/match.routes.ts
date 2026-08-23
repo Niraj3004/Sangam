@@ -8,7 +8,9 @@ const router = Router();
 // All match routes require authentication
 router.use(auth);
 
-// Get algorithmic suggestions with reasons
-router.get('/suggestions', asyncErrorHandler(matchController.getMatchSuggestions));
+// Get algorithmic suggestions with reasons (as POST to match PDF spec)
+router.post('/people', asyncErrorHandler(matchController.getPeopleMatches));
+router.post('/projects', asyncErrorHandler(matchController.getProjectMatches));
+router.post('/ideas', asyncErrorHandler(matchController.getIdeaMatches));
 
 export default router;

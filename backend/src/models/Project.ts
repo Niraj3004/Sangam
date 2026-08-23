@@ -13,6 +13,10 @@ export interface IProject extends Document {
     description: string;
     isFilled: boolean;
   }[];
+  lookingFor: string[];
+  remote: boolean;
+  commitment: 'full-time' | 'part-time' | 'flexible';
+  invites: mongoose.Types.ObjectId[];
   status: 'active' | 'completed';
   createdAt: Date;
   updatedAt: Date;
@@ -34,6 +38,10 @@ const ProjectSchema: Schema = new Schema(
         isFilled: { type: Boolean, default: false },
       }
     ],
+    lookingFor: [{ type: String }],
+    remote: { type: Boolean, default: false },
+    commitment: { type: String, enum: ['full-time', 'part-time', 'flexible'], default: 'flexible' },
+    invites: [{ type: Schema.Types.ObjectId, ref: 'User' }],
     status: { type: String, enum: ['active', 'completed'], default: 'active' },
   },
   { timestamps: true }

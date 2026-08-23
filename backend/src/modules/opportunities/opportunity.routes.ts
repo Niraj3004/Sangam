@@ -13,7 +13,7 @@ const router = Router();
 // Ownership fetcher for Opportunity
 const getOpportunityOwnerId = async (resourceId: string) => {
   const opp = await Opportunity.findById(resourceId).select('posterId');
-  return opp ? opp.posterId.toString() : null;
+  return opp?.posterId ? opp.posterId.toString() : null;
 };
 
 router.get('/', validate(opportunityValidation.getOpportunitiesSchema), asyncErrorHandler(opportunityController.getOpportunities));

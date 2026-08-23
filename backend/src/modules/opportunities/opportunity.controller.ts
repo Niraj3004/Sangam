@@ -8,11 +8,20 @@ export const createOpportunity = async (req: Request, res: Response) => {
 };
 
 export const getOpportunities = async (req: Request, res: Response) => {
-  const { q, page, limit, type } = req.query;
+  const { q, page, limit, type, field, deadline, location, remote } = req.query;
   const pageNum = page ? parseInt(page as string, 10) : 1;
   const limitNum = limit ? parseInt(limit as string, 10) : 10;
   
-  const result = await opportunityService.getOpportunities(q as string, pageNum, limitNum, type as string);
+  const result = await opportunityService.getOpportunities(
+    q as string, 
+    pageNum, 
+    limitNum, 
+    type as string,
+    field as string,
+    deadline as string,
+    location as string,
+    remote as string
+  );
   sendSuccess(res, result, 200);
 };
 

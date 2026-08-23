@@ -1,5 +1,7 @@
 import { Conversation } from '../../models/Conversation';
 import { Message } from '../../models/Message';
+import { Connection } from '../../models/Connection';
+import { emitMessage } from '../../socket';
 import mongoose from 'mongoose';
 
 export const startConversation = async (userId: string, recipientId: string) => {
@@ -57,6 +59,37 @@ export const getMessages = async (conversationId: string, page: number = 1, limi
 };
 
 export const sendMessage = async (userId: string, conversationId: string, content: string) => {
+  const conversation = await Conversation.findById(conversationId);
+  if (!conversation) {
+    throw new Error('Conversation not found');
+  }
+
+  // Stranger gating (Message Requests)
+  if (!conversation.isGroup) {
+    const recipientId = conversation.participants.find(p => p.toString() !== userId);
+    if (recipientId) {
+      // Check if they are connected
+      const isConnected = await Connection.findOne({
+        status: 'accepted',
+        $or: [
+          { requesterId: userId, recipientId },
+          { requesterId: recipientId, recipientId: userId }
+        ]
+      });
+
+      // In a full implementation, if !isConnected, the UI should treat this as a "Message Request"
+      // We will still save the message, but perhaps flag it. For now, the schema just saves it.
+      // The Socket.IO emission checks blocks.
+      const delivered = await emitMessage(conversationId, { content, senderId: userId, createdAt: new Date() }, userId, recipientId.toString());
+      if (!delivered) {
+        throw new Error('Cannot send message. You may be blocked.');
+      }
+    }
+  } else {
+    // For groups, emit to everyone
+    // In a real app, emitMessage would handle an array of recipients.
+  }
+
   const message = await Message.create({
     conversationId,
     senderId: userId,

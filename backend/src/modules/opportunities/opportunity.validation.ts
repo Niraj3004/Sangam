@@ -31,5 +31,9 @@ export const getOpportunitiesSchema = z.object({
     page: z.string().regex(/^\d+$/).optional(),
     limit: z.string().regex(/^\d+$/).optional(),
     type: z.enum(['job', 'internship', 'project', 'hackathon', 'scholarship']).optional(),
+    field: z.string().optional(),
+    deadline: z.string().optional(), // 'upcoming' or 'past'
+    location: z.string().optional(),
+    remote: z.enum(['true', 'false']).optional(),
   }),
 });

@@ -6,11 +6,27 @@ export const createOpportunity = async (userId: string, data: Partial<IOpportuni
   return opportunity;
 };
 
-export const getOpportunities = async (query: string = '', page: number = 1, limit: number = 10, type?: string) => {
+export const getOpportunities = async (
+  query: string = '', 
+  page: number = 1, 
+  limit: number = 10, 
+  type?: string,
+  field?: string,
+  deadline?: string,
+  location?: string,
+  remote?: string
+) => {
   const filter: any = { status: 'active' };
   
-  if (type) {
-    filter.type = type;
+  if (type) filter.type = type;
+  if (field) filter.field = field;
+  if (location) filter.location = { $regex: new RegExp(location, 'i') };
+  if (remote !== undefined) filter.isRemote = remote === 'true';
+
+  if (deadline === 'upcoming') {
+    filter.deadline = { $gte: new Date() };
+  } else if (deadline === 'past') {
+    filter.deadline = { $lt: new Date() };
   }
 
   if (query) {

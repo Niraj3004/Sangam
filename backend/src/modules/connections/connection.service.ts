@@ -1,11 +1,25 @@
 import { Connection } from '../../models/Connection';
 import { Profile } from '../../models/Profile';
-import mongoose from 'mongoose';
+import { Block } from '../../models/Block';
 
 export const requestConnection = async (requesterId: string, recipientId: string, purpose?: string, note?: string) => {
   if (requesterId === recipientId) {
     const error: any = new Error('Cannot connect with yourself');
     error.statusCode = 400;
+    throw error;
+  }
+
+  // Honour Blocks
+  const isBlocked = await Block.findOne({
+    $or: [
+      { blockerId: recipientId, blockedId: requesterId },
+      { blockerId: requesterId, blockedId: recipientId }
+    ]
+  });
+
+  if (isBlocked) {
+    const error: any = new Error('Cannot send connection request to this user.');
+    error.statusCode = 403;
     throw error;
   }
 
