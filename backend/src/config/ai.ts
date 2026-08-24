@@ -1,31 +1,40 @@
 import { env } from './env.config';
 
 export const aiConfig = {
-  anthropicApiKey: process.env.ANTHROPIC_API_KEY || '',
+  // Array of 7 Gemini API keys for round-robin usage
+  geminiApiKeys: [
+    process.env.GEMINI_API_KEY_1 || '',
+    process.env.GEMINI_API_KEY_2 || '',
+    process.env.GEMINI_API_KEY_3 || '',
+    process.env.GEMINI_API_KEY_4 || '',
+    process.env.GEMINI_API_KEY_5 || '',
+    process.env.GEMINI_API_KEY_6 || '',
+    process.env.GEMINI_API_KEY_7 || '',
+  ].filter(key => key !== ''),
   
   // Default models for different tasks
   models: {
-    primary: 'claude-3-5-sonnet-20240620',
-    fast: 'claude-3-haiku-20240307', // Used for extraction/simple tasks
+    primary: 'gemini-2.5-pro',
+    fast: 'gemini-2.5-flash', // Used for extraction/simple tasks
   },
 
   // Task profiles as defined in A2
   taskProfiles: {
     // Extraction: strict JSON, low temperature, fast model
     extract: {
-      model: 'claude-3-haiku-20240307',
+      model: 'gemini-2.5-flash',
       temperature: 0.1,
       maxTokens: 1024,
     },
     // Explain/Chat: human-readable, creative but constrained
     explain: {
-      model: 'claude-3-5-sonnet-20240620',
+      model: 'gemini-2.5-pro',
       temperature: 0.7,
       maxTokens: 500,
     },
     // Moderation: highly deterministic
     moderate: {
-      model: 'claude-3-5-sonnet-20240620',
+      model: 'gemini-2.5-pro',
       temperature: 0.0,
       maxTokens: 200,
     }

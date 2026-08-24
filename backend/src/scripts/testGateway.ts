@@ -5,12 +5,12 @@ import { gateway } from '../modules/ai-gateway';
 import { aiConfig } from '../config/ai';
 
 const runTest = async () => {
-  if (!aiConfig.anthropicApiKey) {
-    console.log('Skipping API test: No ANTHROPIC_API_KEY provided in .env');
+  if (aiConfig.geminiApiKeys.length === 0) {
+    console.log('Skipping API test: No GEMINI_API_KEYs provided in .env');
     return;
   }
 
-  console.log('--- Testing AI Gateway ---');
+  console.log('--- Testing AI Gateway (Gemini) ---');
 
   const schema = {
     title: 'string',
