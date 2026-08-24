@@ -5,6 +5,7 @@ export interface IReport extends Document {
   reportedEntityId: mongoose.Types.ObjectId;
   entityModel: 'User' | 'Opportunity' | 'Project' | 'Post' | 'Job' | 'Comment' | 'Message';
   reason: string;
+  screenshotUrl: string;
   status: 'pending' | 'resolved' | 'dismissed';
   resolvedBy?: mongoose.Types.ObjectId;
   createdAt: Date;
@@ -17,6 +18,7 @@ const ReportSchema: Schema = new Schema(
     reportedEntityId: { type: Schema.Types.ObjectId, required: true, refPath: 'entityModel' },
     entityModel: { type: String, required: true, enum: ['User', 'Opportunity', 'Project', 'Post', 'Job', 'Comment', 'Message'] },
     reason: { type: String, required: true },
+    screenshotUrl: { type: String, default: '' },
     status: { type: String, enum: ['pending', 'resolved', 'dismissed'], default: 'pending' },
     resolvedBy: { type: Schema.Types.ObjectId, ref: 'User' },
   },

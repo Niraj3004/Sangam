@@ -1,7 +1,11 @@
 import { Job, IJob } from '../../models/Job';
 import { Organization } from '../../models/Organization';
 import { Application } from '../../models/Application';
+import { User } from '../../models/User';
+import { Profile } from '../../models/Profile';
 import { runModerationHook } from '../moderation/moderation.service';
+import { sendEmail } from '../../config/mailer';
+import { env } from '../../config/env.config';
 
 const checkOrgPermission = async (userId: string, organizationId: string) => {
   const org = await Organization.findById(organizationId);
@@ -94,6 +98,30 @@ export const applyForJob = async (userId: string, jobId: string, resumeUrl?: str
     status: 'applied'
   });
 
+  const applicant = await User.findById(userId);
+  const applicantProfile = await Profile.findOne({ userId });
+  const applicantName = applicantProfile?.handle || 'A student';
+  const org = await Organization.findById(job.organizationId);
+
+  if (org) {
+    const admins = org.members.filter(m => m.role === 'admin' || m.role === 'recruiter');
+    for (const admin of admins) {
+      const adminUser = await User.findById(admin.userId);
+      if (adminUser) {
+        sendEmail(
+          adminUser.email,
+          `New Application for ${job.title}`,
+          'New Job Application',
+          `<p><strong>${applicantName}</strong> has applied for the <strong>${job.title}</strong> role at your organization.</p>
+           ${coverLetter ? `<p><strong>Cover Letter:</strong> "${coverLetter}"</p>` : ''}
+           <p>Log in to review their application and resume.</p>`,
+          `${env.CLIENT_URL}/organizations/${org._id}/applications`,
+          'Review Application'
+        ).catch(console.error);
+      }
+    }
+  }
+
   return application;
 };
 
@@ -118,6 +146,31 @@ export const updateApplicationStatus = async (userId: string, jobId: string, app
     const error: any = new Error('Application not found');
     error.statusCode = 404;
     throw error;
+  }
+
+  const applicant = await User.findById(app.applicantId);
+  const org = await Organization.findById(job.organizationId);
+
+  if (applicant && org) {
+    const title = status === 'accepted' ? 'Application Accepted! 🎉' : 'Application Update';
+    const body = status === 'accepted'
+      ? `<p>Congratulations! Your application for <strong>${job.title}</strong> at <strong>${org.name}</strong> has been accepted.</p>
+         <p>The organization will reach out to you with next steps.</p>`
+      : (status === 'rejected' 
+         ? `<p>Your application for <strong>${job.title}</strong> at <strong>${org.name}</strong> has been reviewed but was not accepted at this time.</p>
+            <p>Keep exploring other opportunities on Sangam!</p>`
+         : `<p>Your application for <strong>${job.title}</strong> at <strong>${org.name}</strong> has been updated to <strong>${status}</strong>.</p>`);
+
+    if (status !== 'applied') { // Only send on actual state changes
+      sendEmail(
+        applicant.email,
+        `Job Application ${status === 'accepted' ? 'Accepted' : 'Update'}`,
+        title,
+        body,
+        `${env.CLIENT_URL}/jobs/${job._id}`,
+        'View Job'
+      ).catch(console.error);
+    }
   }
 
   return app;
