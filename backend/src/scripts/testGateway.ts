@@ -1,9 +1,11 @@
 import dotenv from 'dotenv';
 dotenv.config();
 
-import { rankOpportunities } from '../modules/feed/relevance.service';
-import { moderateText } from '../modules/moderation/moderation.service';
+import { reviewProfile } from '../modules/profile/assistant.service';
+import { parseNLQuery } from '../modules/search/nl-search.service';
 import { aiConfig } from '../config/ai';
+import { Profile } from '../models/Profile';
+import mongoose from 'mongoose';
 
 const runTest = async () => {
   if (aiConfig.geminiApiKeys.length === 0) {
@@ -11,22 +13,31 @@ const runTest = async () => {
     return;
   }
 
-  console.log('--- Testing AI Gateway (A6 Moderation) ---');
+  console.log('--- Testing AI Gateway (A7 & A8) ---');
 
-  const safeText = "I'm looking for a study buddy for my computer science algorithms class this semester.";
-  const scamText = "URGENT: Work from home and earn $5000 a week! Just pay a $50 registration fee to get started. Must send crypto.";
+  // Mocking a profile for A7
+  (Profile as any).findOne = () => ({
+    lean: () => Promise.resolve({
+      userId: new mongoose.Types.ObjectId(),
+      bio: 'I like code.',
+      careerGoal: 'get a job',
+      skills: [{ name: 'HTML' }],
+      interests: ['web']
+    })
+  });
 
-  console.log('\n1. Moderating Safe Text...');
-  const startSafe = Date.now();
-  const resSafe = await moderateText(safeText);
-  console.log(`Result:`, resSafe);
-  console.log(`Time taken: ${Date.now() - startSafe}ms`);
+  console.log('\n1. Testing Profile Assistant (A7)...');
+  const startA7 = Date.now();
+  const resA7 = await reviewProfile('dummyId');
+  console.log(`Result:`, JSON.stringify(resA7, null, 2));
+  console.log(`Time taken: ${Date.now() - startA7}ms`);
 
-  console.log('\n2. Moderating Scam Text...');
-  const startScam = Date.now();
-  const resScam = await moderateText(scamText);
-  console.log(`Result:`, resScam);
-  console.log(`Time taken: ${Date.now() - startScam}ms`);
+  console.log('\n2. Testing Natural-Language Search Parsing (A8)...');
+  const query = "Nepali React developers open to a part-time remote project";
+  const startA8 = Date.now();
+  const resA8 = await parseNLQuery(query);
+  console.log(`Result:`, JSON.stringify(resA8, null, 2));
+  console.log(`Time taken: ${Date.now() - startA8}ms`);
 };
 
 runTest().catch(console.error);
