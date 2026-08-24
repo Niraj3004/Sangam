@@ -1,6 +1,6 @@
 import { gateway } from '../ai-gateway';
 import { aiConfig } from '../../config/ai';
-import { nlSearchSchema } from './search.schema';
+import { nlSearchSchema } from '../../models/ai-schemas/search.schema';
 import { Opportunity } from '../../models/Opportunity';
 import { Profile } from '../../models/Profile';
 import { Project } from '../../models/Project';

@@ -1,6 +1,9 @@
 import { Resume } from '../../models/Resume';
 import { Profile } from '../../models/Profile';
 import { Job } from '../../models/Job';
+import { gateway } from '../ai-gateway';
+import { aiConfig } from '../../config/ai';
+import { resumeBuilderSchema } from '../../models/ai-schemas/resume.schema';
 
 export const generateResume = async (userId: string, targetJobId?: string, title: string = 'My AI Resume') => {
   const profile = await Profile.findOne({ userId }).populate('projects');
@@ -12,36 +15,36 @@ export const generateResume = async (userId: string, targetJobId?: string, title
     if (job) jobDesc = job.description;
   }
 
-  // AI GATEWAY SEAM: In Part 2, Claude takes profile data + jobDesc and returns a structured resume JSON.
-  // const aiDraft = await callAiGateway({ profile, jobDesc }, 'generate_resume');
+  const textPayload = `
+    Student Profile:
+    - Education: ${(profile.education || []).join(', ')}
+    - Skills: ${(profile.skills || []).map(s => s.name).join(', ')}
+    - About: ${profile.about || ''}
+    - Projects: ${(profile.projects || []).map((p: any) => p.title).join(', ')}
 
-  // Baseline Draft Generation
-  const sections = [
-    {
-      title: 'Experience & Projects',
-      content: profile.projects.length > 0 ? 'List of relevant projects...' : 'No projects listed yet.',
-      order: 1
-    },
-    {
-      title: 'Skills',
-      content: profile.skills.map(s => s.name).join(', '),
-      order: 2
-    },
-    {
-      title: 'Education',
-      content: profile.education.join('\n'),
-      order: 3
-    }
-  ];
+    Target Job Description (Tailor the resume to match this if provided):
+    ${jobDesc ? jobDesc : 'No specific job targeted. Make it a general, strong resume.'}
+    
+    Generate a highly professional resume draft with tailored sections and a summary.
+  `;
 
-  const resume = await Resume.create({
-    userId,
-    targetJobId,
-    title,
-    summary: profile.about || 'A passionate student ready for opportunities.',
-    sections,
-    status: 'draft',
-  });
+  try {
+    const aiDraft = await gateway.extract(resumeBuilderSchema, textPayload, aiConfig.taskProfiles.explain);
+
+    const resume = await Resume.create({
+      userId,
+      targetJobId,
+      title,
+      summary: aiDraft.summary || profile.about || 'A passionate student ready for opportunities.',
+      sections: aiDraft.sections || [],
+      status: 'draft',
+    });
+
+    return resume;
+  } catch (e) {
+    console.error('[ResumeService] AI Resume Generation Failed:', e);
+    throw new Error('Failed to generate AI resume.');
+  }
 
   return resume;
 };

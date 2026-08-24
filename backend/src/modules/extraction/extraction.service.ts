@@ -1,6 +1,6 @@
 import { gateway } from '../ai-gateway';
 import { aiConfig } from '../../config/ai';
-import { opportunityExtractionSchema } from './schema';
+import { opportunityExtractionSchema } from '../../models/ai-schemas/extraction.schema';
 
 export interface ExtractedOpportunity {
   type: string;
@@ -17,7 +17,7 @@ export interface ExtractedOpportunity {
 }
 
 export const extractOpportunity = async (rawText: string): Promise<ExtractedOpportunity> => {
-  // 1. Call AI Gateway with the extraction task profile
+  // 1. Call AI Gateway with the extraction task
   const rawJson = await gateway.extract(opportunityExtractionSchema, rawText, aiConfig.taskProfiles.extract);
 
   // 2. Normalization

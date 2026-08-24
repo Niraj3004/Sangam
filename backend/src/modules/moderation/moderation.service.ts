@@ -7,7 +7,7 @@ import { Job } from '../../models/Job';
 import { Comment } from '../../models/Comment';
 import { gateway } from '../ai-gateway';
 import { aiConfig } from '../../config/ai';
-import { moderationSchema } from './moderation.schema';
+import { moderationSchema } from '../../models/ai-schemas/moderation.schema';
 
 export interface ModerationResult {
   category: string;

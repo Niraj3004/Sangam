@@ -1,7 +1,7 @@
 import { gateway } from '../ai-gateway';
 import { aiConfig } from '../../config/ai';
 import { Profile } from '../../models/Profile';
-import { profileAssistantSchema } from './assistant.schema';
+import { profileAssistantSchema } from '../../models/ai-schemas/assistant.schema';
 
 export interface ProfileReviewResult {
   suggestions: string[];

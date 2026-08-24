@@ -1,6 +1,6 @@
 import { gateway } from '../ai-gateway';
 import { aiConfig } from '../../config/ai';
-import { relevanceRankingSchema } from './relevance.schema';
+import { relevanceRankingSchema } from '../../models/ai-schemas/relevance.schema';
 
 export interface StudentProfileContext {
   careerGoal?: string;
