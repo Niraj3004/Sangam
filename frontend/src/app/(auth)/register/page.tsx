@@ -39,6 +39,10 @@ export default function RegisterPage() {
       const response = await api.post("/auth/register", data);
       
       if (response.data.success) {
+        // Set auth tokens so they can access the authenticated /verify-email endpoint
+        const { user, accessToken, refreshToken } = response.data.data || response.data;
+        setAuth(user, accessToken, refreshToken);
+        
         // Redirect to verify page after successful registration
         router.push("/verify");
       }

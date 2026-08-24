@@ -42,7 +42,9 @@ export default function LoginPage() {
         setAuth(user, accessToken, refreshToken);
         
         // Route based on verification tier
-        if (user.verifyTier === 'unverified') {
+        if (user.isEmailVerified === false) {
+          router.push("/verify");
+        } else if (user.verifyTier === 'unverified') {
           router.push("/onboarding");
         } else {
           router.push("/feed"); // Main app shell

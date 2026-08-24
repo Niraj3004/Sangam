@@ -22,9 +22,15 @@ export default function VerifyEmailPage() {
     setError("");
 
     try {
-      await api.post('/auth/verify-email', { code });
-      updateUser({ isVerified: true });
-      router.push('/dashboard');
+      const res = await api.post('/auth/verify-email', { code });
+      const user = res.data?.data?.user;
+      updateUser({ isEmailVerified: true });
+      
+      if (user?.verifyTier === 'unverified') {
+        router.push("/onboarding");
+      } else {
+        router.push("/feed");
+      }
     } catch (err: any) {
       setError(err.response?.data?.error?.message || "Invalid or expired code.");
     } finally {

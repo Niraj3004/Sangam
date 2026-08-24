@@ -9,6 +9,7 @@ export interface User {
   handle?: string;
   role: 'student' | 'verified_student' | 'admin' | 'organization';
   isVerified: boolean;
+  isEmailVerified?: boolean;
   verifyTier?: 'unverified' | 'manual_pending' | 'verified_email' | 'verified_manual';
   profilePic?: string;
 }
