@@ -20,14 +20,14 @@ export default function FeedPage() {
     try {
       if (activeTab === "foryou") {
         const { data } = await api.get('/feed/personalized');
-        setOpportunities(data.data || []);
+        setOpportunities(data.data?.opportunities || []);
       } else {
         const queryParams = new URLSearchParams();
         if (filters.type) queryParams.append("type", filters.type);
         if (filters.remote) queryParams.append("remote", "true");
         
         const { data } = await api.get(`/opportunities?${queryParams.toString()}`);
-        setOpportunities(data.data || []);
+        setOpportunities(data.data?.opportunities || []);
       }
     } catch (error) {
       console.error("Failed to load feed", error);
