@@ -23,10 +23,10 @@ export default function MentorshipPage() {
     try {
       if (activeTab === "sessions") {
         const { data } = await api.get('/mentorship');
-        setSessions(data.data || []);
+        setSessions((Array.isArray(data.data) ? data.data : (Object.values(data.data || {}).find(Array.isArray) || [])));
       } else {
         const { data } = await api.get('/mentorship/requests');
-        setRequests(data.data || []);
+        setRequests((Array.isArray(data.data) ? data.data : (Object.values(data.data || {}).find(Array.isArray) || [])));
       }
     } catch (err) {
       console.error(err);

@@ -31,7 +31,7 @@ export default function ProjectDetailPage() {
       // If owner, fetch applications
       if (user?._id === data.data.owner?._id) {
         const appsRes = await api.get(`/projects/${params.id}/applications`);
-        setApplications(appsRes.data.data || []);
+        setApplications(appsRes.(Array.isArray(data.data) ? data.data : (Object.values(data.data || {}).find(Array.isArray) || [])));
       }
     } catch (err) {
       console.error(err);

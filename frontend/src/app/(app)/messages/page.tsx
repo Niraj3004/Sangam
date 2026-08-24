@@ -61,7 +61,7 @@ export default function MessagesPage() {
     setIsLoadingChats(true);
     try {
       const { data } = await api.get('/messages/conversations');
-      setConversations(data.data || []);
+      setConversations((Array.isArray(data.data) ? data.data : (Object.values(data.data || {}).find(Array.isArray) || [])));
     } catch (err) {
       console.error(err);
     } finally {
@@ -74,7 +74,7 @@ export default function MessagesPage() {
     setIsLoadingMessages(true);
     try {
       const { data } = await api.get(`/messages/${conversation._id}`);
-      setMessages(data.data || []);
+      setMessages((Array.isArray(data.data) ? data.data : (Object.values(data.data || {}).find(Array.isArray) || [])));
       scrollToBottom();
       
       // Mark as read

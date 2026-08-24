@@ -19,7 +19,7 @@ export default function ResumeBuilderPage() {
     setIsLoading(true);
     try {
       const { data } = await api.get('/resume');
-      setResumes(data.data || []);
+      setResumes((Array.isArray(data.data) ? data.data : (Object.values(data.data || {}).find(Array.isArray) || [])));
     } catch (err) {
       console.error(err);
     } finally {

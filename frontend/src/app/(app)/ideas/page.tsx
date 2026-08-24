@@ -20,7 +20,7 @@ export default function IdeasHubPage() {
     setIsLoading(true);
     try {
       const { data } = await api.get('/ideas');
-      setIdeas(data.data || []);
+      setIdeas((Array.isArray(data.data) ? data.data : (Object.values(data.data || {}).find(Array.isArray) || [])));
     } catch (err) {
       console.error(err);
     } finally {

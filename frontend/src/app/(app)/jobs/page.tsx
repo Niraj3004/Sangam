@@ -33,7 +33,7 @@ export default function JobsHubPage() {
     setIsLoading(true);
     try {
       const { data } = await api.get('/jobs');
-      setJobs(data.data || []);
+      setJobs((Array.isArray(data.data) ? data.data : (Object.values(data.data || {}).find(Array.isArray) || [])));
     } catch (err) {
       console.error(err);
     } finally {

@@ -23,10 +23,10 @@ export default function NetworkPage() {
     try {
       if (activeTab === "pending") {
         const { data } = await api.get('/connections/pending');
-        setPendingRequests(data.data || []);
+        setPendingRequests((Array.isArray(data.data) ? data.data : (Object.values(data.data || {}).find(Array.isArray) || [])));
       } else {
         const { data } = await api.get('/connections');
-        setConnections(data.data || []);
+        setConnections((Array.isArray(data.data) ? data.data : (Object.values(data.data || {}).find(Array.isArray) || [])));
       }
     } catch (err) {
       console.error(err);

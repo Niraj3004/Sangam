@@ -23,7 +23,7 @@ export default function MatchesPage() {
     try {
       const endpoint = activeTab === "people" ? '/match/people' : '/match/projects';
       const { data } = await api.get(endpoint);
-      setMatches(data.data || []);
+      setMatches((Array.isArray(data.data) ? data.data : (Object.values(data.data || {}).find(Array.isArray) || [])));
     } catch (err) {
       console.error(err);
     } finally {

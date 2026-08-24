@@ -29,10 +29,10 @@ export default function AdminModerationPage() {
     try {
       if (activeTab === "reports") {
         const { data } = await api.get('/moderation/reports');
-        setReports(data.data || []);
+        setReports((Array.isArray(data.data) ? data.data : (Object.values(data.data || {}).find(Array.isArray) || [])));
       } else {
         const { data } = await api.get('/moderation/flags');
-        setFlags(data.data || []);
+        setFlags((Array.isArray(data.data) ? data.data : (Object.values(data.data || {}).find(Array.isArray) || [])));
       }
     } catch (err) {
       console.error(err);

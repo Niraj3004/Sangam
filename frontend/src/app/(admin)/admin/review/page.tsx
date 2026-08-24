@@ -28,10 +28,10 @@ export default function AdminReviewPage() {
     try {
       if (activeTab === "content") {
         const { data } = await api.get('/review');
-        setContentQueue(data.data || []);
+        setContentQueue((Array.isArray(data.data) ? data.data : (Object.values(data.data || {}).find(Array.isArray) || [])));
       } else {
         const { data } = await api.get('/auth/verify-requests');
-        setVerifyQueue(data.data || []);
+        setVerifyQueue((Array.isArray(data.data) ? data.data : (Object.values(data.data || {}).find(Array.isArray) || [])));
       }
     } catch (err) {
       console.error(err);

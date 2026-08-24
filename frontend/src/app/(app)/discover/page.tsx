@@ -32,7 +32,7 @@ export default function DiscoverPeoplePage() {
       if (filters.lookingFor) query.append('lookingFor', filters.lookingFor);
       
       const { data } = await api.get(`/discover/people?${query.toString()}`);
-      setPeople(data.data || []);
+      setPeople(data.data?.profiles || []);
     } catch (err) {
       console.error(err);
     } finally {
