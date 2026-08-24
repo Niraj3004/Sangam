@@ -8,7 +8,7 @@ export const revalidate = 0;
 // Generate metadata for SEO
 export async function generateMetadata({ params }: { params: { handle: string } }) {
   const profile = await getProfile(params.handle);
-  if (!profile) return { title: 'Profile Not Found' };
+  if (!profile || profile.error) return { title: 'Profile Error' };
   
   return {
     title: `${profile.handle} | Sangam`,
@@ -28,19 +28,30 @@ async function getProfile(handle: string) {
     console.log(`[getProfile] Response status: ${res.status}`);
     if (!res.ok) {
       console.log(`[getProfile] Not ok, returning null`);
-      return null;
+      return { error: `HTTP ${res.status} from API` };
     }
     const json = await res.json();
     console.log(`[getProfile] Parsed JSON:`, !!json.data);
-    return json.data;
+    return json.data || { error: 'No data in JSON' };
   } catch (error: any) {
     console.error(`[getProfile] Error:`, error.message);
-    return null;
+    return { error: `Fetch failed: ${error.message}` };
   }
 }
 
 export default async function PublicProfilePage({ params }: { params: { handle: string } }) {
   const profile = await getProfile(params.handle);
+
+  if (profile?.error) {
+    return (
+      <div className="min-h-screen bg-secondary flex items-center justify-center">
+        <div className="p-8 bg-white rounded-xl shadow-xl text-center">
+          <h1 className="text-2xl font-bold text-red-500 mb-4">Error Loading Profile</h1>
+          <p className="text-muted">{profile.error}</p>
+        </div>
+      </div>
+    );
+  }
 
   if (!profile) {
     notFound();
