@@ -14,6 +14,9 @@ import messagesRoutes from '../modules/messages/messages.routes';
 import reviewRoutes from '../modules/review/review.routes';
 import communitiesRoutes from '../modules/communities/communities.routes';
 import knowledgeRoutes from '../modules/knowledge/knowledge.routes';
+import organizationsRoutes from '../modules/organizations/organizations.routes';
+import jobsRoutes from '../modules/jobs/jobs.routes';
+import mentorshipRoutes from '../modules/mentorship/mentorship.routes';
 
 const router = Router();
 
@@ -31,6 +34,9 @@ router.use('/messages', messagesRoutes);
 router.use('/review', reviewRoutes);
 router.use('/communities', communitiesRoutes);
 router.use('/knowledge', knowledgeRoutes);
+router.use('/orgs', organizationsRoutes);
+router.use('/jobs', jobsRoutes);
+router.use('/mentorship', mentorshipRoutes);
 
 router.get('/health', (req, res) => {
   sendSuccess(res, { status: 'ok', timestamp: new Date().toISOString() });
