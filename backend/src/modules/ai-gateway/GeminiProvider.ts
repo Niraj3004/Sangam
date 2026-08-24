@@ -36,10 +36,10 @@ export class GeminiProvider implements LLMProvider {
         return await operation(client);
       } catch (error: any) {
         lastError = error;
-        const errorMessage = error?.message || error?.toString() || '';
+        const errorMessage = error?.message || (typeof error === 'object' ? JSON.stringify(error) : String(error));
         
         // Typical Gemini rate limit or overloaded errors (429 or 503)
-        if (errorMessage.includes('429') || errorMessage.includes('503') || errorMessage.includes('quota') || errorMessage.includes('exhausted')) {
+        if (errorMessage.includes('429') || errorMessage.includes('503') || errorMessage.toLowerCase().includes('quota') || errorMessage.toLowerCase().includes('exhausted')) {
           console.warn(`[GeminiProvider] Key index ${this.currentKeyIndex} hit rate limit or failed. Rotating key...`);
           this.rotateKey();
           continue; // Try next key immediately

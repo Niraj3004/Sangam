@@ -5,6 +5,56 @@ import { ModerationFlag } from '../../models/ModerationFlag';
 import { Post } from '../../models/Post';
 import { Job } from '../../models/Job';
 import { Comment } from '../../models/Comment';
+import { gateway } from '../ai-gateway';
+import { aiConfig } from '../../config/ai';
+import { moderationSchema } from './moderation.schema';
+
+export interface ModerationResult {
+  category: string;
+  riskLevel: 'low' | 'medium' | 'high' | 'critical';
+  reason: string;
+}
+
+export const moderateText = async (text: string): Promise<ModerationResult> => {
+  try {
+    const result = await gateway.extract(moderationSchema, text, aiConfig.taskProfiles.moderate);
+    return {
+      category: result.category || 'safe',
+      riskLevel: (result.riskLevel as any) || 'low',
+      reason: result.reason || 'Fallback safe'
+    };
+  } catch (error) {
+    console.error('[ModerationService] AI Moderation failed:', error);
+    return { category: 'safe', riskLevel: 'low', reason: 'Error in gateway' };
+  }
+};
+
+/**
+ * Async hook to moderate content after creation.
+ * If risk is high or critical, raises a ModerationFlag for human review.
+ */
+export const runModerationHook = async (entityId: string, entityModel: string, textToAnalyze: string) => {
+  // Fire and forget
+  setTimeout(async () => {
+    try {
+      const result = await moderateText(textToAnalyze);
+      
+      if (result.riskLevel === 'high' || result.riskLevel === 'critical') {
+        console.warn(`[ModerationService] Flagged ${entityModel} ${entityId} as ${result.category} (${result.riskLevel})`);
+        
+        await ModerationFlag.create({
+          entityId,
+          entityModel: entityModel as any,
+          flagReason: `AI flagged as ${result.riskLevel} risk ${result.category}: ${result.reason}`,
+          confidenceScore: 0.9, // Defaulting for AI flags
+          status: 'pending'
+        });
+      }
+    } catch (e) {
+      console.error('[ModerationService] Background hook error:', e);
+    }
+  }, 0);
+};
 
 export const getReportsQueue = async () => {
   const reports = await Report.find({ status: 'pending' })

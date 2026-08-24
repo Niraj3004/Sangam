@@ -28,15 +28,15 @@ export const aiConfig = {
     },
     // Explain/Chat: human-readable, creative but constrained
     explain: {
-      model: 'gemini-2.5-pro',
+      model: 'gemini-2.5-flash',
       temperature: 0.7,
-      maxTokens: 500,
+      maxTokens: 1000
     },
     // Moderation: highly deterministic
     moderate: {
-      model: 'gemini-2.5-pro',
+      model: 'gemini-2.5-flash',
       temperature: 0.0,
-      maxTokens: 200,
+      maxTokens: 500
     }
   }
 };

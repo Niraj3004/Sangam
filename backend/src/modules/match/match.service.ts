@@ -4,6 +4,48 @@ import mongoose from 'mongoose';
 
 import { Idea } from '../../models/Idea';
 import { Project } from '../../models/Project';
+import { gateway } from '../ai-gateway';
+import { aiConfig } from '../../config/ai';
+
+const explainMatchesBulk = async (context: string, matches: any[]): Promise<any[]> => {
+  if (matches.length === 0) return matches;
+  
+  const textPayload = `
+    Context: ${context}
+    
+    Candidates to explain:
+    ${matches.map(m => `
+    ID: ${m._id}
+    Title/Name: ${m.title || m.userId?.email || m.authorId?.email || 'Unknown'}
+    Initial AI Score: ${m.matchScore}
+    System Reasons: ${m.reasons.join(', ')}
+    `).join('\n')}
+    
+    Return a strict JSON array where each object has:
+    - id: the ID of the candidate
+    - reason: A single, natural, human-readable sentence explaining why this is a good match (don't mention the score, just the qualitative fit).
+  `;
+
+  try {
+    const response = await gateway.extract(
+      { type: 'array', items: { type: 'object', properties: { id: { type: 'string' }, reason: { type: 'string' } } } },
+      textPayload,
+      aiConfig.taskProfiles.explain
+    );
+
+    const explanationMap = new Map(response.map((r: any) => [r.id, r.reason]));
+    
+    return matches.map(m => ({
+      ...m,
+      reasons: explanationMap.has(m._id.toString()) 
+        ? [explanationMap.get(m._id.toString())] 
+        : m.reasons
+    }));
+  } catch (e) {
+    console.error('[MatchService] AI explanation failed:', e);
+    return matches;
+  }
+};
 
 export const getPeopleMatches = async (userId: string) => {
   // Find all users I've already interacted with
@@ -81,7 +123,13 @@ export const getPeopleMatches = async (userId: string) => {
   // Sort descending by score and return top 20
   scoredProfiles.sort((a, b) => b.matchScore - a.matchScore);
   
-  return scoredProfiles.slice(0, 20);
+  const topMatches = scoredProfiles.slice(0, 10);
+  
+  // AI Explanation Pass (Top 5 only to save time/cost)
+  const context = `Student seeking peers. Goal: ${myProfile.careerGoal}. Skills: ${Array.from(mySkills).join(', ')}`;
+  const explainedTop5 = await explainMatchesBulk(context, topMatches.slice(0, 5));
+  
+  return [...explainedTop5, ...topMatches.slice(5)];
 };
 
 export const getProjectMatches = async (userId: string) => {
