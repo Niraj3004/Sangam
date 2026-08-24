@@ -85,7 +85,7 @@ export default function EditProfilePage() {
         updateUser({ profilePic: data.data.avatarUrl });
         alert("Avatar updated successfully!");
       }
-    } catch (err) {
+    } catch (err: any) {
       console.error(err);
       alert("Failed to upload avatar");
     }
@@ -111,7 +111,7 @@ export default function EditProfilePage() {
         alert("Profile saved successfully!");
         router.push(`/u/${user?.handle}`);
       }
-    } catch (err) {
+    } catch (err: any) {
       console.error(err);
       alert("Failed to save profile");
     } finally {

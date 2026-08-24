@@ -33,7 +33,7 @@ export default function ProjectDetailPage() {
         const appsRes = await api.get(`/projects/${params.id}/applications`);
         setApplications(appsRes.data.data || []);
       }
-    } catch (err) {
+    } catch (err: any) {
       console.error(err);
       router.push('/projects');
     } finally {
@@ -73,7 +73,7 @@ export default function ProjectDetailPage() {
       setApplications(prev => prev.filter(app => app._id !== appId));
       // Refresh project to update member list if accepted
       if (status === 'accepted') fetchProject();
-    } catch (err) {
+    } catch (err: any) {
       console.error(err);
       alert("Failed to resolve application");
     }

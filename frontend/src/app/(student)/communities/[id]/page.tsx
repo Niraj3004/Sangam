@@ -47,7 +47,7 @@ export default function CommunityWorkspace() {
           });
           setLoading(false);
         }, 500);
-      } catch (err) {
+      } catch (err: any) {
         console.error(err);
       }
     };

@@ -32,7 +32,7 @@ export default function SettingsPage() {
       if (data.data) {
         setPrefs({ ...prefs, ...data.data });
       }
-    } catch (err) {
+    } catch (err: any) {
       console.error(err);
       // Fallback to defaults if endpoint doesn't exist yet
     } finally {
@@ -45,7 +45,7 @@ export default function SettingsPage() {
     try {
       await api.patch('/notifications/prefs', prefs);
       alert("Settings saved successfully.");
-    } catch (err) {
+    } catch (err: any) {
       console.error(err);
       alert("Failed to save settings.");
     } finally {

@@ -45,7 +45,7 @@ export default function OnboardingWizard() {
       // Locally update state to simulate progression
       updateUser({ verifyTier: "manual" });
       setStep(2);
-    } catch (error) {
+    } catch (error: any) {
       console.error(error);
       alert("Failed to submit verification request. Or your email was automatically verified.");
       // If email was already verified backend-side, we should advance anyway
@@ -63,7 +63,7 @@ export default function OnboardingWizard() {
         lookingFor 
       });
       router.push("/dashboard"); // Done!
-    } catch (error) {
+    } catch (error: any) {
       console.error(error);
       alert("Failed to save profile.");
     } finally {

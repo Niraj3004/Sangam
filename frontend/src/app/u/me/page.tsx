@@ -36,7 +36,7 @@ export default function MeRedirectPage() {
           } else {
             router.replace("/onboarding");
           }
-        } catch (err) {
+        } catch (err: any) {
           router.replace("/dashboard");
         }
       }

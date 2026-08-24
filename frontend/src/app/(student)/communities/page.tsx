@@ -46,7 +46,7 @@ export default function CommunitiesHub() {
       
       const res = await api.get(`${endpoint}?${params.toString()}`);
       setCommunities(res.data.data.communities || []);
-    } catch (err) {
+    } catch (err: any) {
       console.error("Failed to fetch communities", err);
     } finally {
       setLoading(false);

@@ -28,7 +28,7 @@ export default function NetworkPage() {
         const { data } = await api.get('/connections');
         setConnections((Array.isArray(data.data) ? data.data : (Object.values(data.data || {}).find(Array.isArray) || [])));
       }
-    } catch (err) {
+    } catch (err: any) {
       console.error(err);
     } finally {
       setIsLoading(false);
@@ -39,7 +39,7 @@ export default function NetworkPage() {
     try {
       await api.patch(`/connections/${id}`, { status: action === 'accept' ? 'accepted' : 'rejected' });
       setPendingRequests(prev => prev.filter(req => req._id !== id));
-    } catch (err) {
+    } catch (err: any) {
       console.error(err);
       alert("Action failed");
     }

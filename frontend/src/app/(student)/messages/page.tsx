@@ -62,7 +62,7 @@ export default function MessagesPage() {
     try {
       const { data } = await api.get('/messages/conversations');
       setConversations((Array.isArray(data.data) ? data.data : (Object.values(data.data || {}).find(Array.isArray) || [])));
-    } catch (err) {
+    } catch (err: any) {
       console.error(err);
     } finally {
       setIsLoadingChats(false);
@@ -85,7 +85,7 @@ export default function MessagesPage() {
       if (socketRef.current) {
         socketRef.current.emit('joinRoom', conversation._id);
       }
-    } catch (err) {
+    } catch (err: any) {
       console.error(err);
     } finally {
       setIsLoadingMessages(false);
@@ -114,7 +114,7 @@ export default function MessagesPage() {
         conv._id === activeChat._id ? { ...conv, latestMessage: data.data } : conv
       ));
       scrollToBottom();
-    } catch (err) {
+    } catch (err: any) {
       console.error(err);
       alert("Failed to send message. You may be blocked or restricted.");
     }

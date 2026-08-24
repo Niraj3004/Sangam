@@ -20,7 +20,7 @@ export default function IdeaDetailPage() {
     try {
       const { data } = await api.get(`/ideas/${params.id}`);
       setIdea(data.data);
-    } catch (err) {
+    } catch (err: any) {
       console.error(err);
       router.push('/ideas');
     } finally {
@@ -39,7 +39,7 @@ export default function IdeaDetailPage() {
       // E.g. POST /api/ideas/:id/interest or similar. 
       // If the backend doesn't have it explicitly yet, we'll alert as a placeholder.
       alert(`Signaled intent to ${action}!`);
-    } catch (err) {
+    } catch (err: any) {
       console.error(err);
     } finally {
       setIsSignaling(false);

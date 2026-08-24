@@ -37,7 +37,7 @@ export function ReportModal({ isOpen, onClose, targetId, targetType }: ReportMod
         setReason("");
         setDetails("");
       }, 2000);
-    } catch (err) {
+    } catch (err: any) {
       console.error(err);
       alert("Failed to submit report. Please try again.");
     } finally {

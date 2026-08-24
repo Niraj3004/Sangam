@@ -21,7 +21,7 @@ async function getOpportunity(id: string) {
     if (!res.ok) return null;
     const json = await res.json();
     return json.data;
-  } catch (error) {
+  } catch (error: any) {
     return null;
   }
 }

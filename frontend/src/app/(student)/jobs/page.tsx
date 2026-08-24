@@ -34,7 +34,7 @@ export default function JobsHubPage() {
     try {
       const { data } = await api.get('/jobs');
       setJobs((Array.isArray(data.data) ? data.data : (Object.values(data.data || {}).find(Array.isArray) || [])));
-    } catch (err) {
+    } catch (err: any) {
       console.error(err);
     } finally {
       setIsLoading(false);
@@ -59,7 +59,7 @@ export default function JobsHubPage() {
         title: "", company: "", location: "", type: "full-time", description: "", requirements: "", salaryRange: ""
       });
       alert("Job posted successfully!");
-    } catch (err) {
+    } catch (err: any) {
       console.error(err);
       alert("Failed to post job.");
     } finally {

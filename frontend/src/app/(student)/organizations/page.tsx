@@ -31,7 +31,7 @@ export default function OrganizationsPage() {
     try {
       const { data } = await api.get('/organizations');
       setOrgs((Array.isArray(data.data) ? data.data : (Object.values(data.data || {}).find(Array.isArray) || [])));
-    } catch (err) {
+    } catch (err: any) {
       console.error(err);
     } finally {
       setIsLoading(false);
@@ -49,7 +49,7 @@ export default function OrganizationsPage() {
       setIsModalOpen(false);
       setFormData({ name: "", description: "", website: "", industry: "" });
       alert("Organization registered successfully!");
-    } catch (err) {
+    } catch (err: any) {
       console.error(err);
       alert("Failed to register organization.");
     } finally {

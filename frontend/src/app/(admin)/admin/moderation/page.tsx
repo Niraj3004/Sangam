@@ -34,7 +34,7 @@ export default function AdminModerationPage() {
         const { data } = await api.get('/moderation/flags');
         setFlags((Array.isArray(data.data) ? data.data : (Object.values(data.data || {}).find(Array.isArray) || [])));
       }
-    } catch (err) {
+    } catch (err: any) {
       console.error(err);
     } finally {
       setIsLoading(false);
@@ -45,7 +45,7 @@ export default function AdminModerationPage() {
     try {
       await api.post(`/moderation/reports/${id}/resolve`, { action, notes: "Resolved by admin" });
       setReports(prev => prev.filter(r => r._id !== id));
-    } catch (err) {
+    } catch (err: any) {
       console.error(err);
       alert("Failed to resolve report");
     }
@@ -55,7 +55,7 @@ export default function AdminModerationPage() {
     try {
       await api.post(`/moderation/flags/${id}/act`, { action });
       setFlags(prev => prev.filter(f => f._id !== id));
-    } catch (err) {
+    } catch (err: any) {
       console.error(err);
       alert("Failed to act on flag");
     }

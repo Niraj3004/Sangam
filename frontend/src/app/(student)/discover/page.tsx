@@ -33,7 +33,7 @@ export default function DiscoverPeoplePage() {
       
       const { data } = await api.get(`/discover/people?${query.toString()}`);
       setPeople(data.data?.profiles || []);
-    } catch (err) {
+    } catch (err: any) {
       console.error(err);
     } finally {
       setIsLoading(false);

@@ -29,7 +29,7 @@ export default function CopilotPage() {
     try {
       const { data } = await api.get('/copilot/plan');
       setPlan(data.data);
-    } catch (err) {
+    } catch (err: any) {
       console.error(err);
     } finally {
       setIsLoadingPlan(false);
@@ -49,7 +49,7 @@ export default function CopilotPage() {
       }));
 
       await api.patch(`/copilot/plan/${itemId}`, { isCompleted: newIsCompleted });
-    } catch (err) {
+    } catch (err: any) {
       console.error(err);
       // Revert on fail
       fetchPlan();
@@ -79,7 +79,7 @@ export default function CopilotPage() {
       if (data.data.planUpdated) {
         fetchPlan();
       }
-    } catch (err) {
+    } catch (err: any) {
       console.error(err);
       setMessages(prev => [...prev, { role: 'assistant', content: "Sorry, I encountered an error. Please try again later." }]);
     } finally {

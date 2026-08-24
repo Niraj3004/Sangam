@@ -33,7 +33,7 @@ export default function AdminReviewPage() {
         const { data } = await api.get('/auth/verify-requests');
         setVerifyQueue((Array.isArray(data.data) ? data.data : (Object.values(data.data || {}).find(Array.isArray) || [])));
       }
-    } catch (err) {
+    } catch (err: any) {
       console.error(err);
     } finally {
       setIsLoading(false);
@@ -44,7 +44,7 @@ export default function AdminReviewPage() {
     try {
       await api.post(`/review/${id}/${action}`);
       setContentQueue(prev => prev.filter(item => item._id !== id));
-    } catch (err) {
+    } catch (err: any) {
       console.error(err);
       alert("Failed to review content");
     }
@@ -54,7 +54,7 @@ export default function AdminReviewPage() {
     try {
       await api.post(`/auth/verify-resolve/${id}`, { status: action === 'approve' ? 'approved' : 'rejected' });
       setVerifyQueue(prev => prev.filter(req => req._id !== id));
-    } catch (err) {
+    } catch (err: any) {
       console.error(err);
       alert("Failed to resolve verification request");
     }

@@ -31,7 +31,7 @@ export default function SearchPage() {
     try {
       const { data } = await api.get(`/search?q=${encodeURIComponent(q)}`);
       setResults(data.data || { users: [], projects: [], communities: [], ideas: [], jobs: [] });
-    } catch (err) {
+    } catch (err: any) {
       console.error(err);
     } finally {
       setIsLoading(false);

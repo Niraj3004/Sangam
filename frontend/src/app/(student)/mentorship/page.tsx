@@ -28,7 +28,7 @@ export default function MentorshipPage() {
         const { data } = await api.get('/mentorship/requests');
         setRequests((Array.isArray(data.data) ? data.data : (Object.values(data.data || {}).find(Array.isArray) || [])));
       }
-    } catch (err) {
+    } catch (err: any) {
       console.error(err);
     } finally {
       setIsLoading(false);
@@ -40,7 +40,7 @@ export default function MentorshipPage() {
       await api.patch(`/mentorship/${id}/${action}`);
       setRequests(prev => prev.filter(req => req._id !== id));
       alert(`Request ${action}ed successfully.`);
-    } catch (err) {
+    } catch (err: any) {
       console.error(err);
       alert("Failed to perform action");
     }

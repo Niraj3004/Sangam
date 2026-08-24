@@ -31,7 +31,7 @@ export default function JobDetailPage() {
       if (data.data.applicants?.some((app: any) => app.applicant === user?._id || app.applicant?._id === user?._id)) {
         setHasApplied(true);
       }
-    } catch (err) {
+    } catch (err: any) {
       console.error(err);
       router.push('/jobs');
     } finally {

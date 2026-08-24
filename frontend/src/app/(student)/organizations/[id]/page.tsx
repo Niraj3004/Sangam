@@ -26,7 +26,7 @@ export default function OrganizationDetailPage() {
     try {
       const { data } = await api.get(`/organizations/${params.id}`);
       setOrg(data.data);
-    } catch (err) {
+    } catch (err: any) {
       console.error(err);
       router.push('/organizations');
     } finally {
@@ -48,7 +48,7 @@ export default function OrganizationDetailPage() {
       });
       setOrg({ ...org, logo: data.data.logo });
       alert("Logo updated successfully");
-    } catch (err) {
+    } catch (err: any) {
       console.error(err);
       alert("Failed to upload logo.");
     } finally {

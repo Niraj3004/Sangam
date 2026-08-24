@@ -20,7 +20,7 @@ export default function ResumeBuilderPage() {
     try {
       const { data } = await api.get('/resume');
       setResumes((Array.isArray(data.data) ? data.data : (Object.values(data.data || {}).find(Array.isArray) || [])));
-    } catch (err) {
+    } catch (err: any) {
       console.error(err);
     } finally {
       setIsLoading(false);
@@ -55,7 +55,7 @@ export default function ResumeBuilderPage() {
       } else {
         alert("Exported successfully, but no URL returned.");
       }
-    } catch (err) {
+    } catch (err: any) {
       console.error(err);
       alert("Failed to export resume.");
     }

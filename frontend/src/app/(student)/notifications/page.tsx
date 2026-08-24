@@ -19,7 +19,7 @@ export default function NotificationsPage() {
     try {
       const { data } = await api.get('/notifications');
       setNotifications((Array.isArray(data.data) ? data.data : (Object.values(data.data || {}).find(Array.isArray) || [])));
-    } catch (err) {
+    } catch (err: any) {
       console.error(err);
     } finally {
       setIsLoading(false);
@@ -30,7 +30,7 @@ export default function NotificationsPage() {
     try {
       await api.patch('/notifications/read-all');
       setNotifications(prev => prev.map(n => ({ ...n, isRead: true })));
-    } catch (err) {
+    } catch (err: any) {
       console.error(err);
     }
   };
@@ -39,7 +39,7 @@ export default function NotificationsPage() {
     try {
       await api.patch(`/notifications/${id}/read`);
       setNotifications(prev => prev.map(n => n._id === id ? { ...n, isRead: true } : n));
-    } catch (err) {
+    } catch (err: any) {
       console.error(err);
     }
   };

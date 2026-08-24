@@ -20,7 +20,7 @@ export default function ProjectsHubPage() {
     try {
       const { data } = await api.get('/projects');
       setProjects(data.data?.projects || []);
-    } catch (err) {
+    } catch (err: any) {
       console.error(err);
     } finally {
       setIsLoading(false);

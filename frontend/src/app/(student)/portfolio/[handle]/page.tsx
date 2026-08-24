@@ -36,7 +36,7 @@ export default function PortfolioPage() {
       if (data.data.config) {
         setConfig(data.data.config);
       }
-    } catch (err) {
+    } catch (err: any) {
       console.error(err);
       router.push('/discover'); // Fallback if portfolio not found
     } finally {
@@ -51,7 +51,7 @@ export default function PortfolioPage() {
       setPortfolio({ ...portfolio, config });
       setIsEditing(false);
       alert("Portfolio updated!");
-    } catch (err) {
+    } catch (err: any) {
       console.error(err);
       alert("Failed to update portfolio layout");
     } finally {

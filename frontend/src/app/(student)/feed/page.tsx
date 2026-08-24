@@ -29,7 +29,7 @@ export default function FeedPage() {
         const { data } = await api.get(`/opportunities?${queryParams.toString()}`);
         setOpportunities(data.data?.opportunities || []);
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error("Failed to load feed", error);
     } finally {
       setIsLoading(false);
@@ -54,7 +54,7 @@ export default function FeedPage() {
       } else {
         await api.post(`/opportunities/${id}/save`);
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error(error);
     }
   };

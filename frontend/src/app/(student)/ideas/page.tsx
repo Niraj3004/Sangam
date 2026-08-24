@@ -21,7 +21,7 @@ export default function IdeasHubPage() {
     try {
       const { data } = await api.get('/ideas');
       setIdeas((Array.isArray(data.data) ? data.data : (Object.values(data.data || {}).find(Array.isArray) || [])));
-    } catch (err) {
+    } catch (err: any) {
       console.error(err);
     } finally {
       setIsLoading(false);
