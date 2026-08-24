@@ -5,12 +5,21 @@ export interface ISkill {
   level?: string;
 }
 
+export interface IEducation {
+  institution: string;
+  degree?: string;
+  fieldOfStudy?: string;
+  startYear?: number;
+  endYear?: number;
+}
+
 export interface IProfile extends Document {
   userId: mongoose.Types.ObjectId;
+  name?: string;
   handle: string;
   avatarUrl: string;
   about: string;
-  education: string[];
+  education: IEducation[];
   skills: ISkill[];
   interests: string[];
   lookingFor: string[];
@@ -46,10 +55,19 @@ export interface IProfile extends Document {
 const ProfileSchema: Schema = new Schema(
   {
     userId: { type: Schema.Types.ObjectId, ref: 'User', required: true },
+    name: { type: String },
     handle: { type: String, required: true, unique: true },
     avatarUrl: { type: String, default: '' },
     about: { type: String, default: '' },
-    education: [{ type: String }],
+    education: [
+      {
+        institution: { type: String, required: true },
+        degree: { type: String },
+        fieldOfStudy: { type: String },
+        startYear: { type: Number },
+        endYear: { type: Number },
+      }
+    ],
     skills: [
       {
         name: { type: String, required: true },

@@ -172,10 +172,20 @@ export default async function PublicProfilePage({ params }: { params: Promise<{ 
                 </h3>
                 {profile.education && profile.education.length > 0 ? (
                   <div className="space-y-6">
-                    {profile.education.map((edu: string, i: number) => (
+                    {profile.education.map((edu: any, i: number) => (
                       <div key={i} className="relative pl-6 border-l-2 border-slate-200">
                         <div className="absolute w-3 h-3 bg-emerald-500 rounded-full -left-[7.5px] top-1.5 ring-4 ring-white" />
-                        <h4 className="text-lg font-semibold text-foreground">{edu}</h4>
+                        <h4 className="text-lg font-semibold text-foreground">{edu.institution || edu}</h4>
+                        {edu.degree && (
+                          <p className="text-muted mt-1 text-sm font-medium">
+                            {edu.degree} {edu.fieldOfStudy ? `in ${edu.fieldOfStudy}` : ''}
+                          </p>
+                        )}
+                        {edu.startYear && (
+                          <p className="text-muted mt-1 text-xs">
+                            {edu.startYear} - {edu.endYear || 'Present'}
+                          </p>
+                        )}
                       </div>
                     ))}
                   </div>

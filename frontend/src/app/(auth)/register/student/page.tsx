@@ -12,6 +12,7 @@ import { motion } from "framer-motion";
 import { useAuthStore } from "@/store/auth.store";
 
 const registerSchema = z.object({
+  name: z.string().min(2, { message: "Name must be at least 2 characters" }).max(50),
   email: z.string().email({ message: "Please enter a valid email address" }),
   password: z.string().min(6, { message: "Password must be at least 6 characters" }),
   handle: z.string().min(3, { message: "Handle must be at least 3 characters" }).max(30),
@@ -72,10 +73,25 @@ export default function RegisterPage() {
 
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
         <div className="space-y-1">
-          <label className="text-sm font-medium text-foreground">Username / Handle</label>
+          <label className="text-sm font-medium text-foreground">Full Name</label>
           <div className="relative">
             <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-muted">
               <User className="h-4 w-4" />
+            </div>
+            <input
+              type="text"
+              placeholder="e.g. Ram Sharma"
+              {...register("name")}
+              className="w-full pl-10 pr-3 py-2.5 rounded-xl border border-border bg-white/50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all text-sm"
+            />
+          </div>
+          {errors.name && <p className="text-red-500 text-xs mt-1">{errors.name.message}</p>}
+        </div>
+        <div className="space-y-1">
+          <label className="text-sm font-medium text-foreground">Username / Handle</label>
+          <div className="relative">
+            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-muted">
+              <span className="font-bold">@</span>
             </div>
             <input
               type="text"

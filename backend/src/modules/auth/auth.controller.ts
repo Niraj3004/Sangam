@@ -3,8 +3,8 @@ import * as authService from './auth.service';
 import { sendSuccess } from '../../utils/response';
 
 export const register = async (req: Request, res: Response) => {
-  const { email, password, handle } = req.body;
-  const result = await authService.register(email, password, handle);
+  const { email, password, handle, name } = req.body;
+  const result = await authService.register(email, password, handle, name);
   sendSuccess(res, { message: 'OTP sent to email', ...result }, 201);
 };
 

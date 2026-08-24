@@ -48,7 +48,7 @@ const generateTokens = async (user: IUser, org?: any) => {
 
 const generateOTPCode = () => Math.floor(100000 + Math.random() * 900000).toString();
 
-export const register = async (email: string, passwordRaw: string, handle: string) => {
+export const register = async (email: string, passwordRaw: string, handle: string, name?: string) => {
   const existingUser = await User.findOne({ email });
   if (existingUser) {
     const error: any = new Error('Email already in use');
@@ -71,7 +71,7 @@ export const register = async (email: string, passwordRaw: string, handle: strin
   const verifyTier = determineVerifyTier(email);
 
   const user = await User.create({ email, password, verifyTier, role: ROLES.STUDENT });
-  await Profile.create({ userId: user._id, handle, completionScore: 10 });
+  await Profile.create({ userId: user._id, handle, name, completionScore: 10 });
 
   // Generate OTP for primary email verification
   const code = generateOTPCode();
