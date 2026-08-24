@@ -175,7 +175,7 @@ export default function CopilotPage() {
         <div className="flex-1 overflow-y-auto p-6">
           {isLoadingPlan ? (
             <div className="flex justify-center py-10"><Loader2 className="w-6 h-6 animate-spin text-primary" /></div>
-          ) : !plan || plan.actionItems?.length === 0 ? (
+          ) : !plan || !plan.actionItems || plan.actionItems.length === 0 ? (
             <div className="text-center py-10">
               <Sparkles className="w-10 h-10 text-slate-300 mx-auto mb-3" />
               <h3 className="text-sm font-semibold text-foreground mb-1">No active plan</h3>
@@ -184,7 +184,7 @@ export default function CopilotPage() {
           ) : (
             <div className="space-y-4">
               <p className="text-xs font-bold text-muted uppercase tracking-wider mb-2">Recommended Steps</p>
-              {plan.actionItems.map((item: any, idx: number) => {
+              {plan.actionItems?.map((item: any, idx: number) => {
                 const isCompleted = item.status === 'completed';
                 return (
                   <motion.div 
