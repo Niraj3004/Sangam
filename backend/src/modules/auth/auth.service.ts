@@ -21,7 +21,7 @@ const determineVerifyTier = (email: string): VerifyTier => {
   return VERIFY_TIERS.EMAIL;
 };
 
-const generateTokens = (user: IUser, org?: any) => {
+const generateTokens = async (user: IUser, org?: any) => {
   const payload: JwtPayload = {
     userId: user._id.toString(),
     role: user.role,
@@ -36,7 +36,14 @@ const generateTokens = (user: IUser, org?: any) => {
   const accessToken = jwt.sign(payload, env.JWT_SECRET, { expiresIn: '15m' });
   const refreshToken = jwt.sign({ userId: user._id }, env.JWT_REFRESH_SECRET, { expiresIn: '7d' });
 
-  return { user, accessToken, refreshToken, orgType: org?.type };
+  let userObj = typeof user.toObject === 'function' ? user.toObject() : user;
+  const profile = await Profile.findOne({ userId: user._id });
+  if (profile) {
+    userObj.handle = profile.handle;
+    userObj.profilePic = profile.profilePic;
+  }
+
+  return { user: userObj, accessToken, refreshToken, orgType: org?.type };
 };
 
 const generateOTPCode = () => Math.floor(100000 + Math.random() * 900000).toString();
@@ -86,7 +93,7 @@ export const register = async (email: string, passwordRaw: string, handle: strin
     'Enter Code'
   ).catch(console.error);
 
-  return generateTokens(user);
+  return await generateTokens(user);
 };
 
 export const registerOrganization = async (
@@ -144,7 +151,7 @@ export const registerOrganization = async (
     'Enter Code'
   ).catch(console.error);
 
-  return generateTokens(user, org);
+  return await generateTokens(user, org);
 };
 
 export const verifyEmailOTP = async (userId: string, code: string) => {
@@ -210,7 +217,7 @@ export const login = async (email: string, passwordRaw: string) => {
     org = await Organization.findOne({ 'members.userId': user._id });
   }
 
-  return generateTokens(user, org);
+  return await generateTokens(user, org);
 };
 
 export const refresh = async (refreshToken: string) => {
@@ -222,7 +229,7 @@ export const refresh = async (refreshToken: string) => {
     const user = await User.findById(decoded.userId);
     if (!user) throw new Error('User not found');
     
-    return generateTokens(user);
+    return await generateTokens(user);
   } catch (err) {
     const error: any = new Error('Invalid refresh token');
     error.code = 'INVALID_TOKEN';
@@ -233,13 +240,20 @@ export const refresh = async (refreshToken: string) => {
 
 
 export const getMe = async (userId: string) => {
-  const user = await User.findById(userId).select('-password');
+  const user = await User.findById(userId).select('-password').lean() as any;
   if (!user) {
     const error: any = new Error('User not found');
     error.code = 'NOT_FOUND';
     error.statusCode = 404;
     throw error;
   }
+  
+  const profile = await Profile.findOne({ userId });
+  if (profile) {
+    user.handle = profile.handle;
+    user.profilePic = profile.profilePic;
+  }
+  
   return user;
 };
 
