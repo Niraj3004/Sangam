@@ -14,13 +14,7 @@ export default function OnboardingWizard() {
   const [isLoading, setIsLoading] = useState(false);
 
   // Step 1: Academic Background
-  const [education, setEducation] = useState<{
-    institution: string;
-    degree: string;
-    fieldOfStudy: string;
-    startYear?: number;
-    endYear?: number;
-  }>({
+  const [education, setEducation] = useState({
     institution: "",
     degree: "",
     fieldOfStudy: "",
@@ -46,10 +40,10 @@ export default function OnboardingWizard() {
   useEffect(() => {
     if (!isAuthenticated) {
       router.push("/login");
-    } else if (user?.verifyTier === "manual" || user?.verifyTier === "college") {
-      router.push("/dashboard"); // already verified or higher tier
     }
-  }, [isAuthenticated, user, router]);
+    // Removed the automatic redirect to /dashboard for verified users 
+    // because ALL users need to fill out their profile details!
+  }, [isAuthenticated, router]);
 
   if (!isAuthenticated || !user) return null;
 
@@ -208,8 +202,8 @@ export default function OnboardingWizard() {
                     <label className="text-sm font-medium text-foreground block mb-2">Start Year</label>
                     <input
                       type="number"
-                      value={education.startYear || ''}
-                      onChange={(e) => setEducation({...education, startYear: e.target.value ? parseInt(e.target.value) : undefined})}
+                      value={education.startYear}
+                      onChange={(e) => setEducation({...education, startYear: parseInt(e.target.value)})}
                       className="w-full px-4 py-3 rounded-xl border border-border bg-slate-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
                     />
                   </div>
@@ -217,8 +211,8 @@ export default function OnboardingWizard() {
                     <label className="text-sm font-medium text-foreground block mb-2">Expected Graduation</label>
                     <input
                       type="number"
-                      value={education.endYear || ''}
-                      onChange={(e) => setEducation({...education, endYear: e.target.value ? parseInt(e.target.value) : undefined})}
+                      value={education.endYear}
+                      onChange={(e) => setEducation({...education, endYear: parseInt(e.target.value)})}
                       className="w-full px-4 py-3 rounded-xl border border-border bg-slate-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
                     />
                   </div>

@@ -26,11 +26,8 @@ export default function VerifyEmailPage() {
       const user = res.data?.data?.user;
       updateUser({ isEmailVerified: true });
       
-      if (user?.verifyTier === 'unverified') {
-        router.push("/onboarding");
-      } else {
-        router.push("/feed");
-      }
+      // New users who verify their email should complete their profile
+      router.push("/onboarding");
     } catch (err: any) {
       setError(err.response?.data?.error?.message || "Invalid or expired code.");
     } finally {
