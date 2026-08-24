@@ -14,7 +14,13 @@ export default function OnboardingWizard() {
   const [isLoading, setIsLoading] = useState(false);
 
   // Step 1: Academic Background
-  const [education, setEducation] = useState({
+  const [education, setEducation] = useState<{
+    institution: string;
+    degree: string;
+    fieldOfStudy: string;
+    startYear?: number;
+    endYear?: number;
+  }>({
     institution: "",
     degree: "",
     fieldOfStudy: "",
@@ -202,8 +208,8 @@ export default function OnboardingWizard() {
                     <label className="text-sm font-medium text-foreground block mb-2">Start Year</label>
                     <input
                       type="number"
-                      value={education.startYear}
-                      onChange={(e) => setEducation({...education, startYear: parseInt(e.target.value)})}
+                      value={education.startYear || ''}
+                      onChange={(e) => setEducation({...education, startYear: e.target.value ? parseInt(e.target.value) : undefined})}
                       className="w-full px-4 py-3 rounded-xl border border-border bg-slate-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
                     />
                   </div>
@@ -211,8 +217,8 @@ export default function OnboardingWizard() {
                     <label className="text-sm font-medium text-foreground block mb-2">Expected Graduation</label>
                     <input
                       type="number"
-                      value={education.endYear}
-                      onChange={(e) => setEducation({...education, endYear: parseInt(e.target.value)})}
+                      value={education.endYear || ''}
+                      onChange={(e) => setEducation({...education, endYear: e.target.value ? parseInt(e.target.value) : undefined})}
                       className="w-full px-4 py-3 rounded-xl border border-border bg-slate-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
                     />
                   </div>
