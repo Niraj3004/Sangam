@@ -31,7 +31,7 @@ const generateTokens = (user: IUser) => {
   const accessToken = jwt.sign(payload, env.JWT_SECRET, { expiresIn: '15m' });
   const refreshToken = jwt.sign({ userId: user._id }, env.JWT_REFRESH_SECRET, { expiresIn: '7d' });
 
-  return { accessToken, refreshToken };
+  return { user, accessToken, refreshToken };
 };
 
 export const register = async (email: string, passwordRaw: string, handle: string) => {
