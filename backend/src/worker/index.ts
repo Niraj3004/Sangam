@@ -1,13 +1,7 @@
 import cron from 'node-cron';
 import { connectDB } from '../config/db';
 
-const extractStructuredData = async (text: string) => {
-  return {
-    title: 'Stub Opportunity',
-    description: 'Extracted description stub.',
-    confidence: 0.9,
-  };
-};
+import { extractOpportunity } from '../modules/extraction/extraction.service';
 import { ReviewQueueItem } from '../models/ReviewQueueItem';
 import { Opportunity } from '../models/Opportunity';
 import { processDeadlineReminders } from './reminders';
@@ -21,26 +15,32 @@ const runRadarEngine = async () => {
     const rawData = "Raw data from an external RSS feed about an internship at TechCorp.";
 
     // 2. AI Extraction
-    const extracted = await extractStructuredData(rawData);
-    console.log(`[WORKER] Extracted: ${extracted.title}`);
+    const extracted = await extractOpportunity(rawData);
+    console.log(`[WORKER] Extracted: ${extracted.title} (Confidence: ${extracted.confidence})`);
 
-    // 3. Deduplication (Stub logic)
-    const existing = await Opportunity.findOne({ title: extracted.title });
+    // 3. Deduplication (Check by title or url)
+    const existing = await Opportunity.findOne({ 
+      $or: [
+        { title: extracted.title, posterId: '000000000000000000000000' }
+      ]
+    });
+
     if (existing) {
       console.log('[WORKER] Item already exists. Skipping.');
       return;
     }
 
-    // Create the Opportunity with status 'review' (requires dummy or system posterId)
-    // For MVP, we'll use a hardcoded or empty posterId, but our schema requires one.
-    // Let's create a stub system user ID: '000000000000000000000000'
+    // Create the Opportunity with status based on confidence
     const opportunity = await Opportunity.create({
       title: extracted.title,
       description: extracted.description,
-      posterId: '000000000000000000000000', // stub
-      type: 'project',
-      status: extracted.confidence >= 0.9 ? 'active' : 'draft',
-      // We don't have relevanceScore in our Opportunity model right now, so we skip it.
+      posterId: '000000000000000000000000', // system worker user
+      type: extracted.type as any,
+      endDate: extracted.deadline,
+      isExternal: !!extracted.url,
+      externalLink: extracted.url,
+      tags: extracted.eligibility,
+      status: extracted.confidence >= 0.8 ? 'active' : 'draft',
     });
 
     if (opportunity.status === 'draft') {
