@@ -6,8 +6,9 @@ export const dynamic = 'force-dynamic';
 export const revalidate = 0;
 
 // Generate metadata for SEO
-export async function generateMetadata({ params }: { params: { handle: string } }) {
-  const profile = await getProfile(params.handle);
+export async function generateMetadata({ params }: { params: Promise<{ handle: string }> }) {
+  const { handle } = await params;
+  const profile = await getProfile(handle);
   if (!profile || profile.error) return { title: 'Profile Error' };
   
   return {
@@ -39,8 +40,9 @@ async function getProfile(handle: string) {
   }
 }
 
-export default async function PublicProfilePage({ params }: { params: { handle: string } }) {
-  const profile = await getProfile(params.handle);
+export default async function PublicProfilePage({ params }: { params: Promise<{ handle: string }> }) {
+  const { handle } = await params;
+  const profile = await getProfile(handle);
 
   if (profile?.error) {
     return (
