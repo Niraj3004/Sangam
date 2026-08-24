@@ -20,7 +20,6 @@ router.post('/register/org', authLimiter, validate(authValidation.registerOrgSch
 router.post('/login', authLimiter, validate(authValidation.loginSchema), asyncErrorHandler(authController.login));
 router.post('/refresh', validate(authValidation.refreshSchema), asyncErrorHandler(authController.refresh));
 router.post('/logout', validate(authValidation.logoutSchema), asyncErrorHandler(authController.logout));
-router.post('/google', validate(authValidation.googleAuthSchema), asyncErrorHandler(authController.googleAuth));
 router.post('/forgot-password', authLimiter, validate(authValidation.forgotPasswordSchema), asyncErrorHandler(authController.forgotPassword));
 router.post('/reset-password', authLimiter, validate(authValidation.resetPasswordSchema), asyncErrorHandler(authController.resetPassword));
 

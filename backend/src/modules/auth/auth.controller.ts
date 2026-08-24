@@ -50,11 +50,6 @@ export const resetPassword = async (req: Request, res: Response) => {
   sendSuccess(res, { message: 'Password reset successful' }, 200);
 };
 
-export const googleAuth = async (req: Request, res: Response) => {
-  const { idToken } = req.body;
-  const tokens = await authService.googleAuth(idToken);
-  sendSuccess(res, tokens, 200);
-};
 
 export const getMe = async (req: Request, res: Response) => {
   const user = await authService.getMe(req.user!.userId);

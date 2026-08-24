@@ -1,5 +1,4 @@
 import Link from "next/link";
-import { GoogleOAuthProvider } from '@react-oauth/google';
 
 export default function AuthLayout({
   children,
@@ -23,9 +22,7 @@ export default function AuthLayout({
 
       <div className="sm:mx-auto sm:w-full sm:max-w-md w-full relative z-10">
         <div className="glass rounded-2xl p-8 shadow-xl shadow-slate-200/50">
-          <GoogleOAuthProvider clientId={process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID || ""}>
-            {children}
-          </GoogleOAuthProvider>
+          {children}
         </div>
       </div>
       

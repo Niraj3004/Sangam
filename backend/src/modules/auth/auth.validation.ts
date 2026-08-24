@@ -58,11 +58,6 @@ export const verifyEmailSchema = z.object({
   }),
 });
 
-export const googleAuthSchema = z.object({
-  body: z.object({
-    idToken: z.string().min(1),
-  }),
-});
 
 export const verifyRequestSchema = z.object({
   body: z.object({

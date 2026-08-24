@@ -9,7 +9,6 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { Loader2, Mail, Lock, AlertCircle, User } from "lucide-react";
 import { motion } from "framer-motion";
-import { GoogleLogin } from '@react-oauth/google';
 import { useAuthStore } from "@/store/auth.store";
 
 const registerSchema = z.object({
@@ -51,26 +50,6 @@ export default function RegisterPage() {
     }
   };
 
-  const handleGoogleSuccess = async (credentialResponse: any) => {
-    try {
-      setError(null);
-      // We use the same /auth/google endpoint for both login and register since it upserts
-      const response = await api.post("/auth/google", { idToken: credentialResponse.credential });
-      
-      if (response.data.success) {
-        const { user, accessToken, refreshToken } = response.data.data;
-        setAuth(user, accessToken, refreshToken);
-        
-        if (user.verifyTier === 'unverified') {
-          router.push("/onboarding");
-        } else {
-          router.push("/feed");
-        }
-      }
-    } catch (err: any) {
-      setError(err.response?.data?.error?.message || "Google Sign-Up failed");
-    }
-  };
 
   return (
     <motion.div
@@ -90,21 +69,6 @@ export default function RegisterPage() {
         </div>
       )}
 
-      <div className="flex justify-center mb-6 w-full">
-        <GoogleLogin
-          onSuccess={handleGoogleSuccess}
-          onError={() => setError("Google Sign-Up was unsuccessful")}
-          shape="pill"
-          size="large"
-          text="signup_with"
-        />
-      </div>
-
-      <div className="relative flex items-center py-5">
-        <div className="flex-grow border-t border-border"></div>
-        <span className="flex-shrink-0 mx-4 text-muted text-sm">Or continue with email</span>
-        <div className="flex-grow border-t border-border"></div>
-      </div>
 
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
         <div className="space-y-1">

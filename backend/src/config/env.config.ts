@@ -9,7 +9,6 @@ const envSchema = z.object({
   CLIENT_URL: z.string().url(),
   JWT_SECRET: z.string().min(1),
   JWT_REFRESH_SECRET: z.string().min(1),
-  GOOGLE_CLIENT_ID: z.string().optional(),
   COLLEGE_EMAIL_DOMAINS: z.string().default('ku.edu.np,tu.edu.np'),
   CLOUDINARY_CLOUD_NAME: z.string().min(1),
   CLOUDINARY_API_KEY: z.string().min(1),

@@ -10,8 +10,6 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { Loader2, Mail, Lock, AlertCircle } from "lucide-react";
 import { motion } from "framer-motion";
-import { GoogleLogin } from '@react-oauth/google';
-
 const loginSchema = z.object({
   email: z.string().email({ message: "Please enter a valid email address" }),
   password: z.string().min(6, { message: "Password must be at least 6 characters" }),
@@ -59,31 +57,6 @@ export default function LoginPage() {
     }
   };
 
-  const handleGoogleSuccess = async (credentialResponse: any) => {
-    try {
-      setError(null);
-      const response = await api.post("/auth/google", { idToken: credentialResponse.credential });
-      
-      if (response.data.success) {
-        const { user, accessToken, refreshToken, orgType } = response.data.data;
-        setAuth(user, accessToken, refreshToken, orgType);
-        
-        if (user.isEmailVerified === false) {
-          router.push("/verify");
-        } else if (user.role === 'org' && orgType === 'employer') {
-          router.push("/employer/dashboard");
-        } else if (user.role === 'org' && orgType === 'college') {
-          router.push("/college/dashboard");
-        } else if (user.verifyTier === 'unverified') {
-          router.push("/onboarding");
-        } else {
-          router.push("/dashboard");
-        }
-      }
-    } catch (err: any) {
-      setError(err.response?.data?.error?.message || "Google Sign-In failed");
-    }
-  };
 
   return (
     <motion.div
@@ -103,20 +76,6 @@ export default function LoginPage() {
         </div>
       )}
 
-      <div className="flex justify-center mb-6">
-        <GoogleLogin
-          onSuccess={handleGoogleSuccess}
-          onError={() => setError("Google Sign-In was unsuccessful")}
-          shape="pill"
-          size="large"
-        />
-      </div>
-
-      <div className="relative flex items-center py-5">
-        <div className="flex-grow border-t border-border"></div>
-        <span className="flex-shrink-0 mx-4 text-muted text-sm">Or continue with email</span>
-        <div className="flex-grow border-t border-border"></div>
-      </div>
 
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
         <div className="space-y-1">

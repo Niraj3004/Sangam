@@ -1,6 +1,5 @@
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
-import { OAuth2Client } from 'google-auth-library';
 import { User, IUser } from '../../models/User';
 import { VerificationRequest } from '../../models/VerificationRequest';
 import { OTP } from '../../models/OTP';
@@ -11,8 +10,6 @@ import { JwtPayload } from '../../middlewares/auth';
 import { sendEmail } from '../../config/mailer';
 import { Profile } from '../../models/Profile';
 import { Organization } from '../../models/Organization';
-
-const client = new OAuth2Client(env.GOOGLE_CLIENT_ID);
 
 const determineVerifyTier = (email: string): VerifyTier => {
   const domain = email.split('@')[1];
@@ -234,45 +231,6 @@ export const refresh = async (refreshToken: string) => {
   }
 };
 
-export const googleAuth = async (idToken: string) => {
-  if (!env.GOOGLE_CLIENT_ID) {
-    throw new Error('Google OAuth is not configured');
-  }
-
-  const ticket = await client.verifyIdToken({
-    idToken,
-    audience: env.GOOGLE_CLIENT_ID,
-  });
-
-  const payload = ticket.getPayload();
-  if (!payload || !payload.email) {
-    const error: any = new Error('Invalid Google token');
-    error.code = 'INVALID_GOOGLE_TOKEN';
-    error.statusCode = 400;
-    throw error;
-  }
-
-  const { email, sub: googleId, email_verified } = payload;
-
-  let user = await User.findOne({ email });
-
-  if (!user) {
-    const verifyTier = determineVerifyTier(email);
-    user = await User.create({
-      email,
-      googleId,
-      isEmailVerified: email_verified,
-      verifyTier,
-      role: ROLES.STUDENT,
-    });
-  } else if (!user.googleId) {
-    user.googleId = googleId;
-    user.isEmailVerified = user.isEmailVerified || email_verified || false;
-    await user.save();
-  }
-
-  return generateTokens(user);
-};
 
 export const getMe = async (userId: string) => {
   const user = await User.findById(userId).select('-password');

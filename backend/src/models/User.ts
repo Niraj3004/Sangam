@@ -5,7 +5,6 @@ export interface IUser extends Document {
   email: string;
   secondaryEmail?: string;
   password?: string;
-  googleId?: string;
   role: Role;
   verifyTier: VerifyTier;
   isEmailVerified: boolean;
@@ -23,7 +22,6 @@ const UserSchema: Schema = new Schema(
     email: { type: String, required: true, unique: true, index: true },
     secondaryEmail: { type: String, unique: true, sparse: true, index: true },
     password: { type: String },
-    googleId: { type: String, unique: true, sparse: true },
     role: { type: String, enum: Object.values(ROLES), default: ROLES.STUDENT },
     verifyTier: { type: String, enum: Object.values(VERIFY_TIERS), default: VERIFY_TIERS.EMAIL },
     isEmailVerified: { type: Boolean, default: false },
