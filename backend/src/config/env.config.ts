@@ -12,6 +12,10 @@ const envSchema = z.object({
   GOOGLE_CLIENT_ID: z.string().optional(),
   COLLEGE_EMAIL_DOMAINS: z.string().default('ku.edu.np,tu.edu.np'),
   CLOUDINARY_URL: z.string().url(),
+  SMTP_HOST: z.string().default('smtp.gmail.com'),
+  SMTP_PORT: z.string().default('587'),
+  SMTP_USER: z.string().optional(),
+  SMTP_PASS: z.string().optional(),
 });
 
 const _env = envSchema.safeParse(process.env);

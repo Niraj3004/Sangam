@@ -2,6 +2,7 @@ import { Opportunity } from '../models/Opportunity';
 import { SavedItem } from '../models/SavedItem';
 import { User } from '../models/User';
 import { sendEmail } from '../config/mailer';
+import { env } from '../config/env.config';
 
 export const processDeadlineReminders = async () => {
   console.log('[WORKER - REMINDERS] Starting deadline scan...');
@@ -34,8 +35,13 @@ export const processDeadlineReminders = async () => {
         if (user && user.notificationPrefs?.emailReminders !== false) {
           await sendEmail(
             user.email,
-            `Deadline Approaching: ${opp.title}`,
-            `Hi, just a reminder that the opportunity "${opp.title}" you saved is closing in 3 days! Don't forget to apply.`
+            `Deadline Approaching: ${opp.title} ⏰`,
+            'Deadline Approaching',
+            `<p>Hi there,</p>
+             <p>Just a reminder that the opportunity <strong>"${opp.title}"</strong> you saved is closing in <strong>3 days</strong>!</p>
+             <p>Don't forget to submit your application before time runs out.</p>`,
+            `${env.CLIENT_URL}/discover/${opp._id}`,
+            'View Opportunity'
           );
         }
       }

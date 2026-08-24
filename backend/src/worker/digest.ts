@@ -3,6 +3,7 @@ import { Profile } from '../models/Profile';
 import { Opportunity } from '../models/Opportunity';
 import { sendEmail } from '../config/mailer';
 import { rankOpportunities } from '../modules/feed/relevance.service';
+import { env } from '../config/env.config';
 
 export const processWeeklyDigests = async () => {
   console.log('[WORKER - DIGEST] Starting weekly digest generation...');
@@ -61,15 +62,19 @@ export const processWeeklyDigests = async () => {
           .sort((a, b) => b.relevanceScore - a.relevanceScore)
           .slice(0, 3);
 
-        const emailBody = top3.map(ranking => {
+        const emailBodyHtml = top3.map(ranking => {
           const opp = matchedOpportunities.find(o => o._id.toString() === ranking.opportunityId);
-          return `- ${opp?.title} (${opp?.type}): ${ranking.reason}`;
-        }).join('\n\n');
+          return `<p><strong>${opp?.title} (${opp?.type})</strong><br/>${ranking.reason}</p>`;
+        }).join('');
         
         await sendEmail(
           user.email,
-          'Your Weekly Sangam Digest',
-          `Here are the top opportunities matching your profile this week:\n\n${emailBody}`
+          'Your Weekly Sangam Digest 📬',
+          'Your Curated Opportunities',
+          `<p>Based on your profile, here are the top opportunities matching your goals this week:</p>
+           ${emailBodyHtml}`,
+          `${env.CLIENT_URL}/discover`,
+          'View More on Sangam'
         );
       }
     }

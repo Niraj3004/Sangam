@@ -1,6 +1,9 @@
 import { Connection } from '../../models/Connection';
 import { Profile } from '../../models/Profile';
 import { Block } from '../../models/Block';
+import { User } from '../../models/User';
+import { sendEmail } from '../../config/mailer';
+import { env } from '../../config/env.config';
 
 export const requestConnection = async (requesterId: string, recipientId: string, purpose?: string, note?: string) => {
   if (requesterId === recipientId) {
@@ -38,6 +41,25 @@ export const requestConnection = async (requesterId: string, recipientId: string
   }
 
   const connection = await Connection.create({ requesterId, recipientId, status: 'pending', purpose, note });
+
+  const recipient = await User.findById(recipientId);
+  const requesterProfile = await Profile.findOne({ userId: requesterId });
+  const requesterName = requesterProfile?.handle || 'A student';
+
+  if (recipient) {
+    sendEmail(
+      recipient.email,
+      `New Connection Request from ${requesterName}`,
+      'New Connection Request',
+      `<p><strong>${requesterName}</strong> wants to connect with you on Sangam.</p>
+       <p><strong>Purpose:</strong> ${purpose || 'Networking'}</p>
+       ${note ? `<p><strong>Note:</strong> "${note}"</p>` : ''}
+       <p>Log in to view their profile and respond to the request.</p>`,
+      `${env.CLIENT_URL}/network`,
+      'View Request'
+    ).catch(console.error);
+  }
+
   return connection;
 };
 

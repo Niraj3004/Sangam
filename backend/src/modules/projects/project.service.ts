@@ -3,6 +3,9 @@ import { Profile } from '../../models/Profile';
 import { Connection } from '../../models/Connection';
 import { ProjectApplication } from '../../models/ProjectApplication';
 import { runModerationHook } from '../moderation/moderation.service';
+import { User } from '../../models/User';
+import { sendEmail } from '../../config/mailer';
+import { env } from '../../config/env.config';
 
 export const createProject = async (userId: string, data: Partial<IProject>) => {
   // Check if contributors are actually connected with the owner (for V1 constraint)
@@ -130,6 +133,24 @@ export const applyToRole = async (userId: string, projectId: string, roleTitle: 
     message
   });
 
+  const applicant = await User.findById(userId);
+  const owner = await User.findById(project.ownerId);
+  const applicantProfile = await Profile.findOne({ userId });
+  const applicantName = applicantProfile?.handle || 'A student';
+
+  if (owner) {
+    sendEmail(
+      owner.email,
+      `New Application for ${project.title}`,
+      'New Project Application',
+      `<p><strong>${applicantName}</strong> has just applied for the <strong>${roleTitle}</strong> role on your project <strong>${project.title}</strong>.</p>
+       ${message ? `<p><strong>Their message:</strong> "${message}"</p>` : ''}
+       <p>Review their application and profile to see if they're a good fit for your team.</p>`,
+      `${env.CLIENT_URL}/projects/${project._id}/applications`,
+      'Review Application'
+    ).catch(console.error);
+  }
+
   return application;
 };
 
@@ -159,6 +180,25 @@ export const resolveApplication = async (projectId: string, appId: string, statu
         $set: { 'openRoles.$.isFilled': true }
       }
     );
+  }
+
+  const applicant = await User.findById(application.userId);
+  const project = await Project.findById(projectId);
+
+  if (applicant && project) {
+    const title = status === 'accepted' ? 'Application Accepted! 🎉' : 'Application Update';
+    const body = status === 'accepted' 
+      ? `<p>Congratulations! Your application for the <strong>${application.roleTitle}</strong> role on <strong>${project.title}</strong> has been accepted by the project owner.</p><p>You can now collaborate with the team.</p>`
+      : `<p>Your application for the <strong>${application.roleTitle}</strong> role on <strong>${project.title}</strong> has been reviewed but was not accepted at this time.</p><p>Keep exploring other opportunities on Sangam!</p>`;
+
+    sendEmail(
+      applicant.email,
+      `Project Application ${status === 'accepted' ? 'Accepted' : 'Update'}`,
+      title,
+      body,
+      `${env.CLIENT_URL}/projects/${project._id}`,
+      'View Project'
+    ).catch(console.error);
   }
 
   return application;

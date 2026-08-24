@@ -6,6 +6,7 @@ import { VerificationRequest } from '../../models/VerificationRequest';
 import { env } from '../../config/env.config';
 import { VERIFY_TIERS, ROLES, VerifyTier } from '../../constants/roles';
 import { JwtPayload } from '../../middlewares/auth';
+import { sendEmail } from '../../config/mailer';
 
 const client = new OAuth2Client(env.GOOGLE_CLIENT_ID);
 
@@ -46,6 +47,18 @@ export const register = async (email: string, passwordRaw: string) => {
   const verifyTier = determineVerifyTier(email);
 
   const user = await User.create({ email, password, verifyTier, role: ROLES.STUDENT });
+
+  // Fire and forget welcome email
+  sendEmail(
+    email,
+    'Welcome to Sangam! 🇳🇵',
+    'Welcome to the Sangam Platform',
+    `<p>We are thrilled to have you here! Sangam is the number one platform for Nepali students at home and abroad to collaborate, find opportunities, and build their careers.</p>
+     <p>Your next step is to set up your profile so you can start matching with projects and peers.</p>`,
+    `${env.CLIENT_URL}/profile/setup`,
+    'Setup Your Profile'
+  ).catch(console.error);
+
   return generateTokens(user);
 };
 
@@ -177,8 +190,32 @@ export const resolveVerificationRequest = async (requestId: string, action: 'app
   if (notes) request.notes = notes;
   await request.save();
 
+  const user = await User.findById(request.userId);
+
   if (action === 'approve') {
     await User.findByIdAndUpdate(request.userId, { verifyTier: request.tierRequested });
+    if (user) {
+      sendEmail(
+        user.email,
+        'Account Verification Approved ✅',
+        'Verification Successful',
+        `<p>Great news! Your request to upgrade to the <strong>${request.tierRequested}</strong> tier has been approved by our moderation team.</p>
+         <p>You now have full access to post opportunities, create verified organizations, and connect with peers without limits.</p>`,
+        `${env.CLIENT_URL}/dashboard`,
+        'Go to Dashboard'
+      ).catch(console.error);
+    }
+  } else if (user) {
+    sendEmail(
+      user.email,
+      'Account Verification Update ℹ️',
+      'Verification Status Update',
+      `<p>Your request to upgrade to the ${request.tierRequested} tier has been reviewed.</p>
+       <p>Unfortunately, we could not approve it at this time. <strong>Reason:</strong> ${notes || 'Information provided did not meet our verification standards.'}</p>
+       <p>You can try submitting your evidence again from your account settings.</p>`,
+      `${env.CLIENT_URL}/settings/verification`,
+      'Review Request'
+    ).catch(console.error);
   }
 
   return request;
