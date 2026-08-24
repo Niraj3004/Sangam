@@ -13,6 +13,6 @@ export const updatePlanItem = async (req: Request, res: Response) => {
 };
 
 export const chatWithCopilot = async (req: Request, res: Response) => {
-  const response = await copilotService.chatWithCopilot(req.user!.userId, req.body.message);
+  const response = await copilotService.chatWithCopilot(req.user!.userId, req.body.message, req.body.history);
   sendSuccess(res, response, 200);
 };

@@ -9,5 +9,9 @@ export const updatePlanItemSchema = z.object({
 export const chatSchema = z.object({
   body: z.object({
     message: z.string().min(1).max(500),
+    history: z.array(z.object({
+      role: z.enum(['user', 'assistant', 'system']),
+      content: z.string()
+    })).optional()
   }),
 });

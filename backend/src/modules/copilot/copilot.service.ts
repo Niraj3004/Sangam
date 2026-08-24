@@ -62,7 +62,7 @@ export const updatePlanItem = async (userId: string, itemId: string, isCompleted
   return plan;
 };
 
-export const chatWithCopilot = async (userId: string, message: string) => {
+export const chatWithCopilot = async (userId: string, message: string, history: any[] = []) => {
   const profile = await Profile.findOne({ userId }).lean();
   
   const systemContext = `
@@ -77,6 +77,7 @@ export const chatWithCopilot = async (userId: string, message: string) => {
   try {
     const reply = await gateway.chat([
       { role: 'system', content: systemContext },
+      ...history.map(h => ({ role: h.role, content: h.content })),
       { role: 'user', content: message }
     ], aiConfig.taskProfiles.explain);
 
@@ -84,8 +85,8 @@ export const chatWithCopilot = async (userId: string, message: string) => {
       reply,
       suggestedActions: [] // Future expansion for suggested deep links
     };
-  } catch (e) {
+  } catch (e: any) {
     console.error('[CopilotService] Chat failed:', e);
-    throw new Error('Copilot chat failed.');
+    throw new Error('Copilot chat failed: ' + (e.message || String(e)));
   }
 };
