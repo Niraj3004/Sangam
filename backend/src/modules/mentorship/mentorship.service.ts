@@ -1,4 +1,8 @@
 import { Mentorship, IMentorship } from '../../models/Mentorship';
+import { User } from '../../models/User';
+import { Profile } from '../../models/Profile';
+import { sendEmail } from '../../config/mailer';
+import { env } from '../../config/env.config';
 
 export const requestMentorship = async (menteeId: string, mentorId: string, purpose: string) => {
   if (menteeId === mentorId) {
@@ -25,6 +29,23 @@ export const requestMentorship = async (menteeId: string, mentorId: string, purp
     purpose,
     status: 'pending'
   });
+
+  const mentor = await User.findById(mentorId);
+  const menteeProfile = await Profile.findOne({ userId: menteeId });
+  const menteeName = menteeProfile?.handle || 'A student';
+
+  if (mentor) {
+    sendEmail(
+      mentor.email,
+      `New Mentorship Request from ${menteeName}`,
+      'New Mentorship Request',
+      `<p><strong>${menteeName}</strong> has requested you as a mentor on Sangam.</p>
+       <p><strong>Purpose:</strong> ${purpose}</p>
+       <p>Review their profile and decide if you'd like to guide them.</p>`,
+      `${env.CLIENT_URL}/mentorship/requests`,
+      'View Request'
+    ).catch(console.error);
+  }
 
   return mentorship;
 };
@@ -69,6 +90,25 @@ export const acceptMentorship = async (userId: string, id: string, scheduledAt: 
   if (meetingLink) mentorship.meetingLink = meetingLink;
 
   await mentorship.save();
+
+  const mentee = await User.findById(mentorship.menteeId);
+  const mentorProfile = await Profile.findOne({ userId: mentorship.mentorId });
+  const mentorName = mentorProfile?.handle || 'Your requested mentor';
+
+  if (mentee) {
+    sendEmail(
+      mentee.email,
+      'Mentorship Request Accepted! 🎉',
+      'Mentorship Accepted',
+      `<p>Great news! <strong>${mentorName}</strong> has accepted your mentorship request.</p>
+       <p><strong>Scheduled for:</strong> ${scheduledAt.toLocaleString()}</p>
+       ${meetingLink ? `<p><strong>Meeting Link:</strong> <a href="${meetingLink}">${meetingLink}</a></p>` : ''}
+       <p>Prepare your questions and make the most out of this session!</p>`,
+      `${env.CLIENT_URL}/mentorship/sessions`,
+      'View Details'
+    ).catch(console.error);
+  }
+
   return mentorship;
 };
 
@@ -88,5 +128,22 @@ export const declineMentorship = async (userId: string, id: string) => {
 
   mentorship.status = 'declined';
   await mentorship.save();
+
+  const mentee = await User.findById(mentorship.menteeId);
+  const mentorProfile = await Profile.findOne({ userId: mentorship.mentorId });
+  const mentorName = mentorProfile?.handle || 'The requested mentor';
+
+  if (mentee) {
+    sendEmail(
+      mentee.email,
+      'Mentorship Request Update',
+      'Mentorship Update',
+      `<p><strong>${mentorName}</strong> has reviewed your mentorship request, but cannot accept it at this time.</p>
+       <p>Don't be discouraged! There are many other experienced students and alumni on Sangam who would love to help.</p>`,
+      `${env.CLIENT_URL}/mentors`,
+      'Find Another Mentor'
+    ).catch(console.error);
+  }
+
   return mentorship;
 };
