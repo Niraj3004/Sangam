@@ -9,7 +9,7 @@ interface VerifiedBadgeProps {
 }
 
 export function VerifiedBadge({ tier, className = "", showText = false }: VerifiedBadgeProps) {
-  if (tier === "unverified") return null;
+  if (!tier || tier === "unverified") return null;
 
   const config = {
     manual_pending: {
@@ -36,6 +36,7 @@ export function VerifiedBadge({ tier, className = "", showText = false }: Verifi
   };
 
   const style = config[tier];
+  if (!style) return null;
 
   return (
     <div className={`inline-flex items-center gap-1.5 px-2 py-1 rounded-full border ${style.bg} ${style.border} ${className}`} title={style.text}>
