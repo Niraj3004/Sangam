@@ -201,11 +201,8 @@ export const getTeamCandidates = async (userId: string, projectId: string) => {
   const project = await Project.findOne({ _id: projectId, ownerId: userId });
   if (!project) throw new Error('Project not found or unauthorized');
 
-  // AI GATEWAY SEAM: In Part 2, Claude will find users with complementary skills
-  // const candidates = await callAiGateway({ project }, 'find_team_candidates');
-
-  // Baseline logic: find users who have the technologies the project needs, but aren't in the project yet
   const requiredSkills = new Set((project.technologies || []).map((s: string) => s.toLowerCase()));
+  const context = `Project needs: ${Array.from(requiredSkills).join(', ')}`;
   const memberIds = project.contributors.map(c => c.toString());
   
   const potentialProfiles = await Profile.find({ userId: { $nin: [...memberIds, userId] } })
@@ -236,8 +233,12 @@ export const getTeamCandidates = async (userId: string, projectId: string) => {
   // Only return users who actually scored > 0
   const candidates = scoredCandidates.filter(c => c.matchScore > 0);
   candidates.sort((a, b) => b.matchScore - a.matchScore);
-
-  return candidates.slice(0, 10);
+  
+  const top10 = candidates.slice(0, 10);
+  
+  const explainedTop5 = await explainMatchesBulk(context, top10.slice(0, 5));
+  
+  return [...explainedTop5, ...top10.slice(5)];
 };
 
 export const inviteToTeam = async (ownerId: string, projectId: string, candidateId: string) => {

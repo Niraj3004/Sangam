@@ -2,7 +2,7 @@ import { Post, IPost } from '../../models/Post';
 import { Comment } from '../../models/Comment';
 import { Membership } from '../../models/Membership';
 import { ReviewQueueItem } from '../../models/ReviewQueueItem';
-import { evaluateModeration } from '../../ai-gateway/moderation';
+import { runModerationHook } from '../moderation/moderation.service';
 
 // Helper to ensure user is a member of the community
 const checkMembership = async (userId: string, communityId: string) => {
@@ -15,25 +15,23 @@ const checkMembership = async (userId: string, communityId: string) => {
   return membership;
 };
 
-export const createPost = async (userId: string, communityId: string, data: Partial<IPost>) => {
-  await checkMembership(userId, communityId);
+export const createPost = async (authorId: string, communityId: string, data: Partial<IPost>) => {
+  await checkMembership(authorId, communityId);
 
-  // Send new posts to review queue automatically (Moderation Seam B13)
   const post = await Post.create({
     ...data,
-    authorId: userId,
+    authorId,
     communityId,
     status: 'review'
   });
 
   await ReviewQueueItem.create({
     entityId: post._id,
-    entityModel: 'Post', // Wait, ReviewQueueItem schema expects 'Opportunity' | 'User'. We'll need to patch that.
+    entityModel: 'Post',
     reason: 'New community post moderation seam'
   });
 
-  // Async AI Moderation Hook (B13)
-  evaluateModeration(post._id, 'Post', `${post.title} ${post.content}`).catch(console.error);
+  runModerationHook(post._id as unknown as string, 'Post', `${post.title} ${post.content}`).catch(console.error);
 
   return post;
 };
@@ -91,6 +89,8 @@ export const createComment = async (userId: string, postId: string, content: str
     authorId: userId,
     content
   });
+
+  runModerationHook(comment._id as unknown as string, 'Comment', content).catch(console.error);
 
   return await comment.populate('authorId', 'email role verifyTier');
 };

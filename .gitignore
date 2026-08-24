@@ -1,12 +1,11 @@
 docs/
 *.pdf
-/*.md
-!/README.md
-!/AGENTS.md
+*.md
+!README.md
 node_modules/
 dist/
 .env
+infra/
 *.log   
 .zip
 .env.example
-

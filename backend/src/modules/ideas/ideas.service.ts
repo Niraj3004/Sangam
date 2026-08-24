@@ -1,7 +1,9 @@
 import { Idea, IIdea } from '../../models/Idea';
+import { runModerationHook } from '../moderation/moderation.service';
 
 export const createIdea = async (authorId: string, data: Partial<IIdea>) => {
   const idea = await Idea.create({ ...data, authorId });
+  runModerationHook(idea._id as unknown as string, 'Idea', `${idea.title} ${idea.problem} ${idea.solution}`).catch(console.error);
   return idea;
 };
 

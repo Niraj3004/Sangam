@@ -2,6 +2,7 @@ import { Project, IProject } from '../../models/Project';
 import { Profile } from '../../models/Profile';
 import { Connection } from '../../models/Connection';
 import { ProjectApplication } from '../../models/ProjectApplication';
+import { runModerationHook } from '../moderation/moderation.service';
 
 export const createProject = async (userId: string, data: Partial<IProject>) => {
   // Check if contributors are actually connected with the owner (for V1 constraint)
@@ -24,6 +25,7 @@ export const createProject = async (userId: string, data: Partial<IProject>) => 
   }
 
   const project = await Project.create({ ...data, ownerId: userId });
+  runModerationHook(project._id as unknown as string, 'Project', `${project.title} ${project.description}`).catch(console.error);
 
   // Sync to Profile
   await Profile.findOneAndUpdate(

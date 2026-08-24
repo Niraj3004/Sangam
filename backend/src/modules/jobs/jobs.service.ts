@@ -1,7 +1,7 @@
 import { Job, IJob } from '../../models/Job';
 import { Organization } from '../../models/Organization';
 import { Application } from '../../models/Application';
-import { evaluateModeration } from '../../ai-gateway/moderation';
+import { runModerationHook } from '../moderation/moderation.service';
 
 const checkOrgPermission = async (userId: string, organizationId: string) => {
   const org = await Organization.findById(organizationId);
@@ -30,10 +30,10 @@ const checkOrgPermission = async (userId: string, organizationId: string) => {
 export const createJob = async (userId: string, data: Partial<IJob>) => {
   await checkOrgPermission(userId, data.organizationId as any);
 
-  const job = await Job.create(data);
+  const job = await Job.create({ ...data, organizationId: data.organizationId });
   
   // Async AI Moderation Hook (B13)
-  evaluateModeration(job._id, 'Job', `${job.title} ${job.description}`).catch(console.error);
+  runModerationHook(job._id as unknown as string, 'Job', `${job.title} ${job.description}`).catch(console.error);
 
   return job;
 };
