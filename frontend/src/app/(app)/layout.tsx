@@ -25,12 +25,16 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     setMounted(true);
-    if (!isAuthenticated) {
+  }, []);
+
+  useEffect(() => {
+    if (mounted && !isAuthenticated) {
       router.push("/login");
     }
-  }, [isAuthenticated, router]);
+  }, [mounted, isAuthenticated, router]);
 
-  if (!mounted || !isAuthenticated || !user) return null;
+  if (!mounted || !user) return null;
+  if (!isAuthenticated) return null;
 
   const handleLogout = () => {
     logout();
