@@ -60,7 +60,7 @@ export default function ProjectDetailPage() {
       setApplyMessage("");
     } catch (err: any) {
       console.error(err);
-      alert(err.response?.data?.error || "Failed to apply. You may have already applied.");
+      alert(err.response?.data?.error?.message || "Failed to apply. You may have already applied.");
     } finally {
       setIsApplying(false);
     }

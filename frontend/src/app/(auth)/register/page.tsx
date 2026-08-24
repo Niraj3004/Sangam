@@ -43,7 +43,7 @@ export default function RegisterPage() {
         router.push("/login?registered=true");
       }
     } catch (err: any) {
-      setError(err.response?.data?.error || "Registration failed. Please try again.");
+      setError(err.response?.data?.error?.message || "Registration failed. Please try again.");
     }
   };
 
@@ -64,7 +64,7 @@ export default function RegisterPage() {
         }
       }
     } catch (err: any) {
-      setError(err.response?.data?.error || "Google Sign-Up failed");
+      setError(err.response?.data?.error?.message || "Google Sign-Up failed");
     }
   };
 

@@ -48,7 +48,7 @@ export default function IdeasHubPage() {
       fetchIdeas(); // Refresh the list
     } catch (err: any) {
       console.error(err);
-      alert(err.response?.data?.error || "Failed to post idea.");
+      alert(err.response?.data?.error?.message || "Failed to post idea.");
     } finally {
       setIsSubmitting(false);
     }

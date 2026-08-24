@@ -49,7 +49,7 @@ export default function LoginPage() {
         }
       }
     } catch (err: any) {
-      setError(err.response?.data?.error || "Invalid email or password");
+      setError(err.response?.data?.error?.message || "Invalid email or password");
     }
   };
 
@@ -69,7 +69,7 @@ export default function LoginPage() {
         }
       }
     } catch (err: any) {
-      setError(err.response?.data?.error || "Google Sign-In failed");
+      setError(err.response?.data?.error?.message || "Google Sign-In failed");
     }
   };
 
@@ -95,7 +95,6 @@ export default function LoginPage() {
         <GoogleLogin
           onSuccess={handleGoogleSuccess}
           onError={() => setError("Google Sign-In was unsuccessful")}
-          useOneTap
           shape="pill"
           size="large"
         />

@@ -39,7 +39,7 @@ export default function MatchesPage() {
       });
       alert("Connection request sent!");
     } catch (err: any) {
-      alert(err.response?.data?.error || "Failed to send request.");
+      alert(err.response?.data?.error?.message || "Failed to send request.");
     }
   };
 

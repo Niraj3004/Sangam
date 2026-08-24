@@ -56,7 +56,7 @@ export default function DiscoverPeoplePage() {
       setSelectedUser(null);
     } catch (err: any) {
       console.error(err);
-      alert(err.response?.data?.error || "Failed to send request. You may be rate limited or already connected.");
+      alert(err.response?.data?.error?.message || "Failed to send request. You may be rate limited or already connected.");
     } finally {
       setIsConnecting(false);
       setConnectNote("");

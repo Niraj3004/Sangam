@@ -46,7 +46,7 @@ export default function CreateProjectPage() {
       router.push(`/projects/${data.data._id}`);
     } catch (err: any) {
       console.error(err);
-      alert(err.response?.data?.error || "Failed to create project");
+      alert(err.response?.data?.error?.message || "Failed to create project");
     } finally {
       setIsSubmitting(false);
     }

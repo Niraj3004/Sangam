@@ -47,7 +47,7 @@ export default function JobDetailPage() {
       alert("Successfully applied for the job!");
     } catch (err: any) {
       console.error(err);
-      alert(err.response?.data?.error || "Failed to apply.");
+      alert(err.response?.data?.error?.message || "Failed to apply.");
     } finally {
       setIsApplying(false);
     }
