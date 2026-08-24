@@ -2,7 +2,7 @@ import mongoose, { Schema, Document } from 'mongoose';
 
 export interface IReviewQueueItem extends Document {
   entityId: mongoose.Types.ObjectId;
-  entityModel: 'Opportunity' | 'User';
+  entityModel: 'Opportunity' | 'User' | 'Post';
   reason: string;
   status: 'pending' | 'approved' | 'rejected';
   reviewerId?: mongoose.Types.ObjectId;
@@ -13,7 +13,7 @@ export interface IReviewQueueItem extends Document {
 const ReviewQueueItemSchema: Schema = new Schema(
   {
     entityId: { type: Schema.Types.ObjectId, required: true, refPath: 'entityModel' },
-    entityModel: { type: String, required: true, enum: ['Opportunity', 'User'] },
+    entityModel: { type: String, required: true, enum: ['Opportunity', 'User', 'Post'] },
     reason: { type: String, required: true },
     status: { type: String, enum: ['pending', 'approved', 'rejected'], default: 'pending' },
     reviewerId: { type: Schema.Types.ObjectId, ref: 'User' },

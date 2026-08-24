@@ -12,6 +12,8 @@ import ideasRoutes from '../modules/ideas/ideas.routes';
 import matchRoutes from '../modules/match/match.routes';
 import messagesRoutes from '../modules/messages/messages.routes';
 import reviewRoutes from '../modules/review/review.routes';
+import communitiesRoutes from '../modules/communities/communities.routes';
+import knowledgeRoutes from '../modules/knowledge/knowledge.routes';
 
 const router = Router();
 
@@ -27,6 +29,8 @@ router.use('/ideas', ideasRoutes);
 router.use('/match', matchRoutes);
 router.use('/messages', messagesRoutes);
 router.use('/review', reviewRoutes);
+router.use('/communities', communitiesRoutes);
+router.use('/knowledge', knowledgeRoutes);
 
 router.get('/health', (req, res) => {
   sendSuccess(res, { status: 'ok', timestamp: new Date().toISOString() });
