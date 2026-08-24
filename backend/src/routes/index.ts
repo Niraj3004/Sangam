@@ -10,6 +10,7 @@ import notificationsRoutes from '../modules/notifications/notifications.routes';
 import discoverRoutes from '../modules/discover/discover.routes';
 import ideasRoutes from '../modules/ideas/ideas.routes';
 import matchRoutes from '../modules/match/match.routes';
+
 import messagesRoutes from '../modules/messages/messages.routes';
 import reviewRoutes from '../modules/review/review.routes';
 import communitiesRoutes from '../modules/communities/communities.routes';
@@ -19,6 +20,9 @@ import jobsRoutes from '../modules/jobs/jobs.routes';
 import mentorshipRoutes from '../modules/mentorship/mentorship.routes';
 import reportsRoutes from '../modules/reports/reports.routes';
 import searchRoutes from '../modules/search/search.routes';
+import feedRoutes from '../modules/feed/feed.routes';
+import dashboardRoutes from '../modules/dashboard/dashboard.routes';
+
 const router = Router();
 
 router.use('/auth', authRoutes);
@@ -40,6 +44,8 @@ router.use('/jobs', jobsRoutes);
 router.use('/mentorship', mentorshipRoutes);
 router.use('/reports', reportsRoutes);
 router.use('/search', searchRoutes);
+router.use('/feed', feedRoutes);
+router.use('/dashboard', dashboardRoutes);
 router.get('/health', (req, res) => {
   sendSuccess(res, { status: 'ok', timestamp: new Date().toISOString() });
 });

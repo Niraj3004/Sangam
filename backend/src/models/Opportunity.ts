@@ -17,6 +17,11 @@ export interface IOpportunity extends Document {
   isExternal: boolean;
   externalLink?: string;
   endDate?: Date; // Maps to 'deadline'
+  trustScore: number;
+  verifiedSource: boolean;
+  deadlineConfirmed: boolean;
+  eligibilityConfirmed: boolean;
+  lastCheckedAt?: Date;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -39,6 +44,11 @@ const OpportunitySchema: Schema = new Schema(
     isExternal: { type: Boolean, default: false },
     externalLink: { type: String, default: '' },
     endDate: { type: Date },
+    trustScore: { type: Number, default: 0 },
+    verifiedSource: { type: Boolean, default: false },
+    deadlineConfirmed: { type: Boolean, default: false },
+    eligibilityConfirmed: { type: Boolean, default: false },
+    lastCheckedAt: { type: Date },
   },
   { timestamps: true }
 );

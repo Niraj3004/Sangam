@@ -24,6 +24,8 @@ export interface IProfile extends Document {
   };
   achievements: string[];
   projects: mongoose.Types.ObjectId[];
+  careerGoal?: 'internship' | 'job' | 'startup' | 'scholarship' | 'higher_study' | 'hackathon' | 'freelance' | 'networking';
+  completionScore: number;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -53,6 +55,11 @@ const ProfileSchema: Schema = new Schema(
     },
     achievements: [{ type: String }],
     projects: [{ type: Schema.Types.ObjectId, ref: 'Project' }],
+    careerGoal: { 
+      type: String, 
+      enum: ['internship', 'job', 'startup', 'scholarship', 'higher_study', 'hackathon', 'freelance', 'networking'] 
+    },
+    completionScore: { type: Number, default: 0 },
   },
   { timestamps: true }
 );
