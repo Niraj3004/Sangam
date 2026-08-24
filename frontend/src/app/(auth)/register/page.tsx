@@ -39,8 +39,8 @@ export default function RegisterPage() {
       const response = await api.post("/auth/register", data);
       
       if (response.data.success) {
-        // Redirect to login after successful registration
-        router.push("/login?registered=true");
+        // Redirect to verify page after successful registration
+        router.push("/verify");
       }
     } catch (err: any) {
       setError(err.response?.data?.error?.message || "Registration failed. Please try again.");

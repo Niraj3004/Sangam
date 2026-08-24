@@ -20,6 +20,31 @@ export const refreshSchema = z.object({
   }),
 });
 
+export const logoutSchema = z.object({
+  body: z.object({
+    refreshToken: z.string().min(1),
+  }),
+});
+
+export const forgotPasswordSchema = z.object({
+  body: z.object({
+    email: z.string().email(),
+  }),
+});
+
+export const resetPasswordSchema = z.object({
+  body: z.object({
+    token: z.string().min(1),
+    newPassword: z.string().min(8),
+  }),
+});
+
+export const verifyEmailSchema = z.object({
+  body: z.object({
+    code: z.string().length(6),
+  }),
+});
+
 export const googleAuthSchema = z.object({
   body: z.object({
     idToken: z.string().min(1),
@@ -46,5 +71,12 @@ export const resolveVerifySchema = z.object({
 export const secondaryEmailSchema = z.object({
   body: z.object({
     secondaryEmail: z.string().email(),
+  }),
+});
+
+export const verifySecondarySchema = z.object({
+  body: z.object({
+    secondaryEmail: z.string().email(),
+    code: z.string().length(6),
   }),
 });

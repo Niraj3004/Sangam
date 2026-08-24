@@ -9,6 +9,8 @@ export default function SettingsPage() {
   const { user } = useAuthStore();
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
+  const [showSecondaryOtp, setShowSecondaryOtp] = useState(false);
+  const [secondaryOtp, setSecondaryOtp] = useState("");
   
   const [prefs, setPrefs] = useState({
     emailNotifications: true,
@@ -56,10 +58,26 @@ export default function SettingsPage() {
     setIsSaving(true);
     try {
       await api.post('/auth/secondary-email', { secondaryEmail: prefs.secondaryEmail });
-      alert("Secondary email added successfully. You can now use it for account recovery.");
+      alert("Secondary email added successfully. Check your email for the OTP.");
+      setShowSecondaryOtp(true);
     } catch (err: any) {
       console.error(err);
       alert(err.response?.data?.error?.message || "Failed to add secondary email.");
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  const handleVerifySecondaryOtp = async () => {
+    if (secondaryOtp.length !== 6) return alert('Code must be 6 digits');
+    setIsSaving(true);
+    try {
+      await api.post('/auth/verify-secondary', { secondaryEmail: prefs.secondaryEmail, code: secondaryOtp });
+      alert("Secondary email officially linked! ✅");
+      setShowSecondaryOtp(false);
+    } catch (err: any) {
+      console.error(err);
+      alert(err.response?.data?.error?.message || "Invalid OTP.");
     } finally {
       setIsSaving(false);
     }
@@ -182,22 +200,42 @@ export default function SettingsPage() {
               <div>
                 <label className="text-sm font-medium text-foreground block mb-2">Secondary Recovery Email</label>
                 <p className="text-xs text-muted mb-3">Add a personal email to recover your account if you lose access to your college email.</p>
-                <div className="flex gap-3">
-                  <input 
-                    type="email" 
-                    value={prefs.secondaryEmail}
-                    onChange={(e) => setPrefs({...prefs, secondaryEmail: e.target.value})}
-                    placeholder="e.g., personal@gmail.com"
-                    className="flex-1 px-4 py-2.5 rounded-xl border border-border bg-slate-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-primary/20 text-sm transition-all"
-                  />
-                  <button 
-                    onClick={handleAddSecondaryEmail}
-                    disabled={isSaving || !prefs.secondaryEmail}
-                    className="px-4 py-2.5 bg-slate-800 text-white rounded-xl text-sm font-bold hover:bg-slate-700 transition-colors disabled:opacity-50"
-                  >
-                    Link Email
-                  </button>
-                </div>
+                {!showSecondaryOtp ? (
+                  <div className="flex gap-3">
+                    <input 
+                      type="email" 
+                      value={prefs.secondaryEmail}
+                      onChange={(e) => setPrefs({...prefs, secondaryEmail: e.target.value})}
+                      placeholder="e.g., personal@gmail.com"
+                      className="flex-1 px-4 py-2.5 rounded-xl border border-border bg-slate-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-primary/20 text-sm transition-all"
+                    />
+                    <button 
+                      onClick={handleAddSecondaryEmail}
+                      disabled={isSaving || !prefs.secondaryEmail}
+                      className="px-4 py-2.5 bg-slate-800 text-white rounded-xl text-sm font-bold hover:bg-slate-700 transition-colors disabled:opacity-50"
+                    >
+                      {isSaving ? 'Sending...' : 'Link Email'}
+                    </button>
+                  </div>
+                ) : (
+                  <div className="flex gap-3 p-4 bg-primary/5 border border-primary/20 rounded-xl">
+                    <input 
+                      type="text"
+                      maxLength={6}
+                      value={secondaryOtp}
+                      onChange={(e) => setSecondaryOtp(e.target.value)}
+                      placeholder="Enter 6-digit OTP"
+                      className="flex-1 px-4 py-2.5 rounded-xl border border-border bg-white focus:outline-none focus:ring-2 focus:ring-primary/20 text-sm text-center tracking-[0.5em] font-bold"
+                    />
+                    <button 
+                      onClick={handleVerifySecondaryOtp}
+                      disabled={isSaving || secondaryOtp.length !== 6}
+                      className="px-4 py-2.5 bg-primary text-white rounded-xl text-sm font-bold hover:bg-primary-hover transition-colors disabled:opacity-50"
+                    >
+                      Verify
+                    </button>
+                  </div>
+                )}
               </div>
             </div>
           </section>

@@ -3,6 +3,8 @@ import jwt from 'jsonwebtoken';
 import { OAuth2Client } from 'google-auth-library';
 import { User, IUser } from '../../models/User';
 import { VerificationRequest } from '../../models/VerificationRequest';
+import { OTP } from '../../models/OTP';
+import { BlacklistedToken } from '../../models/BlacklistedToken';
 import { env } from '../../config/env.config';
 import { VERIFY_TIERS, ROLES, VerifyTier } from '../../constants/roles';
 import { JwtPayload } from '../../middlewares/auth';
@@ -34,6 +36,8 @@ const generateTokens = (user: IUser) => {
   return { user, accessToken, refreshToken };
 };
 
+const generateOTPCode = () => Math.floor(100000 + Math.random() * 900000).toString();
+
 export const register = async (email: string, passwordRaw: string, handle: string) => {
   const existingUser = await User.findOne({ email });
   if (existingUser) {
@@ -59,18 +63,51 @@ export const register = async (email: string, passwordRaw: string, handle: strin
   const user = await User.create({ email, password, verifyTier, role: ROLES.STUDENT });
   await Profile.create({ userId: user._id, handle, completionScore: 10 });
 
-  // Fire and forget welcome email
+  // Generate OTP for primary email verification
+  const code = generateOTPCode();
+  await OTP.create({
+    email,
+    code,
+    purpose: 'verify_email',
+    expiresAt: new Date(Date.now() + 10 * 60 * 1000) // 10 mins
+  });
+
   sendEmail(
     email,
-    'Welcome to Sangam! 🇳🇵',
-    'Welcome to the Sangam Platform',
-    `<p>We are thrilled to have you here! Sangam is the number one platform for Nepali students at home and abroad to collaborate, find opportunities, and build their careers.</p>
-     <p>Your next step is to set up your profile so you can start matching with projects and peers.</p>`,
-    `${env.CLIENT_URL}/profile/setup`,
-    'Setup Your Profile'
+    'Verify your Sangam Account 🔐',
+    'Email Verification',
+    `<p>Welcome to Sangam! Your verification code is:</p>
+     <h2 style="font-size: 32px; letter-spacing: 5px; color: #333;">${code}</h2>
+     <p>This code will expire in 10 minutes.</p>`,
+    `${env.CLIENT_URL}/verify`,
+    'Enter Code'
   ).catch(console.error);
 
   return generateTokens(user);
+};
+
+export const verifyEmailOTP = async (userId: string, code: string) => {
+  const user = await User.findById(userId);
+  if (!user) throw new Error('User not found');
+
+  if (user.isEmailVerified) {
+    const err: any = new Error('Email is already verified');
+    err.statusCode = 400;
+    throw err;
+  }
+
+  const otp = await OTP.findOne({ email: user.email, code, purpose: 'verify_email' });
+  if (!otp) {
+    const err: any = new Error('Invalid or expired verification code');
+    err.statusCode = 400;
+    throw err;
+  }
+
+  user.isEmailVerified = true;
+  await user.save();
+  await OTP.deleteOne({ _id: otp._id });
+
+  return user;
 };
 
 export const login = async (email: string, passwordRaw: string) => {
@@ -111,6 +148,9 @@ export const login = async (email: string, passwordRaw: string) => {
 
 export const refresh = async (refreshToken: string) => {
   try {
+    const isBlacklisted = await BlacklistedToken.exists({ token: refreshToken });
+    if (isBlacklisted) throw new Error('Token is revoked');
+
     const decoded = jwt.verify(refreshToken, env.JWT_REFRESH_SECRET) as { userId: string };
     const user = await User.findById(decoded.userId);
     if (!user) throw new Error('User not found');
@@ -259,8 +299,87 @@ export const addSecondaryEmail = async (userId: string, secondaryEmail: string) 
     throw error;
   }
 
+  // Generate OTP for secondary email
+  const code = generateOTPCode();
+  await OTP.create({
+    email: secondaryEmail,
+    code,
+    purpose: 'secondary_email',
+    expiresAt: new Date(Date.now() + 10 * 60 * 1000)
+  });
+
+  sendEmail(
+    secondaryEmail,
+    'Verify your Secondary Email 🔐',
+    'Secondary Email Verification',
+    `<p>You requested to link this email as a recovery address for your Sangam account. Your verification code is:</p>
+     <h2 style="font-size: 32px; letter-spacing: 5px; color: #333;">${code}</h2>
+     <p>This code will expire in 10 minutes.</p>`,
+    `${env.CLIENT_URL}/settings`,
+    'Go to Settings'
+  ).catch(console.error);
+
+  return true;
+};
+
+export const verifySecondaryEmailOTP = async (userId: string, secondaryEmail: string, code: string) => {
+  const otp = await OTP.findOne({ email: secondaryEmail, code, purpose: 'secondary_email' });
+  if (!otp) {
+    const err: any = new Error('Invalid or expired verification code');
+    err.statusCode = 400;
+    throw err;
+  }
+
   const user = await User.findByIdAndUpdate(userId, { secondaryEmail }, { new: true });
   if (!user) throw new Error('User not found');
   
+  await OTP.deleteOne({ _id: otp._id });
   return user;
+};
+
+export const logout = async (refreshToken: string) => {
+  if (!refreshToken) return;
+  try {
+    const decoded = jwt.decode(refreshToken) as any;
+    const expiresAt = decoded && decoded.exp ? new Date(decoded.exp * 1000) : new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
+    await BlacklistedToken.create({ token: refreshToken, expiresAt });
+  } catch (err) {
+    // Ignore invalid tokens on logout
+  }
+};
+
+export const forgotPassword = async (email: string) => {
+  const user = await User.findOne({ $or: [{ email }, { secondaryEmail: email }] });
+  if (!user) return; // Silent return for security
+
+  const targetEmail = user.secondaryEmail && email === user.secondaryEmail ? user.secondaryEmail : user.email;
+  const resetToken = jwt.sign({ userId: user._id }, env.JWT_SECRET, { expiresIn: '15m' });
+
+  sendEmail(
+    targetEmail,
+    'Reset your Sangam Password 🔒',
+    'Password Reset Request',
+    `<p>We received a request to reset your password. Click the link below to set a new password.</p>
+     <p>This link is valid for 15 minutes.</p>`,
+    `${env.CLIENT_URL}/reset-password?token=${resetToken}`,
+    'Reset Password'
+  ).catch(console.error);
+};
+
+export const resetPassword = async (token: string, newPasswordRaw: string) => {
+  try {
+    const decoded = jwt.verify(token, env.JWT_SECRET) as { userId: string };
+    const user = await User.findById(decoded.userId);
+    if (!user) throw new Error('User not found');
+
+    const salt = await bcrypt.genSalt(10);
+    user.password = await bcrypt.hash(newPasswordRaw, salt);
+    await user.save();
+
+    return true;
+  } catch (err) {
+    const error: any = new Error('Invalid or expired reset token');
+    error.statusCode = 400;
+    throw error;
+  }
 };

@@ -44,12 +44,22 @@ export const useAuthStore = create<AuthState>()(
         user: state.user ? { ...state.user, ...data } : null
       })),
 
-      logout: () => set({
-        user: null,
-        accessToken: null,
-        refreshToken: null,
-        isAuthenticated: false,
-      }),
+      logout: async () => {
+        const state = useAuthStore.getState();
+        if (state.refreshToken) {
+          try {
+            await api.post('/auth/logout', { refreshToken: state.refreshToken });
+          } catch (e) {
+            console.error('Logout error:', e);
+          }
+        }
+        set({
+          user: null,
+          accessToken: null,
+          refreshToken: null,
+          isAuthenticated: false,
+        });
+      },
     }),
     {
       name: 'sangam-auth-storage',
