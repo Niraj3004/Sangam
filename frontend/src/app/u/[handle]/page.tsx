@@ -8,8 +8,8 @@ export async function generateMetadata({ params }: { params: { handle: string } 
   if (!profile) return { title: 'Profile Not Found' };
   
   return {
-    title: `${profile.user.handle} | Sangam`,
-    description: profile.bio || `View ${profile.user.handle}'s profile on Sangam.`,
+    title: `${profile.handle} | Sangam`,
+    description: profile.about || `View ${profile.handle}'s profile on Sangam.`,
   };
 }
 
@@ -32,7 +32,8 @@ export default async function PublicProfilePage({ params }: { params: { handle: 
     notFound();
   }
 
-  const user = profile.user;
+  const verifyTier = profile.userId?.verifyTier || 'email';
+  const role = profile.userId?.role || 'student';
 
   return (
     <div className="min-h-screen bg-secondary">
@@ -49,10 +50,10 @@ export default async function PublicProfilePage({ params }: { params: { handle: 
             
             {/* Avatar */}
             <div className="w-40 h-40 rounded-full border-4 border-white shadow-lg bg-slate-100 flex-shrink-0 overflow-hidden flex items-center justify-center text-5xl font-bold text-primary">
-              {user.profilePic ? (
-                <img src={user.profilePic} alt={user.handle} className="w-full h-full object-cover" />
+              {profile.avatarUrl ? (
+                <img src={profile.avatarUrl} alt={profile.handle} className="w-full h-full object-cover" />
               ) : (
-                user.handle.charAt(0).toUpperCase()
+                profile.handle.charAt(0).toUpperCase()
               )}
             </div>
 
@@ -61,10 +62,10 @@ export default async function PublicProfilePage({ params }: { params: { handle: 
               <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-4">
                 <div>
                   <h1 className="text-3xl font-bold text-foreground flex items-center gap-3">
-                    {user.handle}
-                    <VerifiedBadge tier={user.verifyTier} />
+                    {profile.handle}
+                    <VerifiedBadge tier={verifyTier} />
                   </h1>
-                  <p className="text-muted mt-1 text-lg">{user.role}</p>
+                  <p className="text-muted mt-1 text-lg capitalize">{role}</p>
                 </div>
                 
                 <button 
@@ -75,9 +76,9 @@ export default async function PublicProfilePage({ params }: { params: { handle: 
                 </button>
               </div>
 
-              {profile.bio && (
+              {profile.about && (
                 <p className="text-foreground/80 leading-relaxed mb-6 max-w-2xl">
-                  {profile.bio}
+                  {profile.about}
                 </p>
               )}
 

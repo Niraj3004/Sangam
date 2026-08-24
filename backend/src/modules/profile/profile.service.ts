@@ -65,7 +65,7 @@ export const patchMyProfile = async (userId: string, data: Partial<IProfile>) =>
 };
 
 export const getProfileByHandle = async (handle: string) => {
-  const profile = await Profile.findOne({ handle }).populate('userId', 'verifyTier');
+  const profile = await Profile.findOne({ handle }).populate('userId', 'verifyTier role');
   
   if (!profile) {
     const error: any = new Error('Profile not found');
