@@ -1,7 +1,7 @@
 import dotenv from 'dotenv';
 dotenv.config();
 
-import { extractOpportunity } from '../modules/extraction/extraction.service';
+import { rankOpportunities } from '../modules/feed/relevance.service';
 import { aiConfig } from '../config/ai';
 
 const runTest = async () => {
@@ -10,26 +10,47 @@ const runTest = async () => {
     return;
   }
 
-  console.log('--- Testing AI Gateway (A3 Extraction) ---');
+  console.log('--- Testing AI Gateway (A4 Relevance Ranking) ---');
 
-  const text = `
-    Exciting opportunity for computer science undergrads in Nepal! 
-    TechCorp is hiring a part-time remote Frontend Intern to work with React and TypeScript. 
-    You must apply before October 15th, 2026. 
-    Check out our website at https://techcorp.example.com/apply to send your resume.
-  `;
+  const student = {
+    careerGoal: 'Become a Senior Frontend Engineer at a fast-paced startup.',
+    field: 'Software Engineering',
+    skills: ['React', 'TypeScript', 'Tailwind'],
+    interests: ['Startups', 'Web Development', 'Open Source']
+  };
 
-  console.log('\n1. Extracting messy text...');
+  const opportunities = [
+    {
+      id: 'opp_1',
+      title: 'Backend Node.js Intern',
+      type: 'internship',
+      description: 'Looking for a backend intern to write APIs in Node and Express. Heavy focus on database optimization.',
+      tags: ['Node.js', 'Express', 'MongoDB'],
+      field: 'Software Engineering'
+    },
+    {
+      id: 'opp_2',
+      title: 'Frontend React Developer (Remote Startup)',
+      type: 'job',
+      description: 'Fast-paced startup looking for a React expert to build our new UI in TypeScript and Tailwind.',
+      tags: ['React', 'TypeScript', 'Remote'],
+      field: 'Software Engineering'
+    },
+    {
+      id: 'opp_3',
+      title: 'Marketing Specialist',
+      type: 'job',
+      description: 'Help us grow our brand presence on social media.',
+      tags: ['Marketing', 'Social Media'],
+      field: 'Marketing'
+    }
+  ];
+
+  console.log('\n1. Ranking 3 opportunities...');
   const start1 = Date.now();
-  const res1 = await extractOpportunity(text);
-  console.log(`Result:`, res1);
+  const res1 = await rankOpportunities(student, opportunities);
+  console.log(`Result:`, JSON.stringify(res1, null, 2));
   console.log(`Time taken: ${Date.now() - start1}ms`);
-
-  console.log('\n2. Second call (should HIT cache)...');
-  const start2 = Date.now();
-  const res2 = await extractOpportunity(text);
-  console.log(`Result:`, res2);
-  console.log(`Time taken: ${Date.now() - start2}ms`);
 };
 
 runTest().catch(console.error);

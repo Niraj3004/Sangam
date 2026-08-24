@@ -2,6 +2,7 @@ import { User } from '../models/User';
 import { Profile } from '../models/Profile';
 import { Opportunity } from '../models/Opportunity';
 import { sendEmail } from '../config/mailer';
+import { rankOpportunities } from '../modules/feed/relevance.service';
 
 export const processWeeklyDigests = async () => {
   console.log('[WORKER - DIGEST] Starting weekly digest generation...');
@@ -25,7 +26,7 @@ export const processWeeklyDigests = async () => {
 
       if (!searchTerms.trim()) continue;
 
-      // Find new opportunities matching their profile
+      // Find new opportunities matching their profile loosely
       const matchedOpportunities = await Opportunity.find(
         {
           createdAt: { $gte: oneWeekAgo },
@@ -35,10 +36,35 @@ export const processWeeklyDigests = async () => {
         { score: { $meta: 'textScore' } }
       )
       .sort({ score: { $meta: 'textScore' } } as any)
-      .limit(3);
+      .limit(10); // Fetch a slightly larger pool for AI to rank
 
       if (matchedOpportunities.length > 0) {
-        const emailBody = matchedOpportunities.map(opp => `- ${opp.title} (${opp.type})`).join('\n');
+        // AI Ranking Pass
+        const aiRankings = await rankOpportunities(
+          {
+            careerGoal: profile.careerGoal,
+            skills: profile.skills.map((s: any) => s.name),
+            interests: profile.interests
+          },
+          matchedOpportunities.map(o => ({
+            id: o._id.toString(),
+            title: o.title,
+            type: o.type,
+            description: o.description,
+            tags: o.tags,
+            field: o.field
+          }))
+        );
+
+        // Sort by AI relevance and take top 3
+        const top3 = aiRankings
+          .sort((a, b) => b.relevanceScore - a.relevanceScore)
+          .slice(0, 3);
+
+        const emailBody = top3.map(ranking => {
+          const opp = matchedOpportunities.find(o => o._id.toString() === ranking.opportunityId);
+          return `- ${opp?.title} (${opp?.type}): ${ranking.reason}`;
+        }).join('\n\n');
         
         await sendEmail(
           user.email,

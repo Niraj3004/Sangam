@@ -1,6 +1,7 @@
 import { Opportunity } from '../../models/Opportunity';
 import { UserInteraction } from '../../models/UserInteraction';
 import { Profile } from '../../models/Profile';
+import { rankOpportunities } from './relevance.service';
 
 export const getPersonalizedFeed = async (userId: string, page: number = 1, limit: number = 20) => {
   const skip = (page - 1) * limit;
@@ -35,12 +36,46 @@ export const getPersonalizedFeed = async (userId: string, page: number = 1, limi
       .sort({ endDate: 1, trustScore: -1 })
       .skip(skip)
       .limit(limit)
-      .populate('posterId', 'role verifyTier'),
+      .populate('posterId', 'role verifyTier')
+      .lean(),
     Opportunity.countDocuments(query)
   ]);
 
+  // 4. AI Relevance Ranking (The B6 seam)
+  let rankedOpportunities: any[] = opportunities;
+
+  if (profile && opportunities.length > 0) {
+    const aiRankings = await rankOpportunities(
+      {
+        careerGoal: profile.careerGoal,
+        skills: profile.skills.map((s: any) => s.name),
+        interests: profile.interests
+      },
+      opportunities.map(o => ({
+        id: o._id.toString(),
+        title: o.title,
+        type: o.type,
+        description: o.description,
+        tags: o.tags,
+        field: o.field
+      }))
+    );
+
+    // Map rankings back to opportunities
+    const rankingMap = new Map(aiRankings.map(r => [r.opportunityId, r]));
+    
+    rankedOpportunities = opportunities.map(o => {
+      const ranking = rankingMap.get(o._id.toString());
+      return {
+        ...o,
+        relevanceScore: ranking?.relevanceScore || 0,
+        relevanceReason: ranking?.reason || ''
+      };
+    }).sort((a: any, b: any) => b.relevanceScore - a.relevanceScore); // Sort highly relevant first
+  }
+
   return {
-    opportunities,
+    opportunities: rankedOpportunities,
     pagination: {
       total,
       page,
