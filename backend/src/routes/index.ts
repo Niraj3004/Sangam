@@ -18,6 +18,7 @@ import organizationsRoutes from '../modules/organizations/organizations.routes';
 import jobsRoutes from '../modules/jobs/jobs.routes';
 import mentorshipRoutes from '../modules/mentorship/mentorship.routes';
 import reportsRoutes from '../modules/reports/reports.routes';
+import searchRoutes from '../modules/search/search.routes';
 const router = Router();
 
 router.use('/auth', authRoutes);
@@ -38,6 +39,7 @@ router.use('/orgs', organizationsRoutes);
 router.use('/jobs', jobsRoutes);
 router.use('/mentorship', mentorshipRoutes);
 router.use('/reports', reportsRoutes);
+router.use('/search', searchRoutes);
 router.get('/health', (req, res) => {
   sendSuccess(res, { status: 'ok', timestamp: new Date().toISOString() });
 });
