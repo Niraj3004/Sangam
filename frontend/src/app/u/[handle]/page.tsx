@@ -2,6 +2,9 @@ import { VerifiedBadge } from "@/components/ui/VerifiedBadge";
 import { Link2, MapPin, Briefcase, GraduationCap, Code, Globe, Share2, CheckCircle2 } from "lucide-react";
 import { notFound } from "next/navigation";
 
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
+
 // Generate metadata for SEO
 export async function generateMetadata({ params }: { params: { handle: string } }) {
   const profile = await getProfile(params.handle);
@@ -15,12 +18,23 @@ export async function generateMetadata({ params }: { params: { handle: string } 
 
 async function getProfile(handle: string) {
   try {
-    const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
-    const res = await fetch(`${API_URL}/profile/${handle}`, { next: { revalidate: 60 } });
-    if (!res.ok) return null;
+    // Use 127.0.0.1 instead of localhost for Node 18+ fetch compatibility in Server Components
+    let API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:5000/api';
+    if (API_URL.includes('localhost')) {
+      API_URL = API_URL.replace('localhost', '127.0.0.1');
+    }
+    console.log(`[getProfile] Fetching ${API_URL}/profile/${handle}`);
+    const res = await fetch(`${API_URL}/profile/${handle}`, { cache: 'no-store' }); // Disable cache for debugging
+    console.log(`[getProfile] Response status: ${res.status}`);
+    if (!res.ok) {
+      console.log(`[getProfile] Not ok, returning null`);
+      return null;
+    }
     const json = await res.json();
+    console.log(`[getProfile] Parsed JSON:`, !!json.data);
     return json.data;
   } catch (error: any) {
+    console.error(`[getProfile] Error:`, error.message);
     return null;
   }
 }
@@ -145,12 +159,10 @@ export default async function PublicProfilePage({ params }: { params: { handle: 
                 </h3>
                 {profile.education && profile.education.length > 0 ? (
                   <div className="space-y-6">
-                    {profile.education.map((edu: any, i: number) => (
+                    {profile.education.map((edu: string, i: number) => (
                       <div key={i} className="relative pl-6 border-l-2 border-slate-200">
                         <div className="absolute w-3 h-3 bg-emerald-500 rounded-full -left-[7.5px] top-1.5 ring-4 ring-white" />
-                        <h4 className="text-lg font-semibold text-foreground">{edu.institution}</h4>
-                        <p className="text-foreground/80">{edu.degree} in {edu.fieldOfStudy}</p>
-                        {edu.year && <p className="text-sm text-muted mt-1">{edu.year}</p>}
+                        <h4 className="text-lg font-semibold text-foreground">{edu}</h4>
                       </div>
                     ))}
                   </div>
