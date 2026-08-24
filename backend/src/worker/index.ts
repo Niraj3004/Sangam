@@ -1,6 +1,13 @@
 import cron from 'node-cron';
 import { connectDB } from '../config/db';
-import { extractStructuredData } from '../config/ai';
+
+const extractStructuredData = async (text: string) => {
+  return {
+    title: 'Stub Opportunity',
+    description: 'Extracted description stub.',
+    confidence: 0.9,
+  };
+};
 import { ReviewQueueItem } from '../models/ReviewQueueItem';
 import { Opportunity } from '../models/Opportunity';
 import { processDeadlineReminders } from './reminders';
