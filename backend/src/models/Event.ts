@@ -7,6 +7,7 @@ export interface IEvent extends Document {
   endDate?: Date;
   location: string;
   url?: string;
+  bannerUrl: string;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -19,6 +20,7 @@ const EventSchema: Schema = new Schema(
     endDate: { type: Date },
     location: { type: String, required: true },
     url: { type: String },
+    bannerUrl: { type: String, default: '' },
   },
   { timestamps: true }
 );

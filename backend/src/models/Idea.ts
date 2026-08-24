@@ -10,6 +10,7 @@ export interface IIdea extends Document {
   category: string;
   problem: string;
   solution: string;
+  bannerUrl: string;
   stage: 'concept' | 'research' | 'prototype' | 'building';
   skillsRequired: string[];
   lookingFor: string[];
@@ -28,6 +29,7 @@ const IdeaSchema: Schema = new Schema(
     category: { type: String, required: true },
     problem: { type: String, required: true },
     solution: { type: String, required: true },
+    bannerUrl: { type: String, default: '' },
     stage: { type: String, enum: ['concept', 'research', 'prototype', 'building'], default: 'concept' },
     skillsRequired: [{ type: String }],
     lookingFor: [{ type: String }],
