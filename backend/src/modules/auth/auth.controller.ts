@@ -3,8 +3,8 @@ import * as authService from './auth.service';
 import { sendSuccess } from '../../utils/response';
 
 export const register = async (req: Request, res: Response) => {
-  const { email, password } = req.body;
-  const tokens = await authService.register(email, password);
+  const { email, password, handle } = req.body;
+  const tokens = await authService.register(email, password, handle);
   sendSuccess(res, tokens, 201);
 };
 

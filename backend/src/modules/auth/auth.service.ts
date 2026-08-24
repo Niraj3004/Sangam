@@ -7,6 +7,7 @@ import { env } from '../../config/env.config';
 import { VERIFY_TIERS, ROLES, VerifyTier } from '../../constants/roles';
 import { JwtPayload } from '../../middlewares/auth';
 import { sendEmail } from '../../config/mailer';
+import { Profile } from '../../models/Profile';
 
 const client = new OAuth2Client(env.GOOGLE_CLIENT_ID);
 
@@ -33,11 +34,20 @@ const generateTokens = (user: IUser) => {
   return { accessToken, refreshToken };
 };
 
-export const register = async (email: string, passwordRaw: string) => {
+export const register = async (email: string, passwordRaw: string, handle: string) => {
   const existingUser = await User.findOne({ email });
   if (existingUser) {
     const error: any = new Error('Email already in use');
     error.code = 'EMAIL_EXISTS';
+    error.statusCode = 400;
+    throw error;
+  }
+
+  // Check if handle is taken
+  const existingProfile = await Profile.findOne({ handle });
+  if (existingProfile) {
+    const error: any = new Error('Username/Handle already taken');
+    error.code = 'HANDLE_EXISTS';
     error.statusCode = 400;
     throw error;
   }
@@ -47,6 +57,7 @@ export const register = async (email: string, passwordRaw: string) => {
   const verifyTier = determineVerifyTier(email);
 
   const user = await User.create({ email, password, verifyTier, role: ROLES.STUDENT });
+  await Profile.create({ userId: user._id, handle, completionScore: 10 });
 
   // Fire and forget welcome email
   sendEmail(
@@ -63,8 +74,19 @@ export const register = async (email: string, passwordRaw: string) => {
 };
 
 export const login = async (email: string, passwordRaw: string) => {
+  console.log(`[LOGIN ATTEMPT] Email: ${email}, Password length: ${passwordRaw?.length}`);
   const user = await User.findOne({ email });
-  if (!user || !user.password) {
+  
+  if (!user) {
+    console.log(`[LOGIN FAILED] User not found for email: ${email}`);
+    const error: any = new Error('Invalid credentials');
+    error.code = 'INVALID_CREDENTIALS';
+    error.statusCode = 401;
+    throw error;
+  }
+  
+  if (!user.password) {
+    console.log(`[LOGIN FAILED] User has no password set (OAuth?): ${email}`);
     const error: any = new Error('Invalid credentials');
     error.code = 'INVALID_CREDENTIALS';
     error.statusCode = 401;
@@ -72,7 +94,10 @@ export const login = async (email: string, passwordRaw: string) => {
   }
 
   const isMatch = await bcrypt.compare(passwordRaw, user.password);
+  console.log(`[LOGIN BCRYPT] Match result: ${isMatch}`);
+  
   if (!isMatch) {
+    console.log(`[LOGIN FAILED] Password mismatch for: ${email}`);
     const error: any = new Error('Invalid credentials');
     error.code = 'INVALID_CREDENTIALS';
     error.statusCode = 401;
