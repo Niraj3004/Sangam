@@ -75,7 +75,9 @@ export const register = async (email: string, passwordRaw: string, handle: strin
 
 export const login = async (email: string, passwordRaw: string) => {
   console.log(`[LOGIN ATTEMPT] Email: ${email}, Password length: ${passwordRaw?.length}`);
-  const user = await User.findOne({ email });
+  const user = await User.findOne({ 
+    $or: [ { email }, { secondaryEmail: email } ] 
+  });
   
   if (!user) {
     console.log(`[LOGIN FAILED] User not found for email: ${email}`);
@@ -244,4 +246,21 @@ export const resolveVerificationRequest = async (requestId: string, action: 'app
   }
 
   return request;
+};
+
+export const addSecondaryEmail = async (userId: string, secondaryEmail: string) => {
+  const existing = await User.findOne({ 
+    $or: [{ email: secondaryEmail }, { secondaryEmail }] 
+  });
+  
+  if (existing) {
+    const error: any = new Error('Email is already in use by another account');
+    error.statusCode = 400;
+    throw error;
+  }
+
+  const user = await User.findByIdAndUpdate(userId, { secondaryEmail }, { new: true });
+  if (!user) throw new Error('User not found');
+  
+  return user;
 };

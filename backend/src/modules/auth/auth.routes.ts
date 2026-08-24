@@ -14,6 +14,7 @@ router.post('/refresh', validate(authValidation.refreshSchema), asyncErrorHandle
 router.post('/google', validate(authValidation.googleAuthSchema), asyncErrorHandler(authController.googleAuth));
 
 router.get('/me', auth, asyncErrorHandler(authController.getMe));
+router.post('/secondary-email', auth, validate(authValidation.secondaryEmailSchema), asyncErrorHandler(authController.addSecondaryEmail));
 
 // User submits verification request
 router.post('/verify-request', auth, validate(authValidation.verifyRequestSchema), asyncErrorHandler(authController.submitVerificationRequest));

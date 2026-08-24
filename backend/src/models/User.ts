@@ -3,6 +3,7 @@ import { ROLES, VERIFY_TIERS, Role, VerifyTier } from '../constants/roles';
 
 export interface IUser extends Document {
   email: string;
+  secondaryEmail?: string;
   password?: string;
   googleId?: string;
   role: Role;
@@ -20,6 +21,7 @@ export interface IUser extends Document {
 const UserSchema: Schema = new Schema(
   {
     email: { type: String, required: true, unique: true, index: true },
+    secondaryEmail: { type: String, unique: true, sparse: true, index: true },
     password: { type: String },
     googleId: { type: String, unique: true, sparse: true },
     role: { type: String, enum: Object.values(ROLES), default: ROLES.STUDENT },

@@ -42,3 +42,9 @@ export const resolveVerifySchema = z.object({
     notes: z.string().optional(),
   }),
 });
+
+export const secondaryEmailSchema = z.object({
+  body: z.object({
+    secondaryEmail: z.string().email(),
+  }),
+});

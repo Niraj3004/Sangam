@@ -48,3 +48,9 @@ export const resolveVerificationRequest = async (req: Request, res: Response) =>
   const request = await authService.resolveVerificationRequest(id, action, notes);
   sendSuccess(res, request, 200);
 };
+
+export const addSecondaryEmail = async (req: Request, res: Response) => {
+  const { secondaryEmail } = req.body;
+  const user = await authService.addSecondaryEmail(req.user!.userId, secondaryEmail);
+  sendSuccess(res, { message: 'Secondary email added successfully', user }, 200);
+};
