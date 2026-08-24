@@ -17,7 +17,7 @@ import knowledgeRoutes from '../modules/knowledge/knowledge.routes';
 import organizationsRoutes from '../modules/organizations/organizations.routes';
 import jobsRoutes from '../modules/jobs/jobs.routes';
 import mentorshipRoutes from '../modules/mentorship/mentorship.routes';
-
+import reportsRoutes from '../modules/reports/reports.routes';
 const router = Router();
 
 router.use('/auth', authRoutes);
@@ -37,7 +37,7 @@ router.use('/knowledge', knowledgeRoutes);
 router.use('/orgs', organizationsRoutes);
 router.use('/jobs', jobsRoutes);
 router.use('/mentorship', mentorshipRoutes);
-
+router.use('/reports', reportsRoutes);
 router.get('/health', (req, res) => {
   sendSuccess(res, { status: 'ok', timestamp: new Date().toISOString() });
 });

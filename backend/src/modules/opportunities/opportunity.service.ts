@@ -1,8 +1,12 @@
 import { Opportunity, IOpportunity } from '../../models/Opportunity';
+import { User } from '../../models/User';
+import { ReviewQueueItem } from '../../models/ReviewQueueItem';
 import { SavedItem } from '../../models/SavedItem';
+import { evaluateModeration } from '../../ai-gateway/moderation';
 
 export const createOpportunity = async (userId: string, data: Partial<IOpportunity>) => {
   const opportunity = await Opportunity.create({ ...data, posterId: userId });
+  await evaluateModeration(opportunity._id as any, 'Opportunity', data.title + ' ' + data.description);
   return opportunity;
 };
 

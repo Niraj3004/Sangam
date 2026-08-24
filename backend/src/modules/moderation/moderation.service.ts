@@ -1,27 +1,12 @@
 import { Report } from '../../models/Report';
 import { Opportunity } from '../../models/Opportunity';
 import { Project } from '../../models/Project';
+import { ModerationFlag } from '../../models/ModerationFlag';
+import { Post } from '../../models/Post';
+import { Job } from '../../models/Job';
+import { Comment } from '../../models/Comment';
 
-export const submitReport = async (reporterId: string, reportedEntityId: string, entityModel: string, reason: string) => {
-  try {
-    const report = await Report.create({
-      reporterId,
-      reportedEntityId,
-      entityModel: entityModel as 'Opportunity' | 'Project' | 'User',
-      reason,
-    });
-    return report;
-  } catch (error: any) {
-    if (error.code === 11000) {
-      const err: any = new Error('You have already reported this entity.');
-      err.statusCode = 400;
-      throw err;
-    }
-    throw error;
-  }
-};
-
-export const getQueue = async () => {
+export const getReportsQueue = async () => {
   const reports = await Report.find({ status: 'pending' })
     .sort({ createdAt: 1 })
     .populate('reporterId', 'email role verifyTier');
@@ -49,10 +34,12 @@ export const resolveReport = async (reportId: string, resolverId: string, action
       await Opportunity.findByIdAndDelete(report.reportedEntityId);
     } else if (report.entityModel === 'Project') {
       await Project.findByIdAndDelete(report.reportedEntityId);
-    } else if (report.entityModel === 'User') {
-      // For MVP, we won't automatically delete users via simple report resolution, 
-      // maybe just suspend them in a future iteration.
-      // But we'll leave it as a no-op for Users right now to prevent accidental account deletion.
+    } else if (report.entityModel === 'Post') {
+      await Post.findByIdAndDelete(report.reportedEntityId);
+    } else if (report.entityModel === 'Job') {
+      await Job.findByIdAndDelete(report.reportedEntityId);
+    } else if (report.entityModel === 'Comment') {
+      await Comment.findByIdAndDelete(report.reportedEntityId);
     }
     
     // Automatically dismiss any other pending reports for this same entity
@@ -67,4 +54,40 @@ export const resolveReport = async (reportId: string, resolverId: string, action
   }
 
   return report;
+};
+
+export const getFlagsQueue = async () => {
+  const flags = await ModerationFlag.find({ status: 'pending' })
+    .sort({ confidenceScore: -1, createdAt: 1 });
+    
+  return flags;
+};
+
+export const actOnFlag = async (flagId: string, moderatorId: string, action: 'approved' | 'rejected') => {
+  const flag = await ModerationFlag.findById(flagId);
+  if (!flag) {
+    const error: any = new Error('Flag not found');
+    error.statusCode = 404;
+    throw error;
+  }
+
+  if (action === 'approved') {
+    // Flag approved means content is indeed bad and should be removed
+    if (flag.entityModel === 'Opportunity') {
+      await Opportunity.findByIdAndDelete(flag.entityId);
+    } else if (flag.entityModel === 'Project') {
+      await Project.findByIdAndDelete(flag.entityId);
+    } else if (flag.entityModel === 'Post') {
+      await Post.findByIdAndDelete(flag.entityId);
+    } else if (flag.entityModel === 'Job') {
+      await Job.findByIdAndDelete(flag.entityId);
+    } else if (flag.entityModel === 'Comment') {
+      await Comment.findByIdAndDelete(flag.entityId);
+    }
+  }
+
+  flag.status = action;
+  await flag.save();
+
+  return flag;
 };

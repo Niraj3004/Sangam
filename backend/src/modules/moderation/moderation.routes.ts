@@ -11,13 +11,15 @@ const router = Router();
 // All moderation routes require auth
 router.use(auth);
 
-// Any authenticated user can submit a report
-router.post('/report', validate(moderationValidation.reportSchema), asyncErrorHandler(moderationController.submitReport));
-
-// Only elevated roles can view and resolve reports
+// Only elevated roles can view and resolve reports and flags
 const elevatedRoles = requireRole(['curator', 'moderator', 'admin']);
 
-router.get('/queue', elevatedRoles, asyncErrorHandler(moderationController.getQueue));
-router.post('/resolve/:id', elevatedRoles, validate(moderationValidation.resolveSchema), asyncErrorHandler(moderationController.resolveReport));
+// User Reports Queue
+router.get('/reports', elevatedRoles, asyncErrorHandler(moderationController.getReportsQueue));
+router.post('/reports/:id/resolve', elevatedRoles, validate(moderationValidation.resolveSchema), asyncErrorHandler(moderationController.resolveReport));
+
+// AI Moderation Flags Queue
+router.get('/flags', elevatedRoles, asyncErrorHandler(moderationController.getFlagsQueue));
+router.post('/flags/:id/act', elevatedRoles, asyncErrorHandler(moderationController.actOnFlag));
 
 export default router;

@@ -10,4 +10,8 @@ const router = Router();
 router.get('/prefs', auth, asyncErrorHandler(notificationsController.getPreferences));
 router.patch('/prefs', auth, validate(notificationsValidation.updatePrefsSchema), asyncErrorHandler(notificationsController.updatePreferences));
 
+router.get('/', auth, asyncErrorHandler(notificationsController.getNotifications));
+router.patch('/read-all', auth, asyncErrorHandler(notificationsController.markAllAsRead));
+router.patch('/:id/read', auth, asyncErrorHandler(notificationsController.markAsRead));
+
 export default router;

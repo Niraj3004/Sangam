@@ -3,7 +3,7 @@ import mongoose, { Schema, Document } from 'mongoose';
 export interface IReport extends Document {
   reporterId: mongoose.Types.ObjectId;
   reportedEntityId: mongoose.Types.ObjectId;
-  entityModel: 'User' | 'Opportunity' | 'Project';
+  entityModel: 'User' | 'Opportunity' | 'Project' | 'Post' | 'Job' | 'Comment' | 'Message';
   reason: string;
   status: 'pending' | 'resolved' | 'dismissed';
   resolvedBy?: mongoose.Types.ObjectId;
@@ -15,7 +15,7 @@ const ReportSchema: Schema = new Schema(
   {
     reporterId: { type: Schema.Types.ObjectId, ref: 'User', required: true },
     reportedEntityId: { type: Schema.Types.ObjectId, required: true, refPath: 'entityModel' },
-    entityModel: { type: String, required: true, enum: ['User', 'Opportunity', 'Project'] },
+    entityModel: { type: String, required: true, enum: ['User', 'Opportunity', 'Project', 'Post', 'Job', 'Comment', 'Message'] },
     reason: { type: String, required: true },
     status: { type: String, enum: ['pending', 'resolved', 'dismissed'], default: 'pending' },
     resolvedBy: { type: Schema.Types.ObjectId, ref: 'User' },

@@ -2,6 +2,7 @@ import { Post, IPost } from '../../models/Post';
 import { Comment } from '../../models/Comment';
 import { Membership } from '../../models/Membership';
 import { ReviewQueueItem } from '../../models/ReviewQueueItem';
+import { evaluateModeration } from '../../ai-gateway/moderation';
 
 // Helper to ensure user is a member of the community
 const checkMembership = async (userId: string, communityId: string) => {
@@ -30,6 +31,9 @@ export const createPost = async (userId: string, communityId: string, data: Part
     entityModel: 'Post', // Wait, ReviewQueueItem schema expects 'Opportunity' | 'User'. We'll need to patch that.
     reason: 'New community post moderation seam'
   });
+
+  // Async AI Moderation Hook (B13)
+  evaluateModeration(post._id, 'Post', `${post.title} ${post.content}`).catch(console.error);
 
   return post;
 };
