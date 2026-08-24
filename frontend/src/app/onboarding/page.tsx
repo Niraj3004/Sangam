@@ -28,8 +28,8 @@ export default function OnboardingWizard() {
   useEffect(() => {
     if (!isAuthenticated) {
       router.push("/login");
-    } else if (user?.verifyTier === "verified_email" || user?.verifyTier === "verified_manual") {
-      router.push("/feed"); // already verified
+    } else if (user?.verifyTier === "manual" || user?.verifyTier === "college") {
+      router.push("/dashboard"); // already verified or higher tier
     }
   }, [isAuthenticated, user, router]);
 
@@ -40,10 +40,10 @@ export default function OnboardingWizard() {
     try {
       await api.post("/auth/verify-request", { 
         evidence, 
-        tierRequested: "verified_manual" 
+        tierRequested: "manual" 
       });
       // Locally update state to simulate progression
-      updateUser({ verifyTier: "manual_pending" });
+      updateUser({ verifyTier: "manual" });
       setStep(2);
     } catch (error) {
       console.error(error);
@@ -62,7 +62,7 @@ export default function OnboardingWizard() {
         bio,
         lookingFor 
       });
-      router.push("/feed"); // Done!
+      router.push("/dashboard"); // Done!
     } catch (error) {
       console.error(error);
       alert("Failed to save profile.");

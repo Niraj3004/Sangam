@@ -43,10 +43,15 @@ export const patchMyProfile = async (userId: string, data: Partial<IProfile>) =>
   let profile = await Profile.findOne({ userId });
 
   if (!profile) {
-    const error: any = new Error('Profile not found');
-    error.code = 'NOT_FOUND';
-    error.statusCode = 404;
-    throw error;
+    const user = await User.findById(userId);
+    if (!user) {
+      const error: any = new Error('User not found');
+      error.code = 'NOT_FOUND';
+      error.statusCode = 404;
+      throw error;
+    }
+    const handle = generateHandle(user.email);
+    profile = await Profile.create({ userId, handle });
   }
 
   const updatedProfile = await Profile.findOneAndUpdate(
