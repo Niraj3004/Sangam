@@ -24,6 +24,8 @@ export default function CollegeRegister() {
     size: "11-50",
     location: "",
     establishedYear: "",
+    accreditation: "",
+    contactEmail: "",
   });
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -137,14 +139,37 @@ export default function CollegeRegister() {
             </div>
           </div>
 
+          <div className="grid grid-cols-2 gap-4">
+            <div className="space-y-1.5">
+              <label className="text-sm font-medium text-gray-700">Established Year</label>
+              <input
+                type="number"
+                value={formData.establishedYear}
+                onChange={(e) => setFormData({ ...formData, establishedYear: e.target.value })}
+                className="w-full px-4 py-2.5 rounded-xl border border-gray-300 focus:ring-2 focus:ring-blue-600 focus:border-transparent outline-none transition-all"
+                placeholder="e.g. 1991"
+              />
+            </div>
+            <div className="space-y-1.5">
+              <label className="text-sm font-medium text-gray-700">Accreditation / Affiliation</label>
+              <input
+                type="text"
+                value={formData.accreditation}
+                onChange={(e) => setFormData({ ...formData, accreditation: e.target.value })}
+                className="w-full px-4 py-2.5 rounded-xl border border-gray-300 focus:ring-2 focus:ring-blue-600 focus:border-transparent outline-none transition-all"
+                placeholder="e.g. TU Affiliated"
+              />
+            </div>
+          </div>
+
           <div className="space-y-1.5">
-            <label className="text-sm font-medium text-gray-700">Established Year</label>
+            <label className="text-sm font-medium text-gray-700">Public Contact Email</label>
             <input
-              type="number"
-              value={formData.establishedYear}
-              onChange={(e) => setFormData({ ...formData, establishedYear: e.target.value })}
+              type="email"
+              value={formData.contactEmail}
+              onChange={(e) => setFormData({ ...formData, contactEmail: e.target.value })}
               className="w-full px-4 py-2.5 rounded-xl border border-gray-300 focus:ring-2 focus:ring-blue-600 focus:border-transparent outline-none transition-all"
-              placeholder="e.g. 1991"
+              placeholder="admissions@ku.edu.np"
             />
           </div>
         </div>

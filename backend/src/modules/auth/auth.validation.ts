@@ -22,6 +22,9 @@ export const registerOrgSchema = z.object({
     size: z.string().optional(),
     location: z.string().optional(),
     establishedYear: z.number().optional(),
+    tagline: z.string().optional(),
+    accreditation: z.string().optional(),
+    contactEmail: z.string().email().optional(),
   }),
 });
 

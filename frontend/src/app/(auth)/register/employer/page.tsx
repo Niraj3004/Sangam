@@ -24,6 +24,8 @@ export default function EmployerRegister() {
     size: "1-10",
     location: "",
     establishedYear: "",
+    tagline: "",
+    contactEmail: "",
   });
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -109,6 +111,29 @@ export default function EmployerRegister() {
               placeholder="Tell students about your company..."
               rows={3}
             />
+          </div>
+
+          <div className="grid grid-cols-2 gap-4">
+            <div className="space-y-1.5">
+              <label className="text-sm font-medium text-gray-700">Company Tagline / Slogan</label>
+              <input
+                type="text"
+                value={formData.tagline}
+                onChange={(e) => setFormData({ ...formData, tagline: e.target.value })}
+                className="w-full px-4 py-2.5 rounded-xl border border-gray-300 focus:ring-2 focus:ring-orange-600 focus:border-transparent outline-none transition-all"
+                placeholder="e.g. Empowering the future of finance"
+              />
+            </div>
+            <div className="space-y-1.5">
+              <label className="text-sm font-medium text-gray-700">Public Contact Email</label>
+              <input
+                type="email"
+                value={formData.contactEmail}
+                onChange={(e) => setFormData({ ...formData, contactEmail: e.target.value })}
+                className="w-full px-4 py-2.5 rounded-xl border border-gray-300 focus:ring-2 focus:ring-orange-600 focus:border-transparent outline-none transition-all"
+                placeholder="hello@company.com"
+              />
+            </div>
           </div>
 
           <div className="grid grid-cols-2 gap-4">

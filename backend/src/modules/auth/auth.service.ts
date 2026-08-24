@@ -100,7 +100,8 @@ export const registerOrganization = async (
   email: string, passwordRaw: string, handle: string, 
   orgName: string, orgType: 'employer' | 'college', 
   orgWebsite: string | undefined, orgDescription: string,
-  industry?: string, size?: string, location?: string, establishedYear?: number
+  industry?: string, size?: string, location?: string, establishedYear?: number,
+  tagline?: string, accreditation?: string, contactEmail?: string
 ) => {
   const existingUser = await User.findOne({ email });
   if (existingUser) {
@@ -123,7 +124,6 @@ export const registerOrganization = async (
   const user = await User.create({ email, password, verifyTier: VERIFY_TIERS.MANUAL, role: ROLES.ORG });
   await Profile.create({ userId: user._id, handle, completionScore: 10 });
 
-  // Create the Organization and link the user
   const org = await Organization.create({
     name: orgName,
     description: orgDescription,
@@ -134,6 +134,9 @@ export const registerOrganization = async (
     size,
     location,
     establishedYear,
+    tagline,
+    accreditation,
+    contactEmail,
     members: [{ userId: user._id, role: 'admin' }]
   });
 

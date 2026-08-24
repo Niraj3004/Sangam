@@ -80,7 +80,13 @@ export default function EditProfilePage() {
         industry: orgProfile.industry,
         size: orgProfile.size,
         location: orgProfile.location,
-        establishedYear: orgProfile.establishedYear ? parseInt(orgProfile.establishedYear) : undefined
+        establishedYear: orgProfile.establishedYear ? parseInt(orgProfile.establishedYear) : undefined,
+        tagline: orgProfile.tagline,
+        benefits: orgProfile.benefits,
+        programs: orgProfile.programs,
+        accreditation: orgProfile.accreditation,
+        socialLinks: orgProfile.socialLinks,
+        contactEmail: orgProfile.contactEmail
       });
       alert("Organization profile updated successfully!");
     } catch (err: any) {
@@ -196,6 +202,93 @@ export default function EditProfilePage() {
                 onChange={e => setOrgProfile({...orgProfile, description: e.target.value})}
                 className="w-full px-4 py-2.5 rounded-xl border border-border bg-slate-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-primary/20 text-sm resize-none"
               />
+            </div>
+
+            <div className="space-y-2">
+              <label className="text-sm font-medium">Tagline / Mission Statement</label>
+              <input 
+                type="text" 
+                value={orgProfile.tagline || ''} 
+                onChange={e => setOrgProfile({...orgProfile, tagline: e.target.value})}
+                placeholder="Short, catchy one-liner"
+                className="w-full px-4 py-2.5 rounded-xl border border-border bg-slate-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-primary/20 text-sm"
+              />
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="space-y-2">
+                <label className="text-sm font-medium">Public Contact Email</label>
+                <input 
+                  type="email" 
+                  value={orgProfile.contactEmail || ''} 
+                  onChange={e => setOrgProfile({...orgProfile, contactEmail: e.target.value})}
+                  className="w-full px-4 py-2.5 rounded-xl border border-border bg-slate-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-primary/20 text-sm"
+                />
+              </div>
+              <div className="space-y-2">
+                <label className="text-sm font-medium">Accreditation (Colleges)</label>
+                <input 
+                  type="text" 
+                  value={orgProfile.accreditation || ''} 
+                  onChange={e => setOrgProfile({...orgProfile, accreditation: e.target.value})}
+                  placeholder="e.g. TU Affiliated"
+                  className="w-full px-4 py-2.5 rounded-xl border border-border bg-slate-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-primary/20 text-sm"
+                />
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="space-y-2">
+                <label className="text-sm font-medium">Benefits (Employers, comma separated)</label>
+                <input 
+                  type="text" 
+                  value={orgProfile.benefits?.join(', ') || ''} 
+                  onChange={e => setOrgProfile({...orgProfile, benefits: e.target.value.split(',').map((s: string) => s.trim()).filter(Boolean)})}
+                  placeholder="Remote Work, Health Insurance..."
+                  className="w-full px-4 py-2.5 rounded-xl border border-border bg-slate-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-primary/20 text-sm"
+                />
+              </div>
+              <div className="space-y-2">
+                <label className="text-sm font-medium">Programs Offered (Colleges, comma separated)</label>
+                <input 
+                  type="text" 
+                  value={orgProfile.programs?.join(', ') || ''} 
+                  onChange={e => setOrgProfile({...orgProfile, programs: e.target.value.split(',').map((s: string) => s.trim()).filter(Boolean)})}
+                  placeholder="BSc. CSIT, BCA..."
+                  className="w-full px-4 py-2.5 rounded-xl border border-border bg-slate-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-primary/20 text-sm"
+                />
+              </div>
+            </div>
+
+            <h3 className="text-lg font-bold text-foreground mt-4">Social Links</h3>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              <div className="space-y-2">
+                <label className="text-sm font-medium">LinkedIn</label>
+                <input 
+                  type="url" 
+                  value={orgProfile.socialLinks?.linkedin || ''} 
+                  onChange={e => setOrgProfile({...orgProfile, socialLinks: {...orgProfile.socialLinks, linkedin: e.target.value}})}
+                  className="w-full px-4 py-2.5 rounded-xl border border-border bg-slate-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-primary/20 text-sm"
+                />
+              </div>
+              <div className="space-y-2">
+                <label className="text-sm font-medium">Twitter</label>
+                <input 
+                  type="url" 
+                  value={orgProfile.socialLinks?.twitter || ''} 
+                  onChange={e => setOrgProfile({...orgProfile, socialLinks: {...orgProfile.socialLinks, twitter: e.target.value}})}
+                  className="w-full px-4 py-2.5 rounded-xl border border-border bg-slate-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-primary/20 text-sm"
+                />
+              </div>
+              <div className="space-y-2">
+                <label className="text-sm font-medium">Facebook</label>
+                <input 
+                  type="url" 
+                  value={orgProfile.socialLinks?.facebook || ''} 
+                  onChange={e => setOrgProfile({...orgProfile, socialLinks: {...orgProfile.socialLinks, facebook: e.target.value}})}
+                  className="w-full px-4 py-2.5 rounded-xl border border-border bg-slate-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-primary/20 text-sm"
+                />
+              </div>
             </div>
           </div>
         ) : studentProfile ? (

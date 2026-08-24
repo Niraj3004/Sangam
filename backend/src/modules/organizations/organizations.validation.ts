@@ -28,5 +28,15 @@ export const updateOrgSchema = z.object({
     size: z.string().optional(),
     location: z.string().optional(),
     establishedYear: z.number().optional(),
+    tagline: z.string().optional(),
+    benefits: z.array(z.string()).optional(),
+    programs: z.array(z.string()).optional(),
+    accreditation: z.string().optional(),
+    socialLinks: z.object({
+      linkedin: z.string().url().optional(),
+      twitter: z.string().url().optional(),
+      facebook: z.string().url().optional(),
+    }).optional(),
+    contactEmail: z.string().email().optional(),
   }),
 });

@@ -16,6 +16,16 @@ export interface IOrganization extends Document {
   size?: string;
   location?: string;
   establishedYear?: number;
+  tagline?: string;
+  benefits?: string[];
+  programs?: string[];
+  accreditation?: string;
+  socialLinks?: {
+    linkedin?: string;
+    twitter?: string;
+    facebook?: string;
+  };
+  contactEmail?: string;
   members: IOrgMember[];
   createdAt: Date;
   updatedAt: Date;
@@ -33,6 +43,16 @@ const OrganizationSchema: Schema = new Schema(
     size: { type: String },
     location: { type: String },
     establishedYear: { type: Number },
+    tagline: { type: String },
+    benefits: [{ type: String }],
+    programs: [{ type: String }],
+    accreditation: { type: String },
+    socialLinks: {
+      linkedin: { type: String },
+      twitter: { type: String },
+      facebook: { type: String },
+    },
+    contactEmail: { type: String },
     members: [
       {
         userId: { type: Schema.Types.ObjectId, ref: 'User', required: true },
