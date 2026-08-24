@@ -23,6 +23,9 @@ import searchRoutes from '../modules/search/search.routes';
 import feedRoutes from '../modules/feed/feed.routes';
 import dashboardRoutes from '../modules/dashboard/dashboard.routes';
 import copilotRoutes from '../modules/copilot/copilot.routes';
+import githubRoutes from '../modules/integrations/github/github.routes';
+import resumeRoutes from '../modules/resume/resume.routes';
+import portfolioRoutes from '../modules/portfolio/portfolio.routes';
 
 const router = Router();
 
@@ -48,6 +51,9 @@ router.use('/search', searchRoutes);
 router.use('/feed', feedRoutes);
 router.use('/dashboard', dashboardRoutes);
 router.use('/copilot', copilotRoutes);
+router.use('/integrations/github', githubRoutes);
+router.use('/resume', resumeRoutes);
+router.use('/portfolio', portfolioRoutes);
 
 router.get('/health', (req, res) => {
   sendSuccess(res, { status: 'ok', timestamp: new Date().toISOString() });

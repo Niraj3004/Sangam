@@ -24,6 +24,18 @@ export interface IProfile extends Document {
   };
   achievements: string[];
   projects: mongoose.Types.ObjectId[];
+  githubRepositories: {
+    name: string;
+    description?: string;
+    url: string;
+    language?: string;
+    stars?: number;
+  }[];
+  portfolioConfig: {
+    theme: string;
+    visibleSections: string[];
+    customUrlSlug?: string;
+  };
   careerGoal?: 'internship' | 'job' | 'startup' | 'scholarship' | 'higher_study' | 'hackathon' | 'freelance' | 'networking';
   completionScore: number;
   createdAt: Date;
@@ -55,6 +67,20 @@ const ProfileSchema: Schema = new Schema(
     },
     achievements: [{ type: String }],
     projects: [{ type: Schema.Types.ObjectId, ref: 'Project' }],
+    githubRepositories: [
+      {
+        name: { type: String, required: true },
+        description: { type: String },
+        url: { type: String, required: true },
+        language: { type: String },
+        stars: { type: Number, default: 0 },
+      }
+    ],
+    portfolioConfig: {
+      theme: { type: String, default: 'light' },
+      visibleSections: [{ type: String }],
+      customUrlSlug: { type: String, unique: true, sparse: true },
+    },
     careerGoal: { 
       type: String, 
       enum: ['internship', 'job', 'startup', 'scholarship', 'higher_study', 'hackathon', 'freelance', 'networking'] 
