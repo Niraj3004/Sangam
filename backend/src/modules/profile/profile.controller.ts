@@ -17,3 +17,11 @@ export const getProfileByHandle = async (req: Request, res: Response) => {
   const profile = await profileService.getProfileByHandle(handle);
   sendSuccess(res, profile, 200);
 };
+
+export const uploadAvatar = async (req: Request, res: Response) => {
+  if (!req.file) throw new Error('No image file provided');
+  // req.file.path contains the secure Cloudinary URL when using multer-storage-cloudinary
+  const avatarUrl = req.file.path;
+  const profile = await profileService.patchMyProfile(req.user!.userId, { avatarUrl });
+  sendSuccess(res, profile, 200);
+};

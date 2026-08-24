@@ -6,6 +6,7 @@ import { auth } from '../../middlewares/auth';
 import { ownership } from '../../middlewares/ownership';
 import { asyncErrorHandler } from '../../utils/asyncErrorHandler';
 import { Project } from '../../models/Project';
+import { uploadImage } from '../../config/cloudinary';
 
 const router = Router();
 
@@ -32,6 +33,13 @@ router.patch(
   ownership(getProjectOwnerId),
   validate(projectValidation.updateProjectSchema),
   asyncErrorHandler(projectController.updateProject)
+);
+
+router.post(
+  '/:id/cover',
+  ownership(getProjectOwnerId),
+  uploadImage.single('cover'),
+  asyncErrorHandler(projectController.uploadCover)
 );
 
 router.delete(

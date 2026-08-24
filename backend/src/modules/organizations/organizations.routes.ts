@@ -4,6 +4,7 @@ import * as organizationsValidation from './organizations.validation';
 import { validate } from '../../middlewares/validate';
 import { auth } from '../../middlewares/auth';
 import { asyncErrorHandler } from '../../utils/asyncErrorHandler';
+import { uploadImage } from '../../config/cloudinary';
 
 const router = Router();
 
@@ -28,6 +29,13 @@ router.get(
   '/:id',
   validate(organizationsValidation.orgIdParamSchema),
   asyncErrorHandler(organizationsController.getOrganizationById)
+);
+
+// Upload Logo
+router.post(
+  '/:id/logo',
+  uploadImage.single('logo'),
+  asyncErrorHandler(organizationsController.uploadLogo)
 );
 
 export default router;

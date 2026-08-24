@@ -40,3 +40,9 @@ export const getComments = async (req: Request, res: Response) => {
   const result = await knowledgeService.getComments(req.user!.userId, postId, pageNum, limitNum);
   sendSuccess(res, result, 200);
 };
+
+export const uploadPostImage = async (req: Request, res: Response) => {
+  if (!req.file) throw new Error('No image file provided');
+  // Just return the uploaded URL so the frontend can embed it into a post payload or markdown text
+  sendSuccess(res, { imageUrl: req.file.path }, 200);
+};

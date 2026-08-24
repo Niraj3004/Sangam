@@ -21,3 +21,11 @@ export const getOrganizationById = async (req: Request, res: Response) => {
   const org = await organizationsService.getOrganizationById(id);
   sendSuccess(res, org, 200);
 };
+
+export const uploadLogo = async (req: Request, res: Response) => {
+  if (!req.file) throw new Error('No image file provided');
+  const id = req.params.id as string;
+  const logoUrl = req.file.path;
+  const org = await organizationsService.updateOrganization(id, { logoUrl });
+  sendSuccess(res, org, 200);
+};

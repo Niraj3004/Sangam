@@ -28,3 +28,11 @@ export const leaveCommunity = async (req: Request, res: Response) => {
   const result = await communitiesService.leaveCommunity(req.user!.userId, id);
   sendSuccess(res, result, 200);
 };
+
+export const uploadIcon = async (req: Request, res: Response) => {
+  if (!req.file) throw new Error('No image file provided');
+  const id = req.params.id as string;
+  const iconUrl = req.file.path;
+  const community = await communitiesService.updateCommunity(id, { iconUrl });
+  sendSuccess(res, community, 200);
+};

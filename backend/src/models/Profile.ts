@@ -8,7 +8,8 @@ export interface ISkill {
 export interface IProfile extends Document {
   userId: mongoose.Types.ObjectId;
   handle: string;
-  about?: string;
+  avatarUrl: string;
+  about: string;
   education: string[];
   skills: ISkill[];
   interests: string[];
@@ -44,8 +45,9 @@ export interface IProfile extends Document {
 
 const ProfileSchema: Schema = new Schema(
   {
-    userId: { type: Schema.Types.ObjectId, ref: 'User', required: true, unique: true },
+    userId: { type: Schema.Types.ObjectId, ref: 'User', required: true },
     handle: { type: String, required: true, unique: true },
+    avatarUrl: { type: String, default: '' },
     about: { type: String, default: '' },
     education: [{ type: String }],
     skills: [

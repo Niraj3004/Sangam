@@ -3,6 +3,7 @@ import mongoose, { Schema, Document } from 'mongoose';
 export interface IProject extends Document {
   title: string;
   description: string;
+  coverUrl: string;
   ownerId: mongoose.Types.ObjectId;
   contributors: mongoose.Types.ObjectId[];
   technologies: string[];
@@ -26,6 +27,7 @@ const ProjectSchema: Schema = new Schema(
   {
     title: { type: String, required: true },
     description: { type: String, required: true },
+    coverUrl: { type: String, default: '' },
     ownerId: { type: Schema.Types.ObjectId, ref: 'User', required: true },
     contributors: [{ type: Schema.Types.ObjectId, ref: 'User' }],
     technologies: [{ type: String }],

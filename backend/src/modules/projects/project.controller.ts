@@ -54,3 +54,11 @@ export const resolveApplication = async (req: Request, res: Response) => {
   const application = await projectService.resolveApplication(id, appId, status);
   sendSuccess(res, application, 200);
 };
+
+export const uploadCover = async (req: Request, res: Response) => {
+  if (!req.file) throw new Error('No image file provided');
+  const id = req.params.id as string;
+  const coverUrl = req.file.path;
+  const project = await projectService.updateProject(id, { coverUrl });
+  sendSuccess(res, project, 200);
+};
