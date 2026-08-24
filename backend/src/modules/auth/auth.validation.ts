@@ -4,6 +4,19 @@ export const registerSchema = z.object({
   body: z.object({
     email: z.string().email(),
     password: z.string().min(8),
+    handle: z.string().min(3).optional(),
+  }),
+});
+
+export const registerOrgSchema = z.object({
+  body: z.object({
+    email: z.string().email(),
+    password: z.string().min(8),
+    handle: z.string().min(3),
+    orgName: z.string().min(2),
+    orgType: z.enum(['employer', 'college']),
+    orgWebsite: z.string().url().optional(),
+    orgDescription: z.string().min(10),
   }),
 });
 

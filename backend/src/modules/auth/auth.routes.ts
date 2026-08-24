@@ -16,6 +16,7 @@ const authLimiter = rateLimit({
 });
 
 router.post('/register', authLimiter, validate(authValidation.registerSchema), asyncErrorHandler(authController.register));
+router.post('/register/org', authLimiter, validate(authValidation.registerOrgSchema), asyncErrorHandler(authController.registerOrg));
 router.post('/login', authLimiter, validate(authValidation.loginSchema), asyncErrorHandler(authController.login));
 router.post('/refresh', validate(authValidation.refreshSchema), asyncErrorHandler(authController.refresh));
 router.post('/logout', validate(authValidation.logoutSchema), asyncErrorHandler(authController.logout));

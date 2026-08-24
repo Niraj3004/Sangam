@@ -10,6 +10,7 @@ import { VERIFY_TIERS, ROLES, VerifyTier } from '../../constants/roles';
 import { JwtPayload } from '../../middlewares/auth';
 import { sendEmail } from '../../config/mailer';
 import { Profile } from '../../models/Profile';
+import { Organization } from '../../models/Organization';
 
 const client = new OAuth2Client(env.GOOGLE_CLIENT_ID);
 
@@ -23,17 +24,22 @@ const determineVerifyTier = (email: string): VerifyTier => {
   return VERIFY_TIERS.EMAIL;
 };
 
-const generateTokens = (user: IUser) => {
+const generateTokens = (user: IUser, org?: any) => {
   const payload: JwtPayload = {
     userId: user._id.toString(),
     role: user.role,
     verifyTier: user.verifyTier,
   };
 
+  if (org) {
+    payload.orgId = org._id.toString();
+    payload.orgType = org.type;
+  }
+
   const accessToken = jwt.sign(payload, env.JWT_SECRET, { expiresIn: '15m' });
   const refreshToken = jwt.sign({ userId: user._id }, env.JWT_REFRESH_SECRET, { expiresIn: '7d' });
 
-  return { user, accessToken, refreshToken };
+  return { user, accessToken, refreshToken, orgType: org?.type };
 };
 
 const generateOTPCode = () => Math.floor(100000 + Math.random() * 900000).toString();
@@ -84,6 +90,64 @@ export const register = async (email: string, passwordRaw: string, handle: strin
   ).catch(console.error);
 
   return generateTokens(user);
+};
+
+export const registerOrganization = async (
+  email: string, passwordRaw: string, handle: string, 
+  orgName: string, orgType: 'employer' | 'college', 
+  orgWebsite: string | undefined, orgDescription: string
+) => {
+  const existingUser = await User.findOne({ email });
+  if (existingUser) {
+    const error: any = new Error('Email already in use');
+    error.statusCode = 400;
+    throw error;
+  }
+
+  const existingProfile = await Profile.findOne({ handle });
+  if (existingProfile) {
+    const error: any = new Error('Username/Handle already taken');
+    error.statusCode = 400;
+    throw error;
+  }
+
+  const salt = await bcrypt.genSalt(10);
+  const password = await bcrypt.hash(passwordRaw, salt);
+
+  // Users who register organizations get the ORG role
+  const user = await User.create({ email, password, verifyTier: VERIFY_TIERS.MANUAL, role: ROLES.ORG });
+  await Profile.create({ userId: user._id, handle, completionScore: 10 });
+
+  // Create the Organization and link the user
+  const org = await Organization.create({
+    name: orgName,
+    description: orgDescription,
+    website: orgWebsite,
+    type: orgType,
+    verified: false,
+    members: [{ userId: user._id, role: 'admin' }]
+  });
+
+  const code = generateOTPCode();
+  await OTP.create({
+    email,
+    code,
+    purpose: 'verify_email',
+    expiresAt: new Date(Date.now() + 10 * 60 * 1000)
+  });
+
+  sendEmail(
+    email,
+    'Verify your Sangam Business Account 🔐',
+    'Email Verification',
+    `<p>Welcome to Sangam! Your business account verification code is:</p>
+     <h2 style="font-size: 32px; letter-spacing: 5px; color: #333;">${code}</h2>
+     <p>This code will expire in 10 minutes.</p>`,
+    `${env.CLIENT_URL}/verify`,
+    'Enter Code'
+  ).catch(console.error);
+
+  return generateTokens(user, org);
 };
 
 export const verifyEmailOTP = async (userId: string, code: string) => {
@@ -143,7 +207,13 @@ export const login = async (email: string, passwordRaw: string) => {
     throw error;
   }
 
-  return generateTokens(user);
+  let org = null;
+  if (user.role === ROLES.ORG) {
+    // Find the organization this user belongs to
+    org = await Organization.findOne({ 'members.userId': user._id });
+  }
+
+  return generateTokens(user, org);
 };
 
 export const refresh = async (refreshToken: string) => {

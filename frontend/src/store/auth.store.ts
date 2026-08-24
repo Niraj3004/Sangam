@@ -7,10 +7,10 @@ export interface User {
   _id?: string;
   email: string;
   handle?: string;
-  role: 'student' | 'verified_student' | 'admin' | 'organization';
+  role: 'student' | 'verified_student' | 'admin' | 'org';
   isVerified: boolean;
   isEmailVerified?: boolean;
-  verifyTier?: 'unverified' | 'manual_pending' | 'verified_email' | 'verified_manual';
+  verifyTier?: 'unverified' | 'manual_pending' | 'verified_email' | 'verified_manual' | 'college' | 'manual';
   profilePic?: string;
 }
 
@@ -21,7 +21,7 @@ interface AuthState {
   isAuthenticated: boolean;
   
   // Actions
-  setAuth: (user: User, accessToken: string, refreshToken: string) => void;
+  setAuth: (user: User, accessToken: string, refreshToken: string, orgType?: string) => void;
   logout: () => void;
   updateUser: (data: Partial<User>) => void;
 }
@@ -33,12 +33,14 @@ export const useAuthStore = create<AuthState>()(
       accessToken: null,
       refreshToken: null,
       isAuthenticated: false,
+      orgType: null as string | null,
 
-      setAuth: (user, accessToken, refreshToken) => set({
+      setAuth: (user, accessToken, refreshToken, orgType) => set({
         user,
         accessToken,
         refreshToken,
         isAuthenticated: true,
+        ...(orgType && { orgType })
       }),
 
       updateUser: (data) => set((state) => ({

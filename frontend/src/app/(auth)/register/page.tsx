@@ -1,175 +1,82 @@
 "use client";
 
-import { useState } from "react";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import * as z from "zod";
-import { api } from "@/lib/api";
-import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { Loader2, Mail, Lock, AlertCircle, User } from "lucide-react";
 import { motion } from "framer-motion";
-import { GoogleLogin } from '@react-oauth/google';
-import { useAuthStore } from "@/store/auth.store";
+import { Building2, UserCircle2, GraduationCap, ChevronRight } from "lucide-react";
 
-const registerSchema = z.object({
-  email: z.string().email({ message: "Please enter a valid email address" }),
-  password: z.string().min(6, { message: "Password must be at least 6 characters" }),
-  handle: z.string().min(3, { message: "Handle must be at least 3 characters" }).max(30),
-});
-
-type RegisterFormValues = z.infer<typeof registerSchema>;
-
-export default function RegisterPage() {
-  const router = useRouter();
-  const [error, setError] = useState<string | null>(null);
-  const setAuth = useAuthStore((state) => state.setAuth);
-
-  const {
-    register,
-    handleSubmit,
-    formState: { errors, isSubmitting },
-  } = useForm<RegisterFormValues>({
-    resolver: zodResolver(registerSchema),
-  });
-
-  const onSubmit = async (data: RegisterFormValues) => {
-    try {
-      setError(null);
-      const response = await api.post("/auth/register", data);
-      
-      if (response.data.success) {
-        // Set auth tokens so they can access the authenticated /verify-email endpoint
-        const { user, accessToken, refreshToken } = response.data.data || response.data;
-        setAuth(user, accessToken, refreshToken);
-        
-        // Redirect to verify page after successful registration
-        router.push("/verify");
-      }
-    } catch (err: any) {
-      setError(err.response?.data?.error?.message || "Registration failed. Please try again.");
-    }
-  };
-
-  const handleGoogleSuccess = async (credentialResponse: any) => {
-    try {
-      setError(null);
-      // We use the same /auth/google endpoint for both login and register since it upserts
-      const response = await api.post("/auth/google", { idToken: credentialResponse.credential });
-      
-      if (response.data.success) {
-        const { user, accessToken, refreshToken } = response.data.data;
-        setAuth(user, accessToken, refreshToken);
-        
-        if (user.verifyTier === 'unverified') {
-          router.push("/onboarding");
-        } else {
-          router.push("/feed");
-        }
-      }
-    } catch (err: any) {
-      setError(err.response?.data?.error?.message || "Google Sign-Up failed");
-    }
-  };
-
+export default function RegisterGateway() {
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 10 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.4 }}
-    >
-      <h2 className="text-2xl font-semibold text-foreground mb-2 text-center">Create an account</h2>
-      <p className="text-sm text-muted text-center mb-8">
-        Join the network of verified Nepali students
-      </p>
-
-      {error && (
-        <div className="mb-6 p-3 rounded-lg bg-red-50 border border-red-100 flex items-center gap-2 text-red-600 text-sm">
-          <AlertCircle className="w-4 h-4" />
-          <span>{error}</span>
-        </div>
-      )}
-
-      <div className="flex justify-center mb-6 w-full">
-        <GoogleLogin
-          onSuccess={handleGoogleSuccess}
-          onError={() => setError("Google Sign-Up was unsuccessful")}
-          shape="pill"
-          size="large"
-          text="signup_with"
-        />
+    <div className="w-full max-w-md">
+      <div className="text-center mb-8">
+        <h1 className="text-3xl font-bold text-gray-900 tracking-tight">Join Sangam</h1>
+        <p className="text-gray-500 mt-2">How do you want to use the platform?</p>
       </div>
 
-      <div className="relative flex items-center py-5">
-        <div className="flex-grow border-t border-border"></div>
-        <span className="flex-shrink-0 mx-4 text-muted text-sm">Or continue with email</span>
-        <div className="flex-grow border-t border-border"></div>
-      </div>
-
-      <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
-        <div className="space-y-1">
-          <label className="text-sm font-medium text-foreground">Username / Handle</label>
-          <div className="relative">
-            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-muted">
-              <User className="h-4 w-4" />
+      <div className="space-y-4">
+        <Link href="/register/student" className="block">
+          <motion.div 
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
+            className="bg-white border-2 border-gray-100 p-5 rounded-2xl flex items-center justify-between hover:border-indigo-600 hover:shadow-md transition-all group"
+          >
+            <div className="flex items-center gap-4">
+              <div className="w-12 h-12 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center">
+                <UserCircle2 className="w-6 h-6" />
+              </div>
+              <div>
+                <h3 className="font-bold text-gray-900">As a Student</h3>
+                <p className="text-sm text-gray-500">Build your career and network</p>
+              </div>
             </div>
-            <input
-              type="text"
-              placeholder="e.g. ram_sharma"
-              {...register("handle")}
-              className="w-full pl-10 pr-3 py-2.5 rounded-xl border border-border bg-white/50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all text-sm"
-            />
-          </div>
-          {errors.handle && <p className="text-red-500 text-xs mt-1">{errors.handle.message}</p>}
-        </div>
+            <ChevronRight className="text-gray-300 group-hover:text-indigo-600 group-hover:translate-x-1 transition-all" />
+          </motion.div>
+        </Link>
 
-        <div className="space-y-1">
-          <label className="text-sm font-medium text-foreground">Email Address</label>
-          <div className="relative">
-            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-muted">
-              <Mail className="h-4 w-4" />
+        <Link href="/register/employer" className="block">
+          <motion.div 
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
+            className="bg-white border-2 border-gray-100 p-5 rounded-2xl flex items-center justify-between hover:border-orange-500 hover:shadow-md transition-all group"
+          >
+            <div className="flex items-center gap-4">
+              <div className="w-12 h-12 rounded-xl bg-orange-50 text-orange-600 flex items-center justify-center">
+                <Building2 className="w-6 h-6" />
+              </div>
+              <div>
+                <h3 className="font-bold text-gray-900">As an Employer</h3>
+                <p className="text-sm text-gray-500">Hire the top 1% of talent</p>
+              </div>
             </div>
-            <input
-              type="email"
-              placeholder="you@university.edu.np"
-              {...register("email")}
-              className="w-full pl-10 pr-3 py-2.5 rounded-xl border border-border bg-white/50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all text-sm"
-            />
-          </div>
-          {errors.email && <p className="text-red-500 text-xs mt-1">{errors.email.message}</p>}
-        </div>
+            <ChevronRight className="text-gray-300 group-hover:text-orange-500 group-hover:translate-x-1 transition-all" />
+          </motion.div>
+        </Link>
 
-        <div className="space-y-1">
-          <label className="text-sm font-medium text-foreground">Password</label>
-          <div className="relative">
-            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-muted">
-              <Lock className="h-4 w-4" />
+        <Link href="/register/college" className="block">
+          <motion.div 
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
+            className="bg-white border-2 border-gray-100 p-5 rounded-2xl flex items-center justify-between hover:border-blue-600 hover:shadow-md transition-all group"
+          >
+            <div className="flex items-center gap-4">
+              <div className="w-12 h-12 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center">
+                <GraduationCap className="w-6 h-6" />
+              </div>
+              <div>
+                <h3 className="font-bold text-gray-900">As an Institution</h3>
+                <p className="text-sm text-gray-500">Manage alumni and events</p>
+              </div>
             </div>
-            <input
-              type="password"
-              placeholder="••••••••"
-              {...register("password")}
-              className="w-full pl-10 pr-3 py-2.5 rounded-xl border border-border bg-white/50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all text-sm"
-            />
-          </div>
-          {errors.password && <p className="text-red-500 text-xs mt-1">{errors.password.message}</p>}
-        </div>
-
-        <button
-          type="submit"
-          disabled={isSubmitting}
-          className="w-full bg-primary text-white py-2.5 rounded-xl font-medium hover:bg-primary-hover transition-colors shadow-sm disabled:opacity-70 disabled:cursor-not-allowed flex items-center justify-center gap-2"
-        >
-          {isSubmitting ? <Loader2 className="w-5 h-5 animate-spin" /> : "Sign Up"}
-        </button>
-      </form>
-
-      <div className="mt-6 flex items-center justify-center gap-1 text-sm">
-        <span className="text-muted">Already have an account?</span>
-        <Link href="/login" className="text-primary font-medium hover:text-primary-hover">
-          Sign in
+            <ChevronRight className="text-gray-300 group-hover:text-blue-600 group-hover:translate-x-1 transition-all" />
+          </motion.div>
         </Link>
       </div>
-    </motion.div>
+
+      <p className="mt-8 text-center text-sm text-gray-500">
+        Already have an account?{" "}
+        <Link href="/login" className="font-semibold text-primary hover:underline">
+          Sign in
+        </Link>
+      </p>
+    </div>
   );
 }

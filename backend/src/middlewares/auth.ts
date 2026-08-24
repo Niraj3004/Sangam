@@ -8,6 +8,8 @@ export interface JwtPayload {
   userId: string;
   role: Role;
   verifyTier: VerifyTier;
+  orgId?: string;
+  orgType?: 'employer' | 'college';
 }
 
 declare global {
