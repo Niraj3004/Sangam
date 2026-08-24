@@ -7,7 +7,10 @@ export interface ICommunity extends Document {
   iconUrl: string;
   bannerUrl: string;
   memberCount: number;
-  status: 'active' | 'archived';
+  status: 'pending' | 'active' | 'archived';
+  creatorId?: mongoose.Types.ObjectId;
+  creatorType?: 'student' | 'org';
+  isOfficial: boolean;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -20,7 +23,10 @@ const CommunitySchema: Schema = new Schema(
     iconUrl: { type: String, default: '' },
     bannerUrl: { type: String, default: '' },
     memberCount: { type: Number, default: 0 },
-    status: { type: String, enum: ['active', 'archived'], default: 'active' },
+    status: { type: String, enum: ['pending', 'active', 'archived'], default: 'active' },
+    creatorId: { type: Schema.Types.ObjectId, refPath: 'creatorType' },
+    creatorType: { type: String, enum: ['User', 'Organization'] },
+    isOfficial: { type: Boolean, default: false },
   },
   { timestamps: true }
 );

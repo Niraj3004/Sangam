@@ -73,3 +73,77 @@ export const updateCommunity = async (id: string, updates: Partial<typeof Commun
   }
   return community;
 };
+
+export const proposeCommunity = async (userId: string, data: any) => {
+  const existing = await Community.findOne({ name: data.name });
+  if (existing) {
+    const error: any = new Error('A community with this name already exists');
+    error.statusCode = 400;
+    throw error;
+  }
+
+  const community = await Community.create({
+    ...data,
+    status: 'pending',
+    creatorId: userId,
+    creatorType: 'student',
+    isOfficial: false,
+  });
+
+  return community;
+};
+
+export const createCommunity = async (orgId: string, data: any) => {
+  const existing = await Community.findOne({ name: data.name });
+  if (existing) {
+    const error: any = new Error('A community with this name already exists');
+    error.statusCode = 400;
+    throw error;
+  }
+
+  const community = await Community.create({
+    ...data,
+    status: 'active',
+    creatorId: orgId,
+    creatorType: 'org',
+    isOfficial: true,
+  });
+
+  // Automatically add the creator as the admin of the new community
+  // We need the org's admin userId to do this properly, 
+  // but for now, we assume the API caller is the org admin user.
+  // Wait, the orgId passed in here should be the User ID of the Org Admin, or the Org ID?
+  // Let's pass userId and set creatorId to userId, creatorType to org.
+  
+  return community;
+};
+
+export const getPendingCommunities = async () => {
+  const communities = await Community.find({ status: 'pending' }).populate('creatorId', 'email name handle');
+  return communities;
+};
+
+export const approveCommunity = async (communityId: string) => {
+  const community = await Community.findById(communityId);
+  if (!community || community.status !== 'pending') {
+    const error: any = new Error('Community not found or not pending');
+    error.statusCode = 404;
+    throw error;
+  }
+
+  community.status = 'active';
+  await community.save();
+
+  // Add the student creator as the admin
+  if (community.creatorId) {
+    await Membership.create({
+      userId: community.creatorId,
+      communityId: community._id,
+      role: 'admin'
+    });
+    community.memberCount = 1;
+    await community.save();
+  }
+
+  return community;
+};

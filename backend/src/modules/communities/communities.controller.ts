@@ -36,3 +36,28 @@ export const uploadIcon = async (req: Request, res: Response) => {
   const community = await communitiesService.updateCommunity(id, { iconUrl });
   sendSuccess(res, community, 200);
 };
+
+export const proposeCommunity = async (req: Request, res: Response) => {
+  // Students only
+  const community = await communitiesService.proposeCommunity(req.user!.userId, req.body);
+  sendSuccess(res, { message: 'Community proposal submitted successfully', community }, 201);
+};
+
+export const createCommunity = async (req: Request, res: Response) => {
+  // Organizations only
+  const community = await communitiesService.createCommunity(req.user!.userId, req.body);
+  sendSuccess(res, { message: 'Community created successfully', community }, 201);
+};
+
+export const getPendingCommunities = async (req: Request, res: Response) => {
+  // Admins only
+  const communities = await communitiesService.getPendingCommunities();
+  sendSuccess(res, communities, 200);
+};
+
+export const approveCommunity = async (req: Request, res: Response) => {
+  // Admins only
+  const id = req.params.id as string;
+  const community = await communitiesService.approveCommunity(id);
+  sendSuccess(res, { message: 'Community approved', community }, 200);
+};
