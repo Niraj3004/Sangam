@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { api } from "@/lib/api";
 import { Loader2, Settings as SettingsIcon, Bell, Shield, Code, Save } from "lucide-react";
 import { useAuthStore } from "@/store/auth.store";
+import Link from "next/link";
 
 export default function SettingsPage() {
   const { user } = useAuthStore();
@@ -118,6 +119,9 @@ export default function SettingsPage() {
             <button className="w-full text-left px-4 py-2.5 rounded-xl bg-primary/10 text-primary font-bold flex items-center gap-3">
               <Bell className="w-4 h-4" /> Notifications
             </button>
+            <Link href="/settings/profile" className="w-full text-left px-4 py-2.5 rounded-xl text-muted hover:bg-slate-50 hover:text-foreground font-medium flex items-center gap-3 transition-colors">
+              <SettingsIcon className="w-4 h-4" /> Edit Profile
+            </Link>
             <button className="w-full text-left px-4 py-2.5 rounded-xl text-muted hover:bg-slate-50 hover:text-foreground font-medium flex items-center gap-3 transition-colors">
               <Shield className="w-4 h-4" /> Privacy & Security
             </button>

@@ -40,10 +40,10 @@ const generateTokens = async (user: IUser, org?: any) => {
   const profile = await Profile.findOne({ userId: user._id });
   if (profile) {
     userObj.handle = profile.handle;
-    userObj.profilePic = profile.profilePic;
+    userObj.profilePic = profile.avatarUrl;
   }
 
-  return { user: userObj, accessToken, refreshToken, orgType: org?.type };
+  return { user: userObj, accessToken, refreshToken, orgType: org?.type, orgId: org?._id };
 };
 
 const generateOTPCode = () => Math.floor(100000 + Math.random() * 900000).toString();
@@ -99,7 +99,8 @@ export const register = async (email: string, passwordRaw: string, handle: strin
 export const registerOrganization = async (
   email: string, passwordRaw: string, handle: string, 
   orgName: string, orgType: 'employer' | 'college', 
-  orgWebsite: string | undefined, orgDescription: string
+  orgWebsite: string | undefined, orgDescription: string,
+  industry?: string, size?: string, location?: string, establishedYear?: number
 ) => {
   const existingUser = await User.findOne({ email });
   if (existingUser) {
@@ -129,6 +130,10 @@ export const registerOrganization = async (
     website: orgWebsite,
     type: orgType,
     verified: false,
+    industry,
+    size,
+    location,
+    establishedYear,
     members: [{ userId: user._id, role: 'admin' }]
   });
 
@@ -251,7 +256,7 @@ export const getMe = async (userId: string) => {
   const profile = await Profile.findOne({ userId });
   if (profile) {
     user.handle = profile.handle;
-    user.profilePic = profile.profilePic;
+    user.profilePic = profile.avatarUrl;
   }
   
   return user;

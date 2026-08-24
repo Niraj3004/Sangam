@@ -18,6 +18,10 @@ export const registerOrgSchema = z.object({
     orgType: z.enum(['employer', 'college']),
     orgWebsite: z.string().url().optional(),
     orgDescription: z.string().min(10),
+    industry: z.string().optional(),
+    size: z.string().optional(),
+    location: z.string().optional(),
+    establishedYear: z.number().optional(),
   }),
 });
 

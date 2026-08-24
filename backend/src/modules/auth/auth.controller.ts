@@ -9,8 +9,8 @@ export const register = async (req: Request, res: Response) => {
 };
 
 export const registerOrg = async (req: Request, res: Response) => {
-  const { email, password, handle, orgName, orgType, orgWebsite, orgDescription } = req.body;
-  const result = await authService.registerOrganization(email, password, handle, orgName, orgType, orgWebsite, orgDescription);
+  const { email, password, handle, orgName, orgType, orgWebsite, orgDescription, industry, size, location, establishedYear } = req.body;
+  const result = await authService.registerOrganization(email, password, handle, orgName, orgType, orgWebsite, orgDescription, industry, size, location, establishedYear);
   sendSuccess(res, { message: 'OTP sent to email', ...result }, 201);
 };
 

@@ -31,6 +31,13 @@ router.get(
   asyncErrorHandler(organizationsController.getOrganizationById)
 );
 
+// Update specific organization
+router.patch(
+  '/:id',
+  validate(organizationsValidation.updateOrgSchema),
+  asyncErrorHandler(organizationsController.updateOrganization)
+);
+
 // Upload Logo
 router.post(
   '/:id/logo',

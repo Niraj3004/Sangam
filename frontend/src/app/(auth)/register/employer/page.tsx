@@ -20,6 +20,10 @@ export default function EmployerRegister() {
     email: "",
     password: "",
     orgDescription: "",
+    industry: "",
+    size: "1-10",
+    location: "",
+    establishedYear: "",
   });
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -31,12 +35,14 @@ export default function EmployerRegister() {
       // Create Organization + User in one shot
       const res = await api.post("/auth/register/org", {
         ...formData,
+        establishedYear: formData.establishedYear ? parseInt(formData.establishedYear) : undefined,
         orgType: "employer"
       });
 
       // Save tokens and navigate to verification screen
       setTokens(res.accessToken, res.refreshToken);
       setUser(res.user);
+      useAuthStore.getState().setAuth(res.user, res.accessToken, res.refreshToken, res.orgType, res.orgId);
       router.push("/verify");
     } catch (err: any) {
       setError(err.response?.data?.error?.message || "Registration failed. Please try again.");
@@ -103,6 +109,56 @@ export default function EmployerRegister() {
               placeholder="Tell students about your company..."
               rows={3}
             />
+          </div>
+
+          <div className="grid grid-cols-2 gap-4">
+            <div className="space-y-1.5">
+              <label className="text-sm font-medium text-gray-700">Industry</label>
+              <input
+                type="text"
+                value={formData.industry}
+                onChange={(e) => setFormData({ ...formData, industry: e.target.value })}
+                className="w-full px-4 py-2.5 rounded-xl border border-gray-300 focus:ring-2 focus:ring-orange-600 focus:border-transparent outline-none transition-all"
+                placeholder="e.g. Fintech"
+              />
+            </div>
+            <div className="space-y-1.5">
+              <label className="text-sm font-medium text-gray-700">Company Size</label>
+              <select
+                value={formData.size}
+                onChange={(e) => setFormData({ ...formData, size: e.target.value })}
+                className="w-full px-4 py-2.5 rounded-xl border border-gray-300 focus:ring-2 focus:ring-orange-600 focus:border-transparent outline-none transition-all bg-white"
+              >
+                <option value="1-10">1-10 employees</option>
+                <option value="11-50">11-50 employees</option>
+                <option value="51-200">51-200 employees</option>
+                <option value="201-500">201-500 employees</option>
+                <option value="500+">500+ employees</option>
+              </select>
+            </div>
+          </div>
+          
+          <div className="grid grid-cols-2 gap-4">
+            <div className="space-y-1.5">
+              <label className="text-sm font-medium text-gray-700">Location (HQ)</label>
+              <input
+                type="text"
+                value={formData.location}
+                onChange={(e) => setFormData({ ...formData, location: e.target.value })}
+                className="w-full px-4 py-2.5 rounded-xl border border-gray-300 focus:ring-2 focus:ring-orange-600 focus:border-transparent outline-none transition-all"
+                placeholder="e.g. Kathmandu, Nepal"
+              />
+            </div>
+            <div className="space-y-1.5">
+              <label className="text-sm font-medium text-gray-700">Established Year</label>
+              <input
+                type="number"
+                value={formData.establishedYear}
+                onChange={(e) => setFormData({ ...formData, establishedYear: e.target.value })}
+                className="w-full px-4 py-2.5 rounded-xl border border-gray-300 focus:ring-2 focus:ring-orange-600 focus:border-transparent outline-none transition-all"
+                placeholder="e.g. 2004"
+              />
+            </div>
           </div>
         </div>
 

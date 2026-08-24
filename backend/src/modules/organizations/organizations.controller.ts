@@ -29,3 +29,19 @@ export const uploadLogo = async (req: Request, res: Response) => {
   const org = await organizationsService.updateOrganization(id, { logoUrl });
   sendSuccess(res, org, 200);
 };
+
+export const updateOrganization = async (req: Request, res: Response) => {
+  const id = req.params.id as string;
+  
+  // Optional authorization check: only org members can update
+  const org = await organizationsService.getOrganizationById(id);
+  const isMember = org.members.some(m => m.userId._id.toString() === req.user!.userId);
+  if (!isMember && req.user!.role !== 'admin') {
+    const err: any = new Error('Not authorized to update this organization');
+    err.statusCode = 403;
+    throw err;
+  }
+
+  const updatedOrg = await organizationsService.updateOrganization(id, req.body);
+  sendSuccess(res, updatedOrg, 200);
+};

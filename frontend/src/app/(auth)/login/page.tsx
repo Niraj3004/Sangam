@@ -36,8 +36,8 @@ export default function LoginPage() {
       const response = await api.post("/auth/login", data);
       
       if (response.data.success) {
-        const { user, accessToken, refreshToken, orgType } = response.data.data;
-        setAuth(user, accessToken, refreshToken, orgType);
+        const { user, accessToken, refreshToken, orgType, orgId } = response.data.data;
+        setAuth(user, accessToken, refreshToken, orgType, orgId);
         
         // Route based on verification tier and role
         if (user.isEmailVerified === false) {

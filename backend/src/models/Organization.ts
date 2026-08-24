@@ -12,6 +12,10 @@ export interface IOrganization extends Document {
   logoUrl?: string;
   type: 'employer' | 'college';
   verified: boolean;
+  industry?: string;
+  size?: string;
+  location?: string;
+  establishedYear?: number;
   members: IOrgMember[];
   createdAt: Date;
   updatedAt: Date;
@@ -25,6 +29,10 @@ const OrganizationSchema: Schema = new Schema(
     logoUrl: { type: String },
     type: { type: String, enum: ['employer', 'college'], required: true },
     verified: { type: Boolean, default: false },
+    industry: { type: String },
+    size: { type: String },
+    location: { type: String },
+    establishedYear: { type: Number },
     members: [
       {
         userId: { type: Schema.Types.ObjectId, ref: 'User', required: true },

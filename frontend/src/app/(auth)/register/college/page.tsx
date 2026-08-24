@@ -20,6 +20,10 @@ export default function CollegeRegister() {
     email: "",
     password: "",
     orgDescription: "",
+    industry: "Education",
+    size: "11-50",
+    location: "",
+    establishedYear: "",
   });
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -31,12 +35,14 @@ export default function CollegeRegister() {
       // Create Organization + User in one shot
       const res = await api.post("/auth/register/org", {
         ...formData,
+        establishedYear: formData.establishedYear ? parseInt(formData.establishedYear) : undefined,
         orgType: "college"
       });
 
       // Save tokens and navigate to verification screen
       setTokens(res.accessToken, res.refreshToken);
       setUser(res.user);
+      useAuthStore.getState().setAuth(res.user, res.accessToken, res.refreshToken, res.orgType, res.orgId);
       router.push("/verify");
     } catch (err: any) {
       setError(err.response?.data?.error?.message || "Registration failed. Please try again.");
@@ -102,6 +108,43 @@ export default function CollegeRegister() {
               className="w-full px-4 py-2.5 rounded-xl border border-gray-300 focus:ring-2 focus:ring-blue-600 focus:border-transparent outline-none transition-all resize-none"
               placeholder="Tell students about your institution..."
               rows={3}
+            />
+          </div>
+
+          <div className="grid grid-cols-2 gap-4">
+            <div className="space-y-1.5">
+              <label className="text-sm font-medium text-gray-700">Student Body Size</label>
+              <select
+                value={formData.size}
+                onChange={(e) => setFormData({ ...formData, size: e.target.value })}
+                className="w-full px-4 py-2.5 rounded-xl border border-gray-300 focus:ring-2 focus:ring-blue-600 focus:border-transparent outline-none transition-all bg-white"
+              >
+                <option value="1-100">1-100 students</option>
+                <option value="101-500">101-500 students</option>
+                <option value="501-2000">501-2,000 students</option>
+                <option value="2000+">2,000+ students</option>
+              </select>
+            </div>
+            <div className="space-y-1.5">
+              <label className="text-sm font-medium text-gray-700">Location (Main Campus)</label>
+              <input
+                type="text"
+                value={formData.location}
+                onChange={(e) => setFormData({ ...formData, location: e.target.value })}
+                className="w-full px-4 py-2.5 rounded-xl border border-gray-300 focus:ring-2 focus:ring-blue-600 focus:border-transparent outline-none transition-all"
+                placeholder="e.g. Kathmandu, Nepal"
+              />
+            </div>
+          </div>
+
+          <div className="space-y-1.5">
+            <label className="text-sm font-medium text-gray-700">Established Year</label>
+            <input
+              type="number"
+              value={formData.establishedYear}
+              onChange={(e) => setFormData({ ...formData, establishedYear: e.target.value })}
+              className="w-full px-4 py-2.5 rounded-xl border border-gray-300 focus:ring-2 focus:ring-blue-600 focus:border-transparent outline-none transition-all"
+              placeholder="e.g. 1991"
             />
           </div>
         </div>
