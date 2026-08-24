@@ -4,6 +4,7 @@ import { api } from '@/lib/api';
 
 export interface User {
   id: string;
+  _id?: string;
   email: string;
   handle?: string;
   role: 'student' | 'verified_student' | 'admin' | 'organization';
