@@ -36,19 +36,19 @@ export default function CopilotPage() {
     }
   };
 
-  const toggleActionItem = async (itemId: string, currentStatus: string) => {
+  const toggleActionItem = async (itemId: string, currentIsCompleted: boolean) => {
     try {
-      const newStatus = currentStatus === 'completed' ? 'pending' : 'completed';
+      const newIsCompleted = !currentIsCompleted;
       
       // Optimistic update
       setPlan((prev: any) => ({
         ...prev,
         items: prev.items.map((item: any) => 
-          item._id === itemId ? { ...item, status: newStatus } : item
+          item._id === itemId ? { ...item, isCompleted: newIsCompleted } : item
         )
       }));
 
-      await api.patch(`/copilot/plan/${itemId}`, { status: newStatus });
+      await api.patch(`/copilot/plan/${itemId}`, { isCompleted: newIsCompleted });
     } catch (err) {
       console.error(err);
       // Revert on fail
@@ -185,7 +185,7 @@ export default function CopilotPage() {
             <div className="space-y-4">
               <p className="text-xs font-bold text-muted uppercase tracking-wider mb-2">Recommended Steps</p>
               {plan.items?.map((item: any, idx: number) => {
-                const isCompleted = item.status === 'completed';
+                const isCompleted = item.isCompleted === true;
                 return (
                   <motion.div 
                     key={item._id || idx}
@@ -196,7 +196,7 @@ export default function CopilotPage() {
                   >
                     <div className="flex items-start gap-3">
                       <button 
-                        onClick={() => toggleActionItem(item._id, item.status)}
+                        onClick={() => toggleActionItem(item._id, item.isCompleted)}
                         className={`mt-0.5 flex-shrink-0 ${isCompleted ? 'text-emerald-500' : 'text-slate-300 hover:text-primary transition-colors'}`}
                       >
                         {isCompleted ? <CheckCircle2 className="w-5 h-5" /> : <Circle className="w-5 h-5" />}
