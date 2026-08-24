@@ -41,9 +41,9 @@ export const generateResume = async (userId: string, targetJobId?: string, targe
     });
 
     return resume;
-  } catch (e) {
+  } catch (e: any) {
     console.error('[ResumeService] AI Resume Generation Failed:', e);
-    throw new Error('Failed to generate AI resume.');
+    throw new Error('Failed to generate AI resume: ' + (e.message || String(e)));
   }
 };
 

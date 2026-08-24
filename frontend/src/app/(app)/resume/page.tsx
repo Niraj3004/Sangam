@@ -37,9 +37,9 @@ export default function ResumeBuilderPage() {
       setResumes([data.data, ...resumes]);
       setTargetRole("");
       alert("Resume generated successfully!");
-    } catch (err) {
+    } catch (err: any) {
       console.error(err);
-      alert("Failed to generate resume.");
+      alert(err.response?.data?.error?.message || err.message || "Failed to generate resume.");
     } finally {
       setIsGenerating(false);
     }

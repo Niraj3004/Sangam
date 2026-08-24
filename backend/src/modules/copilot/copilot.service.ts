@@ -42,9 +42,9 @@ export const getActionPlan = async (userId: string) => {
         })),
         validUntil: nextWeek,
       });
-    } catch (e) {
+    } catch (e: any) {
       console.error('[CopilotService] AI Plan Generation Failed:', e);
-      throw new Error('Failed to generate AI action plan.');
+      throw new Error('Failed to generate AI action plan: ' + (e.message || String(e)));
     }
   }
 
