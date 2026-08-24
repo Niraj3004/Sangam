@@ -14,7 +14,9 @@ export default function SettingsPage() {
     emailNotifications: true,
     pushNotifications: true,
     marketingEmails: false,
-    profileVisibility: "public"
+    marketingEmails: false,
+    profileVisibility: "public",
+    secondaryEmail: ""
   });
 
   useEffect(() => {
@@ -44,6 +46,20 @@ export default function SettingsPage() {
     } catch (err) {
       console.error(err);
       alert("Failed to save settings.");
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  const handleAddSecondaryEmail = async () => {
+    if (!prefs.secondaryEmail.trim()) return;
+    setIsSaving(true);
+    try {
+      await api.post('/auth/secondary-email', { secondaryEmail: prefs.secondaryEmail });
+      alert("Secondary email added successfully. You can now use it for account recovery.");
+    } catch (err: any) {
+      console.error(err);
+      alert(err.response?.data?.error?.message || "Failed to add secondary email.");
     } finally {
       setIsSaving(false);
     }
@@ -156,6 +172,33 @@ export default function SettingsPage() {
               >
                 Connect
               </button>
+            </div>
+          </section>
+
+          <section className="bg-white rounded-2xl border border-border p-6 shadow-sm">
+            <h2 className="text-xl font-bold text-foreground mb-6">Account Security</h2>
+            
+            <div className="space-y-4">
+              <div>
+                <label className="text-sm font-medium text-foreground block mb-2">Secondary Recovery Email</label>
+                <p className="text-xs text-muted mb-3">Add a personal email to recover your account if you lose access to your college email.</p>
+                <div className="flex gap-3">
+                  <input 
+                    type="email" 
+                    value={prefs.secondaryEmail}
+                    onChange={(e) => setPrefs({...prefs, secondaryEmail: e.target.value})}
+                    placeholder="e.g., personal@gmail.com"
+                    className="flex-1 px-4 py-2.5 rounded-xl border border-border bg-slate-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-primary/20 text-sm transition-all"
+                  />
+                  <button 
+                    onClick={handleAddSecondaryEmail}
+                    disabled={isSaving || !prefs.secondaryEmail}
+                    className="px-4 py-2.5 bg-slate-800 text-white rounded-xl text-sm font-bold hover:bg-slate-700 transition-colors disabled:opacity-50"
+                  >
+                    Link Email
+                  </button>
+                </div>
+              </div>
             </div>
           </section>
 
