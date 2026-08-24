@@ -3,10 +3,11 @@ import { CloudinaryStorage } from 'multer-storage-cloudinary';
 import multer from 'multer';
 import { env } from './env.config';
 
-// The SDK automatically configures itself when CLOUDINARY_URL is present in process.env,
-// but we explicitly pass it here for safety.
+// Configure Cloudinary explicitly with individual credentials
 cloudinary.config({
-  cloudinary_url: env.CLOUDINARY_URL
+  cloud_name: env.CLOUDINARY_CLOUD_NAME,
+  api_key: env.CLOUDINARY_API_KEY,
+  api_secret: env.CLOUDINARY_API_SECRET,
 });
 
 // Configure Multer Storage for Cloudinary
