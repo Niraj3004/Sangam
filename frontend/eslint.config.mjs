@@ -21,7 +21,8 @@ const eslintConfig = defineConfig([
       "react-hooks/set-state-in-effect": "off",
       "no-use-before-define": "off",
       "@typescript-eslint/no-use-before-define": "off",
-      "react/no-unescaped-entities": "off"
+      "react/no-unescaped-entities": "off",
+      "react-hooks/immutability": "off"
     }
   }
 ]);
