@@ -65,10 +65,11 @@ export const patchMyProfile = async (userId: string, data: Partial<IProfile>) =>
 };
 
 export const getProfileByHandle = async (handle: string) => {
+  console.log(`[getProfileByHandle] Searching for handle: "${handle}"`);
   const profile = await Profile.findOne({ handle }).populate('userId', 'verifyTier role');
   
   if (!profile) {
-    const error: any = new Error('Profile not found');
+    const error: any = new Error(`Profile not found for handle: "${handle}"`);
     error.code = 'NOT_FOUND';
     error.statusCode = 404;
     throw error;
