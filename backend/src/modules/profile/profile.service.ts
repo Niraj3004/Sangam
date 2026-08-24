@@ -57,7 +57,7 @@ export const patchMyProfile = async (userId: string, data: Partial<IProfile>) =>
   const updatedProfile = await Profile.findOneAndUpdate(
     { userId },
     { $set: data },
-    { new: true, runValidators: true }
+    { returnDocument: 'after', runValidators: true }
   );
 
   const score = calculateCompleteness(updatedProfile!);
@@ -77,3 +77,4 @@ export const getProfileByHandle = async (handle: string) => {
 
   return profile;
 };
+

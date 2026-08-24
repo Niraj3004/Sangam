@@ -27,7 +27,7 @@ export const markAsRead = async (userId: string, notificationId: string) => {
   const notification = await Notification.findOneAndUpdate(
     { _id: notificationId, userId },
     { isRead: true },
-    { new: true }
+    { returnDocument: 'after' }
   );
 
   if (!notification) {
@@ -78,3 +78,4 @@ export const notifyUser = async (
 
   return notification;
 };
+

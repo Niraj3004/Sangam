@@ -74,7 +74,7 @@ export const getOpportunityById = async (id: string) => {
 };
 
 export const updateOpportunity = async (id: string, data: Partial<IOpportunity>) => {
-  const opportunity = await Opportunity.findByIdAndUpdate(id, { $set: data }, { new: true, runValidators: true });
+  const opportunity = await Opportunity.findByIdAndUpdate(id, { $set: data }, { returnDocument: 'after', runValidators: true });
   if (!opportunity) {
     const error: any = new Error('Opportunity not found');
     error.code = 'NOT_FOUND';
@@ -135,3 +135,4 @@ export const unsaveOpportunity = async (userId: string, opportunityId: string) =
 
   return { message: 'Unsaved successfully' };
 };
+

@@ -55,7 +55,7 @@ export const updateResume = async (userId: string, resumeId: string, updates: an
   const resume = await Resume.findOneAndUpdate(
     { _id: resumeId, userId },
     { $set: updates },
-    { new: true }
+    { returnDocument: 'after' }
   );
   if (!resume) throw new Error('Resume not found or unauthorized');
   return resume;
@@ -73,3 +73,4 @@ export const exportResume = async (userId: string, resumeId: string) => {
     exportData: resume
   };
 };
+

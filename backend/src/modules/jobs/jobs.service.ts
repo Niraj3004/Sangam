@@ -139,7 +139,7 @@ export const updateApplicationStatus = async (userId: string, jobId: string, app
   const app = await Application.findOneAndUpdate(
     { _id: appId, jobId },
     { status },
-    { new: true }
+    { returnDocument: 'after' }
   );
 
   if (!app) {
@@ -175,3 +175,4 @@ export const updateApplicationStatus = async (userId: string, jobId: string, app
 
   return app;
 };
+

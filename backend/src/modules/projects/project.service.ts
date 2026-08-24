@@ -86,7 +86,7 @@ export const getProjectById = async (id: string) => {
 };
 
 export const updateProject = async (id: string, data: Partial<IProject>) => {
-  const project = await Project.findByIdAndUpdate(id, { $set: data }, { new: true, runValidators: true });
+  const project = await Project.findByIdAndUpdate(id, { $set: data }, { returnDocument: 'after', runValidators: true });
   if (!project) {
     const error: any = new Error('Project not found');
     error.statusCode = 404;
@@ -162,7 +162,7 @@ export const resolveApplication = async (projectId: string, appId: string, statu
   const application = await ProjectApplication.findOneAndUpdate(
     { _id: appId, projectId, status: 'pending' },
     { status },
-    { new: true }
+    { returnDocument: 'after' }
   );
 
   if (!application) {
@@ -203,3 +203,4 @@ export const resolveApplication = async (projectId: string, appId: string, statu
 
   return application;
 };
+

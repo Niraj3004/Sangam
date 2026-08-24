@@ -65,7 +65,7 @@ export const leaveCommunity = async (userId: string, communityId: string) => {
 };
 
 export const updateCommunity = async (id: string, updates: Partial<typeof Community.prototype>) => {
-  const community = await Community.findByIdAndUpdate(id, { $set: updates }, { new: true });
+  const community = await Community.findByIdAndUpdate(id, { $set: updates }, { returnDocument: 'after' });
   if (!community) {
     const error: any = new Error('Community not found');
     error.statusCode = 404;
@@ -147,3 +147,4 @@ export const approveCommunity = async (communityId: string) => {
 
   return community;
 };
+

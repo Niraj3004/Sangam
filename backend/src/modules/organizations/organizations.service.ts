@@ -44,7 +44,7 @@ export const getOrganizationById = async (id: string) => {
 };
 
 export const updateOrganization = async (id: string, updates: Partial<IOrganization>) => {
-  const org = await Organization.findByIdAndUpdate(id, { $set: updates }, { new: true });
+  const org = await Organization.findByIdAndUpdate(id, { $set: updates }, { returnDocument: 'after' });
   if (!org) {
     const error: any = new Error('Organization not found');
     error.statusCode = 404;
@@ -52,3 +52,4 @@ export const updateOrganization = async (id: string, updates: Partial<IOrganizat
   }
   return org;
 };
+

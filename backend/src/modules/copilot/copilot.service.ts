@@ -55,7 +55,7 @@ export const updatePlanItem = async (userId: string, itemId: string, isCompleted
   const plan = await ActionPlan.findOneAndUpdate(
     { userId, 'items._id': itemId },
     { $set: { 'items.$.isCompleted': isCompleted } },
-    { new: true }
+    { returnDocument: 'after' }
   );
 
   if (!plan) throw new Error('Plan or item not found');
@@ -90,3 +90,4 @@ export const chatWithCopilot = async (userId: string, message: string, history: 
     throw new Error('Copilot chat failed: ' + (e.message || String(e)));
   }
 };
+

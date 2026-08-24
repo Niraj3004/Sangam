@@ -67,7 +67,7 @@ export const acceptConnection = async (recipientId: string, requesterId: string)
   const connection = await Connection.findOneAndUpdate(
     { requesterId, recipientId, status: 'pending' },
     { status: 'accepted' },
-    { new: true }
+    { returnDocument: 'after' }
   );
 
   if (!connection) {
@@ -83,7 +83,7 @@ export const rejectConnection = async (recipientId: string, requesterId: string)
   const connection = await Connection.findOneAndUpdate(
     { requesterId, recipientId, status: 'pending' },
     { status: 'rejected' },
-    { new: true }
+    { returnDocument: 'after' }
   );
 
   if (!connection) {
@@ -112,3 +112,4 @@ export const getPendingRequests = async (userId: string) => {
   
   return connections;
 };
+

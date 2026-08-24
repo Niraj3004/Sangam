@@ -90,8 +90,9 @@ export const trackInteraction = async (userId: string, data: any) => {
   const interaction = await UserInteraction.findOneAndUpdate(
     { userId, entityId: data.entityId, interactionType: data.interactionType },
     { ...data, userId },
-    { new: true, upsert: true }
+    { returnDocument: 'after', upsert: true }
   );
 
   return interaction;
 };
+

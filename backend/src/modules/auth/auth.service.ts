@@ -372,7 +372,7 @@ export const verifySecondaryEmailOTP = async (userId: string, secondaryEmail: st
     throw err;
   }
 
-  const user = await User.findByIdAndUpdate(userId, { secondaryEmail }, { new: true });
+  const user = await User.findByIdAndUpdate(userId, { secondaryEmail }, { returnDocument: 'after' });
   if (!user) throw new Error('User not found');
   
   await OTP.deleteOne({ _id: otp._id });
@@ -425,3 +425,4 @@ export const resetPassword = async (token: string, newPasswordRaw: string) => {
     throw error;
   }
 };
+

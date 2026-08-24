@@ -30,7 +30,7 @@ export const getIdeaById = async (id: string) => {
 };
 
 export const updateIdea = async (id: string, data: Partial<IIdea>) => {
-  const idea = await Idea.findByIdAndUpdate(id, data, { new: true });
+  const idea = await Idea.findByIdAndUpdate(id, data, { returnDocument: 'after' });
   if (!idea) {
     const error: any = new Error('Idea not found');
     error.statusCode = 404;
@@ -48,3 +48,4 @@ export const deleteIdea = async (id: string) => {
   }
   return idea;
 };
+
