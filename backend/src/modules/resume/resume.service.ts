@@ -5,7 +5,7 @@ import { gateway } from '../ai-gateway';
 import { aiConfig } from '../../config/ai';
 import { resumeBuilderSchema } from '../../models/ai-schemas/resume.schema';
 
-export const generateResume = async (userId: string, targetJobId?: string, title: string = 'My AI Resume') => {
+export const generateResume = async (userId: string, targetJobId?: string, targetRole?: string, title: string = 'My AI Resume') => {
   const profile = await Profile.findOne({ userId }).populate('projects');
   if (!profile) throw new Error('Profile not found');
 
@@ -23,7 +23,7 @@ export const generateResume = async (userId: string, targetJobId?: string, title
     - Projects: ${(profile.projects || []).map((p: any) => p.title).join(', ')}
 
     Target Job Description (Tailor the resume to match this if provided):
-    ${jobDesc ? jobDesc : 'No specific job targeted. Make it a general, strong resume.'}
+    ${jobDesc ? jobDesc : targetRole ? `Target Role: ${targetRole}` : 'No specific job targeted. Make it a general, strong resume.'}
     
     Generate a highly professional resume draft with tailored sections and a summary.
   `;
@@ -34,7 +34,7 @@ export const generateResume = async (userId: string, targetJobId?: string, title
     const resume = await Resume.create({
       userId,
       targetJobId,
-      title,
+      title: targetRole ? `${targetRole} Resume` : title,
       summary: aiDraft.summary || profile.about || 'A passionate student ready for opportunities.',
       sections: aiDraft.sections || [],
       status: 'draft',

@@ -24,13 +24,13 @@ export const aiConfig = {
     extract: {
       model: 'gemini-2.5-flash',
       temperature: 0.1,
-      maxTokens: 1024,
+      maxTokens: 8192,
     },
     // Explain/Chat: human-readable, creative but constrained
     explain: {
       model: 'gemini-2.5-flash',
       temperature: 0.7,
-      maxTokens: 1000
+      maxTokens: 8192
     },
     // Moderation: highly deterministic
     moderate: {

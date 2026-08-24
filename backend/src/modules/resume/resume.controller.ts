@@ -3,7 +3,7 @@ import * as resumeService from './resume.service';
 import { sendSuccess } from '../../utils/response';
 
 export const generateResume = async (req: Request, res: Response) => {
-  const resume = await resumeService.generateResume(req.user!.userId, req.body.targetJobId, req.body.title);
+  const resume = await resumeService.generateResume(req.user!.userId, req.body.targetJobId, req.body.targetRole, req.body.title);
   sendSuccess(res, resume, 201);
 };
 
