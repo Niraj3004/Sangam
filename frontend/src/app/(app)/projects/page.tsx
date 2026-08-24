@@ -19,7 +19,7 @@ export default function ProjectsHubPage() {
     setIsLoading(true);
     try {
       const { data } = await api.get('/projects');
-      setProjects((Array.isArray(data.data) ? data.data : (Object.values(data.data || {}).find(Array.isArray) || [])));
+      setProjects(data.data?.projects || []);
     } catch (err) {
       console.error(err);
     } finally {
