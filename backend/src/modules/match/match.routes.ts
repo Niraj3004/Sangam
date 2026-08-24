@@ -11,6 +11,10 @@ router.use(auth);
 // Get algorithmic suggestions with reasons (as POST to match PDF spec)
 router.post('/people', asyncErrorHandler(matchController.getPeopleMatches));
 router.post('/projects', asyncErrorHandler(matchController.getProjectMatches));
-router.post('/ideas', asyncErrorHandler(matchController.getIdeaMatches));
+router.get('/ideas', asyncErrorHandler(matchController.getIdeaMatches));
+
+// Project Team Matching (Owner looking for complementary candidates)
+router.get('/teams/:projectId/candidates', asyncErrorHandler(matchController.getTeamCandidates));
+router.post('/teams/:projectId/invite', asyncErrorHandler(matchController.inviteToTeam));
 
 export default router;

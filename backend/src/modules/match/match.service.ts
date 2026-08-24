@@ -148,3 +148,56 @@ export const getIdeaMatches = async (userId: string) => {
   scoredIdeas.sort((a, b) => b.matchScore - a.matchScore);
   return scoredIdeas.slice(0, 20);
 };
+
+export const getTeamCandidates = async (userId: string, projectId: string) => {
+  const project = await Project.findOne({ _id: projectId, ownerId: userId });
+  if (!project) throw new Error('Project not found or unauthorized');
+
+  // AI GATEWAY SEAM: In Part 2, Claude will find users with complementary skills
+  // const candidates = await callAiGateway({ project }, 'find_team_candidates');
+
+  // Baseline logic: find users who have the technologies the project needs, but aren't in the project yet
+  const requiredSkills = new Set((project.technologies || []).map((s: string) => s.toLowerCase()));
+  const memberIds = project.contributors.map(c => c.toString());
+  
+  const potentialProfiles = await Profile.find({ userId: { $nin: [...memberIds, userId] } })
+    .limit(100)
+    .populate('userId', 'email verifyTier role')
+    .lean();
+
+  const scoredCandidates = potentialProfiles.map(profile => {
+    let score = 0;
+    const reasons: string[] = [];
+
+    const userSkills = (profile.skills || []).map(s => s.name.toLowerCase());
+    const matchedSkills = userSkills.filter(s => requiredSkills.has(s));
+
+    if (matchedSkills.length > 0) {
+      score += matchedSkills.length * 15;
+      reasons.push(`Has required skills: ${matchedSkills.join(', ')}`);
+    }
+
+    if (project.remote && profile.availability === 'remote') {
+      score += 10;
+      reasons.push('Remote availability matches');
+    }
+
+    return { ...profile, matchScore: score, reasons };
+  });
+
+  // Only return users who actually scored > 0
+  const candidates = scoredCandidates.filter(c => c.matchScore > 0);
+  candidates.sort((a, b) => b.matchScore - a.matchScore);
+
+  return candidates.slice(0, 10);
+};
+
+export const inviteToTeam = async (ownerId: string, projectId: string, candidateId: string) => {
+  const project = await Project.findOne({ _id: projectId, ownerId });
+  if (!project) throw new Error('Project not found or unauthorized');
+
+  // In a real system, we'd create a Notification or a Connection request here with purpose 'project_invite'
+  // For now, we simulate an invite success
+  return { success: true, message: 'Candidate invited successfully to the project team.' };
+};
+

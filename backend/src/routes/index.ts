@@ -22,6 +22,7 @@ import reportsRoutes from '../modules/reports/reports.routes';
 import searchRoutes from '../modules/search/search.routes';
 import feedRoutes from '../modules/feed/feed.routes';
 import dashboardRoutes from '../modules/dashboard/dashboard.routes';
+import copilotRoutes from '../modules/copilot/copilot.routes';
 
 const router = Router();
 
@@ -46,6 +47,8 @@ router.use('/reports', reportsRoutes);
 router.use('/search', searchRoutes);
 router.use('/feed', feedRoutes);
 router.use('/dashboard', dashboardRoutes);
+router.use('/copilot', copilotRoutes);
+
 router.get('/health', (req, res) => {
   sendSuccess(res, { status: 'ok', timestamp: new Date().toISOString() });
 });
