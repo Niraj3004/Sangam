@@ -20,7 +20,8 @@ import {
   Lightbulb,
   Terminal,
   Building,
-  ArrowRight
+  ArrowRight,
+  Activity
 } from "lucide-react";
 import Link from "next/link";
 
