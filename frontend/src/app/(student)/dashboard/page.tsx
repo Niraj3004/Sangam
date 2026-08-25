@@ -169,22 +169,22 @@ export default function StudentDashboard() {
             <div className="absolute inset-0 opacity-10" style={{ backgroundImage: "url('data:image/svg+xml,%3Csvg width=\\'60\\' height=\\'60\\' viewBox=\\'0 0 60 60\\' xmlns=\\'http://www.w3.org/2000/svg\\'%3E%3Cg fill=\\'none\\' fill-rule=\\'evenodd\\'%3E%3Cg fill=\\'%23ffffff\\' fill-opacity=\\'1\\'%3E%3Cpath d=\\'M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z\\'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E')" }}></div>
             <div className={`absolute top-0 right-0 w-64 h-64 ${SPONSORED_ADS[currentAdIndex].accentColor} rounded-full blur-3xl -mr-20 -mt-20 transition-colors duration-1000`}></div>
             
-            <div className="bg-slate-900/50 backdrop-blur-md rounded-[26px] p-6 relative z-10 flex flex-col md:flex-row md:items-center gap-6 border border-slate-700/50">
-              <div className="w-16 h-16 rounded-2xl bg-white flex items-center justify-center shrink-0 shadow-md p-3">
+            <div className="bg-slate-900/50 backdrop-blur-md rounded-[26px] p-10 md:p-14 relative z-10 flex flex-col md:flex-row md:items-center gap-8 border border-slate-700/50">
+              <div className="w-24 h-24 md:w-32 md:h-32 rounded-[2rem] bg-white flex items-center justify-center shrink-0 shadow-md p-5">
                 <img src={SPONSORED_ADS[currentAdIndex].logo} alt="Sponsor" className="w-full h-full object-contain" />
               </div>
               <div className="flex-1">
-                <div className="flex items-center gap-2 mb-2">
-                  <span className={`px-2.5 py-0.5 text-[10px] font-black uppercase tracking-widest rounded-md border ${SPONSORED_ADS[currentAdIndex].badgeColor} transition-colors duration-1000`}>
+                <div className="flex items-center gap-2 mb-3">
+                  <span className={`px-3 py-1 text-xs font-black uppercase tracking-widest rounded-lg border ${SPONSORED_ADS[currentAdIndex].badgeColor} transition-colors duration-1000`}>
                     Sponsored Opportunity
                   </span>
                 </div>
-                <h3 className="text-xl font-bold text-white mb-1">{SPONSORED_ADS[currentAdIndex].title}</h3>
-                <p className="text-sm text-slate-300 line-clamp-2">{SPONSORED_ADS[currentAdIndex].description}</p>
+                <h3 className="text-2xl md:text-4xl font-bold text-white mb-3">{SPONSORED_ADS[currentAdIndex].title}</h3>
+                <p className="text-base md:text-lg text-slate-300 line-clamp-2">{SPONSORED_ADS[currentAdIndex].description}</p>
               </div>
-              <div className="shrink-0 mt-2 md:mt-0">
-                <Link href={SPONSORED_ADS[currentAdIndex].link} className="inline-flex items-center justify-center gap-2 px-6 py-3 bg-white text-slate-900 rounded-xl font-bold text-sm hover:bg-slate-100 transition-colors shadow-sm group-hover:scale-105 transform duration-300">
-                  Learn More <ArrowRight className="w-4 h-4" />
+              <div className="shrink-0 mt-4 md:mt-0">
+                <Link href={SPONSORED_ADS[currentAdIndex].link} className="inline-flex items-center justify-center gap-2 px-8 py-4 bg-white text-slate-900 rounded-2xl font-bold text-base hover:bg-slate-100 transition-colors shadow-md group-hover:scale-105 transform duration-300">
+                  Learn More <ArrowRight className="w-5 h-5" />
                 </Link>
               </div>
             </div>
