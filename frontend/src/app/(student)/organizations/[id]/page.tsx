@@ -24,7 +24,7 @@ export default function OrganizationDetailPage() {
 
   const fetchOrg = async () => {
     try {
-      const { data } = await api.get(`/organizations/${params.id}`);
+      const { data } = await api.get(`/orgs/${params.id}`);
       setOrg(data.data);
     } catch (err: any) {
       console.error(err);
@@ -43,7 +43,7 @@ export default function OrganizationDetailPage() {
     formData.append('image', file);
 
     try {
-      const { data } = await api.post(`/organizations/${params.id}/logo`, formData, {
+      const { data } = await api.post(`/orgs/${params.id}/logo`, formData, {
         headers: { 'Content-Type': 'multipart/form-data' }
       });
       setOrg({ ...org, logo: data.data.logo });

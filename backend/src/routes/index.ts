@@ -26,6 +26,7 @@ import copilotRoutes from '../modules/copilot/copilot.routes';
 import githubRoutes from '../modules/integrations/github/github.routes';
 import resumeRoutes from '../modules/resume/resume.routes';
 import portfolioRoutes from '../modules/portfolio/portfolio.routes';
+import adRoutes from '../modules/ads/ad.routes';
 
 const router = Router();
 
@@ -54,6 +55,7 @@ router.use('/copilot', copilotRoutes);
 router.use('/integrations/github', githubRoutes);
 router.use('/resume', resumeRoutes);
 router.use('/portfolio', portfolioRoutes);
+router.use('/ads', adRoutes);
 
 router.get('/health', (req, res) => {
   sendSuccess(res, { status: 'ok', timestamp: new Date().toISOString() });

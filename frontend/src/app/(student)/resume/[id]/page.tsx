@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { api } from "@/lib/api";
 import { useAuthStore } from "@/store/auth.store";
-import { Loader2, Download, ChevronLeft, Mail, Phone, MapPin, Linkedin, Github, Globe } from "lucide-react";
+import { Loader2, Download, ChevronLeft, Mail, Phone, MapPin, Globe } from "lucide-react";
 import Link from "next/link";
 import { useParams } from "next/navigation";
 
@@ -65,7 +65,7 @@ export default function ResumeViewerPage() {
         
         {/* Header Name & Contacts */}
         <div className="text-center mb-4">
-          <h1 className="text-[28px] font-sans text-[#4472C4] mb-1 uppercase tracking-wide">{profile.name || user?.name || user?.handle}</h1>
+          <h1 className="text-[28px] font-sans text-[#4472C4] mb-1 uppercase tracking-wide">{profile.name || (user as any)?.name || user?.handle}</h1>
           <div className="text-[13px] text-black leading-snug">
             {profile.location && <span>{profile.location}</span>}
             <br />
@@ -175,7 +175,7 @@ function formatMarkdown(text: string) {
   html = html.replace(/^(?:-|\*)\s+(.+)$/gm, '<li>$1</li>');
   
   // Wrap contiguous <li> in <ul>
-  html = html.replace(/(<li>.*<\/li>)/s, '<ul>$1</ul>');
+  html = html.replace(/(\<li\>.*\<\/li\>)/g, '<ul>$1</ul>');
   
   // Fix double breaks
   html = html.replace(/\n\n/g, '<br/>');

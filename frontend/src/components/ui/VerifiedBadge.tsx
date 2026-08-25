@@ -1,6 +1,6 @@
 import { ShieldCheck, CheckCircle2, ShieldAlert } from "lucide-react";
 
-type VerifyTier = "unverified" | "manual_pending" | "verified_email" | "verified_manual";
+type VerifyTier = "unverified" | "manual_pending" | "verified_email" | "verified_manual" | "college" | "manual";
 
 interface VerifiedBadgeProps {
   tier: VerifyTier;
@@ -32,8 +32,22 @@ export function VerifiedBadge({ tier, className = "", showText = false }: Verifi
       bg: "bg-blue-50",
       border: "border-blue-200",
       textColor: "text-blue-700"
+    },
+    college: {
+      icon: <CheckCircle2 className="w-4 h-4 text-purple-500" />,
+      text: "Verified College",
+      bg: "bg-purple-50",
+      border: "border-purple-200",
+      textColor: "text-purple-700"
+    },
+    manual: {
+      icon: <ShieldCheck className="w-4 h-4 text-indigo-500" />,
+      text: "Verified Manual",
+      bg: "bg-indigo-50",
+      border: "border-indigo-200",
+      textColor: "text-indigo-700"
     }
-  };
+  } as Record<VerifyTier, any>;
 
   const style = config[tier];
   if (!style) return null;

@@ -27,13 +27,14 @@ import {
   Network
 } from "lucide-react";
 
+import { Suspense } from "react";
+import SearchBar from "./SearchBar";
+
 export default function AppLayout({ children }: { children: React.ReactNode }) {
   const { isAuthenticated, user, logout } = useAuthStore();
   const router = useRouter();
   const pathname = usePathname();
-  const searchParams = useSearchParams();
   const [mounted, setMounted] = useState(false);
-  const [searchQuery, setSearchQuery] = useState(searchParams.get("q") || "");
   const [hasUnread, setHasUnread] = useState(false);
 
   useEffect(() => {
@@ -145,22 +146,9 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
       <main className="flex-1 ml-64 flex flex-col min-h-screen">
         {/* Topbar */}
         <header className="h-16 bg-white border-b border-border sticky top-0 z-10 flex items-center justify-between px-8">
-          <form 
-            onSubmit={(e) => {
-              e.preventDefault();
-              if (searchQuery.trim()) router.push(`/search?q=${encodeURIComponent(searchQuery.trim())}`);
-            }}
-            className="flex items-center bg-slate-50 rounded-full px-4 py-2 w-96 border border-border focus-within:border-primary/40 focus-within:ring-2 focus-within:ring-primary/10 focus-within:bg-white transition-all shadow-sm"
-          >
-            <Search className="w-4 h-4 text-muted mr-2" />
-            <input 
-              type="text" 
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Search people, projects, opportunities..." 
-              className="bg-transparent border-none outline-none text-sm w-full font-medium text-slate-900 placeholder:text-slate-400"
-            />
-          </form>
+          <Suspense fallback={<div className="w-96 bg-slate-50 h-10 rounded-full border border-border animate-pulse" />}>
+            <SearchBar />
+          </Suspense>
           
           <div className="flex items-center gap-6">
             <Link href="/notifications" className="w-10 h-10 rounded-full bg-slate-50 border border-slate-100 flex items-center justify-center text-slate-500 hover:text-primary hover:bg-primary/5 transition-colors relative shadow-sm">

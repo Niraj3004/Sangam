@@ -2,6 +2,7 @@ import { Opportunity } from '../../models/Opportunity';
 import { UserInteraction } from '../../models/UserInteraction';
 import { Profile } from '../../models/Profile';
 import { rankOpportunities } from './relevance.service';
+import { AdService } from '../ads/ad.service';
 
 export const getPersonalizedFeed = async (userId: string, page: number = 1, limit: number = 20) => {
   const skip = (page - 1) * limit;
@@ -72,6 +73,35 @@ export const getPersonalizedFeed = async (userId: string, page: number = 1, limi
         relevanceReason: ranking?.reason || ''
       };
     }).sort((a: any, b: any) => b.relevanceScore - a.relevanceScore); // Sort highly relevant first
+  }
+
+  // 5. Inject Dynamic Ads (Phase 3)
+  const ads = await AdService.getRelevantAdsForUser(userId, 2);
+  
+  if (ads.length > 0) {
+    // Map ads to match the feed item structure roughly
+    const formattedAds = ads.map(ad => ({
+      ...ad.toObject(),
+      _id: ad._id,
+      item: ad, // Ensure nested item reference if frontend expects it
+      isSponsored: true,
+      score: 99, // Fake high match score
+      explanation: 'Sponsored promotion matching your skills.'
+    }));
+
+    // Inject ad 1 at index 1 (2nd item)
+    if (rankedOpportunities.length >= 1 && formattedAds[0]) {
+      rankedOpportunities.splice(1, 0, formattedAds[0]);
+    } else if (formattedAds[0]) {
+      rankedOpportunities.push(formattedAds[0]);
+    }
+
+    // Inject ad 2 at index 8 (9th item)
+    if (rankedOpportunities.length >= 8 && formattedAds[1]) {
+      rankedOpportunities.splice(8, 0, formattedAds[1]);
+    } else if (formattedAds[1]) {
+      rankedOpportunities.push(formattedAds[1]);
+    }
   }
 
   return {

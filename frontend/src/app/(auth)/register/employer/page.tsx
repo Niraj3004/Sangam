@@ -9,7 +9,7 @@ import { api } from "@/lib/api";
 
 export default function EmployerRegister() {
   const router = useRouter();
-  const { setTokens, setUser } = useAuthStore();
+  const { setAuth } = useAuthStore();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -41,10 +41,9 @@ export default function EmployerRegister() {
         orgType: "employer"
       });
 
+      const { user, accessToken, refreshToken, orgType, orgId } = res.data;
       // Save tokens and navigate to verification screen
-      setTokens(res.accessToken, res.refreshToken);
-      setUser(res.user);
-      useAuthStore.getState().setAuth(res.user, res.accessToken, res.refreshToken, res.orgType, res.orgId);
+      setAuth(user, accessToken, refreshToken, orgType, orgId);
       router.push("/verify");
     } catch (err: any) {
       setError(err.response?.data?.error?.message || "Registration failed. Please try again.");

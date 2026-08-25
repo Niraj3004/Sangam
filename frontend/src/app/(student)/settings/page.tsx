@@ -17,7 +17,6 @@ export default function SettingsPage() {
     emailNotifications: true,
     pushNotifications: true,
     marketingEmails: false,
-    marketingEmails: false,
     profileVisibility: "public",
     secondaryEmail: ""
   });

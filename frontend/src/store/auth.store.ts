@@ -20,6 +20,8 @@ interface AuthState {
   refreshToken: string | null;
   isAuthenticated: boolean;
   isInitialized: boolean;
+  orgType?: string | null;
+  orgId?: string | null;
   
   // Actions
   setAuth: (user: User, accessToken: string, refreshToken: string, orgType?: string, orgId?: string) => void;

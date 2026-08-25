@@ -17,7 +17,7 @@ export default function AdminDashboardPage() {
   return (
     <div className="p-8 max-w-6xl mx-auto space-y-8">
       <div>
-        <h1 className="text-3xl font-bold text-gray-900 tracking-tight">Welcome back, {user?.name || user?.handle}</h1>
+        <h1 className="text-3xl font-bold text-gray-900 tracking-tight">Welcome back, {(user as any)?.name || user?.handle}</h1>
         <p className="text-gray-500 mt-2">Here is what is happening on Sangam today.</p>
       </div>
 

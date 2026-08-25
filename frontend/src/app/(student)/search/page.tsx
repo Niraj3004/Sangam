@@ -2,12 +2,14 @@
 
 import { useState, useEffect } from "react";
 import { api } from "@/lib/api";
-import { Loader2, Search as SearchIcon, Users, FolderKanban, BookOpen, Lightbulb, Briefcase } from "lucide-react";
+import { Loader2, Search as SearchIcon, Users, FolderKanban, BookOpen, Lightbulb, Briefcase, ArrowRight } from "lucide-react";
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { VerifiedBadge } from "@/components/ui/VerifiedBadge";
 
-export default function SearchPage() {
+import { Suspense } from "react";
+
+function SearchContent() {
   const searchParams = useSearchParams();
   const query = searchParams.get("q") || "";
   
@@ -195,5 +197,13 @@ export default function SearchPage() {
         </div>
       )}
     </div>
+  );
+}
+
+export default function SearchPage() {
+  return (
+    <Suspense fallback={<div className="p-8 max-w-6xl mx-auto flex justify-center"><Loader2 className="w-8 h-8 animate-spin text-primary" /></div>}>
+      <SearchContent />
+    </Suspense>
   );
 }

@@ -96,13 +96,13 @@ export default function EditProfilePage() {
   };
 
   const fetchOrgProfile = async () => {
-    const orgId = useAuthStore.getState().orgId;
+    const orgId = (useAuthStore.getState() as any).orgId;
     if (!orgId) {
       setIsLoading(false);
       return;
     }
     try {
-      const res = await api.get(`/organizations/${orgId}`);
+      const res = await api.get(`/orgs/${orgId}`);
       setOrgProfile(res.data.data);
     } catch (err) {
       console.error(err);
@@ -151,7 +151,7 @@ export default function EditProfilePage() {
   };
 
   const handleSaveOrg = async () => {
-    const orgId = useAuthStore.getState().orgId;
+    const orgId = (useAuthStore.getState() as any).orgId;
     if (!orgId) return;
     setIsSaving(true);
     try {
@@ -181,7 +181,7 @@ export default function EditProfilePage() {
         Object.keys(payload.socialLinks).forEach(key => payload.socialLinks[key] === undefined && delete payload.socialLinks[key]);
       }
 
-      await api.patch(`/organizations/${orgId}`, payload);
+      await api.patch(`/orgs/${orgId}`, payload);
       alert("Organization profile updated successfully!");
     } catch (err: any) {
       alert(err.response?.data?.error?.message || "Failed to update organization.");
@@ -207,8 +207,8 @@ export default function EditProfilePage() {
         setStudentProfile({ ...studentProfile, avatarUrl: res.data.data.avatarUrl });
         alert("Avatar updated successfully!");
       } else {
-        const orgId = useAuthStore.getState().orgId;
-        const res = await api.post(`/organizations/${orgId}/logo`, formData, {
+        const orgId = (useAuthStore.getState() as any).orgId;
+        const res = await api.post(`/orgs/${orgId}/logo`, formData, {
           headers: { 'Content-Type': 'multipart/form-data' }
         });
         setOrgProfile({ ...orgProfile, logoUrl: res.data.data.logoUrl });
@@ -591,6 +591,8 @@ export default function EditProfilePage() {
                     onChange={e => setStudentProfile({...studentProfile, links: {...studentProfile.links, portfolio: e.target.value}})}
                     placeholder="https://yourwebsite.com"
                     className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-border bg-slate-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-primary/20 text-sm"
+                  />
+                </div>
               </div>
             </div>
             

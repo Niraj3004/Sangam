@@ -11,6 +11,8 @@ export interface IOpportunity extends Document {
   sourceId?: string;
   relevanceScore?: number;
   confidence?: number;
+  isSponsored?: boolean;
+  imageUrl?: string;
   status: 'active' | 'closed' | 'draft' | 'review' | 'rejected' | 'published';
   tags: string[];
   location?: string;
@@ -38,6 +40,8 @@ const OpportunitySchema: Schema = new Schema(
     sourceId: { type: String },
     relevanceScore: { type: Number },
     confidence: { type: Number },
+    isSponsored: { type: Boolean, default: false },
+    imageUrl: { type: String },
     status: { type: String, enum: ['active', 'closed', 'draft', 'review', 'rejected', 'published'], default: 'active' },
     tags: [{ type: String }],
     location: { type: String, default: '' },

@@ -7,7 +7,9 @@ import { api } from "@/lib/api";
 import { Loader2, ArrowLeft, Lock, CheckCircle2 } from "lucide-react";
 import { motion } from "framer-motion";
 
-export default function ResetPasswordPage() {
+import { Suspense } from "react";
+
+function ResetPasswordContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const token = searchParams.get("token");
@@ -162,5 +164,13 @@ export default function ResetPasswordPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function ResetPasswordPage() {
+  return (
+    <Suspense fallback={<div className="min-h-screen bg-slate-50 flex items-center justify-center"><Loader2 className="w-8 h-8 animate-spin text-primary" /></div>}>
+      <ResetPasswordContent />
+    </Suspense>
   );
 }

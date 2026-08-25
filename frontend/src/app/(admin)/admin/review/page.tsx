@@ -199,7 +199,7 @@ export default function AdminReviewPage() {
             </div>
           )}
         </div>
-      ) : (
+      ) : activeTab === "verification" ? (
         <div className="space-y-4">
           {verifyQueue.length === 0 ? (
             <div className="text-center py-20 bg-white border border-border rounded-2xl border-dashed">
@@ -257,7 +257,7 @@ export default function AdminReviewPage() {
             </div>
           )}
         </div>
-      ) : (
+      ) : activeTab === "communities" ? (
         <div className="space-y-4">
           {communityQueue.length === 0 ? (
             <div className="text-center py-20 bg-white border border-border rounded-2xl border-dashed">
