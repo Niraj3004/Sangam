@@ -175,7 +175,7 @@ export default function StudentDashboard() {
               
               <div className="bg-slate-900/50 backdrop-blur-md rounded-[26px] p-6 relative z-10 flex flex-col md:flex-row md:items-center gap-6 border border-slate-700/50">
                 <div className="w-16 h-16 rounded-2xl bg-white flex items-center justify-center shrink-0 shadow-md p-3">
-                  <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/2/2f/Google_2015_logo.svg/2560px-Google_2015_logo.svg.png" alt="Google" className="w-full h-full object-contain" />
+                  <img src="https://upload.wikimedia.org/wikipedia/commons/2/2f/Google_2015_logo.svg" alt="Google" className="w-full h-full object-contain" />
                 </div>
                 <div className="flex-1">
                   <div className="flex items-center gap-2 mb-2">
