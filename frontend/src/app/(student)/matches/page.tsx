@@ -164,9 +164,7 @@ export default function MatchesPage() {
                     </div>
                   </motion.div>
                 );
-              } 
-              
-              else {
+              } else if (activeTab === "projects") {
                 // Projects
                 const project = match.project;
                 return (
