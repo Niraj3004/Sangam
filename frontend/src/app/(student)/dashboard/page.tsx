@@ -157,7 +157,7 @@ export default function StudentDashboard() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.15 }}
-          className="xl:col-span-1 flex flex-col relative group h-full"
+          className="xl:col-span-2 flex flex-col relative group h-full"
         >
           <AnimatePresence mode="wait">
             <motion.div
@@ -171,23 +171,24 @@ export default function StudentDashboard() {
               <div className="absolute inset-0 opacity-10" style={{ backgroundImage: "url('data:image/svg+xml,%3Csvg width=\\'60\\' height=\\'60\\' viewBox=\\'0 0 60 60\\' xmlns=\\'http://www.w3.org/2000/svg\\'%3E%3Cg fill=\\'none\\' fill-rule=\\'evenodd\\'%3E%3Cg fill=\\'%23ffffff\\' fill-opacity=\\'1\\'%3E%3Cpath d=\\'M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z\\'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E')" }}></div>
               <div className={`absolute top-0 right-0 w-64 h-64 ${SPONSORED_ADS[currentAdIndex].accentColor} rounded-full blur-3xl -mr-20 -mt-20 transition-colors duration-1000`}></div>
               
-              <div className="bg-slate-900/50 backdrop-blur-md rounded-[1.8rem] p-8 relative z-10 flex flex-col items-start h-full border border-slate-700/50">
-                <div className="w-16 h-16 md:w-20 md:h-20 rounded-2xl bg-white flex items-center justify-center shrink-0 shadow-md p-4 mb-6">
+              <div className="bg-slate-900/50 backdrop-blur-md rounded-[1.8rem] p-8 md:p-12 relative z-10 flex flex-col md:flex-row items-start md:items-center gap-8 h-full border border-slate-700/50">
+                <div className="w-20 h-20 md:w-32 md:h-32 rounded-3xl bg-white flex items-center justify-center shrink-0 shadow-xl p-4 md:p-6 mb-6 md:mb-0">
                   <img src={SPONSORED_ADS[currentAdIndex].logo} alt="Sponsor" className="w-full h-full object-contain" />
                 </div>
                 <div className="flex-1 flex flex-col">
-                  <div className="flex items-center gap-2 mb-3">
-                    <span className={`px-3 py-1 text-[10px] font-black uppercase tracking-widest rounded-lg border ${SPONSORED_ADS[currentAdIndex].badgeColor} transition-colors duration-1000`}>
+                  <div className="flex items-center gap-2 mb-4">
+                    <span className={`px-4 py-1.5 text-xs font-black uppercase tracking-widest rounded-xl border ${SPONSORED_ADS[currentAdIndex].badgeColor} transition-colors duration-1000`}>
                       Sponsored
                     </span>
                   </div>
-                  <h3 className="text-2xl md:text-3xl font-bold text-white mb-3 leading-tight">{SPONSORED_ADS[currentAdIndex].title}</h3>
-                  <p className="text-sm md:text-base text-slate-300 line-clamp-3 mb-6">{SPONSORED_ADS[currentAdIndex].description}</p>
-                </div>
-                <div className="w-full mt-auto">
-                  <Link href={SPONSORED_ADS[currentAdIndex].link} className="flex items-center justify-center gap-2 w-full py-4 bg-white text-slate-900 rounded-2xl font-bold text-base hover:bg-slate-100 transition-colors shadow-md group-hover:shadow-lg transform duration-300">
-                    Learn More <ArrowRight className="w-5 h-5" />
-                  </Link>
+                  <h3 className="text-3xl md:text-5xl font-extrabold text-white mb-4 leading-tight">{SPONSORED_ADS[currentAdIndex].title}</h3>
+                  <p className="text-base md:text-lg text-slate-300 line-clamp-3 mb-8 max-w-2xl">{SPONSORED_ADS[currentAdIndex].description}</p>
+                  
+                  <div>
+                    <Link href={SPONSORED_ADS[currentAdIndex].link} className="inline-flex items-center justify-center gap-3 px-8 py-4 bg-white text-slate-900 rounded-2xl font-bold text-lg hover:bg-slate-100 transition-colors shadow-md group-hover:shadow-xl transform duration-300 group-hover:-translate-y-1">
+                      Learn More <ArrowRight className="w-6 h-6" />
+                    </Link>
+                  </div>
                 </div>
               </div>
             </motion.div>
@@ -213,41 +214,39 @@ export default function StudentDashboard() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.1 }}
-          className="xl:col-span-2 flex flex-col h-full"
+          className="xl:col-span-1 flex flex-col h-full"
         >
-          <div className="bg-gradient-to-r from-indigo-900 via-indigo-800 to-purple-900 rounded-[2rem] p-8 text-white relative overflow-hidden shadow-2xl shadow-indigo-900/20 flex flex-col md:flex-row items-center justify-between gap-8 flex-1 w-full h-full">
-            <div className="absolute top-0 right-1/4 p-8 opacity-10">
-              <Sparkles className="w-64 h-64" />
+          <div className="bg-gradient-to-br from-indigo-900 via-indigo-800 to-purple-900 rounded-[2rem] p-6 text-white relative overflow-hidden shadow-2xl shadow-indigo-900/20 flex flex-col gap-6 flex-1 w-full h-full">
+            <div className="absolute top-0 right-0 p-4 opacity-10">
+              <Sparkles className="w-48 h-48" />
             </div>
             
-            <div className="relative z-10 flex-1">
+            <div className="relative z-10">
               <div className="flex items-center gap-2 mb-3">
-                <Sparkles className="w-5 h-5 text-indigo-300" />
-                <span className="text-sm font-bold tracking-widest text-indigo-300 uppercase">AI Copilot</span>
+                <Sparkles className="w-4 h-4 text-indigo-300" />
+                <span className="text-xs font-bold tracking-widest text-indigo-300 uppercase">AI Copilot</span>
               </div>
-              <h2 className="text-2xl md:text-3xl font-bold mb-3">2 steps to "Internship Ready"</h2>
-              <p className="text-indigo-200 max-w-lg mb-6">Our AI analyzed your profile. Complete these high-impact tasks to boost your visibility to employers.</p>
+              <h2 className="text-xl font-bold mb-2">Ready to Boost Profile?</h2>
+              <p className="text-indigo-200 text-sm mb-4">Complete these high-impact tasks to boost your visibility.</p>
               
-              <div className="flex flex-col sm:flex-row gap-3">
-                <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl px-5 py-3 flex items-center gap-4 hover:bg-white/20 transition-colors cursor-pointer group">
-                  <FileText className="w-5 h-5 text-indigo-200 group-hover:text-white transition-colors" />
+              <div className="flex flex-col gap-2">
+                <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl px-4 py-3 flex items-center gap-3 hover:bg-white/20 transition-colors cursor-pointer group">
+                  <FileText className="w-4 h-4 text-indigo-200 group-hover:text-white transition-colors" />
                   <div>
-                    <h4 className="font-bold text-sm">Generate AI Resume</h4>
-                    <p className="text-[10px] text-indigo-200">Takes 2 minutes</p>
+                    <h4 className="font-bold text-xs">Generate AI Resume</h4>
                   </div>
                 </div>
                 
-                <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl px-5 py-3 flex items-center gap-4 hover:bg-white/20 transition-colors cursor-pointer group">
-                  <Briefcase className="w-5 h-5 text-indigo-200 group-hover:text-white transition-colors" />
+                <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl px-4 py-3 flex items-center gap-3 hover:bg-white/20 transition-colors cursor-pointer group">
+                  <Briefcase className="w-4 h-4 text-indigo-200 group-hover:text-white transition-colors" />
                   <div>
-                    <h4 className="font-bold text-sm">Apply to F1Soft</h4>
-                    <p className="text-[10px] text-indigo-200">High match based on skills</p>
+                    <h4 className="font-bold text-xs">Apply to F1Soft</h4>
                   </div>
                 </div>
               </div>
             </div>
 
-            <div className="relative z-10 w-full md:w-auto shrink-0 bg-white/5 backdrop-blur-md border border-white/10 rounded-3xl p-6">
+            <div className="relative z-10 w-full mt-auto bg-white/5 backdrop-blur-md border border-white/10 rounded-2xl p-4">
               <h3 className="font-bold mb-4 flex items-center gap-2 text-indigo-100 text-sm uppercase tracking-wider">
                 <Rocket className="w-4 h-4 text-indigo-300" /> Quick Launch
               </h3>
