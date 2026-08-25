@@ -3,12 +3,14 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { api } from "@/lib/api";
+import { useAuthStore } from "@/store/auth.store";
 import { motion, AnimatePresence } from "framer-motion";
 import { Sparkles, Users, ArrowRight, Loader2, CheckCircle2, ChevronLeft } from "lucide-react";
 import Link from "next/link";
 
 export default function ProposeCommunity() {
   const router = useRouter();
+  const { user } = useAuthStore();
   const [step, setStep] = useState(1);
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
@@ -24,7 +26,8 @@ export default function ProposeCommunity() {
     try {
       setLoading(true);
       setError(null);
-      await api.post("/communities/propose", formData);
+      const endpoint = user?.role === 'org' ? '/communities/create' : '/communities/propose';
+      await api.post(endpoint, formData);
       setSuccess(true);
     } catch (err: any) {
       setError(err.response?.data?.error?.message || "Failed to propose community");
@@ -44,9 +47,13 @@ export default function ProposeCommunity() {
           <div className="w-20 h-20 bg-green-50 rounded-full flex items-center justify-center mx-auto mb-6">
             <CheckCircle2 className="w-10 h-10 text-green-500" />
           </div>
-          <h2 className="text-2xl font-bold text-gray-900 mb-2">Proposal Submitted!</h2>
+          <h2 className="text-2xl font-bold text-gray-900 mb-2">
+            {user?.role === 'org' ? 'Community Created!' : 'Proposal Submitted!'}
+          </h2>
           <p className="text-gray-500 mb-8">
-            Your community proposal has been sent to the Sangam moderation team. We'll review it shortly. Once approved, you will officially become the Community Leader!
+            {user?.role === 'org' 
+              ? "Your official community has been created and is now live on Sangam."
+              : "Your community proposal has been sent to the Sangam moderation team. We'll review it shortly. Once approved, you will officially become the Community Leader!"}
           </p>
           <Link 
             href="/communities"
@@ -71,9 +78,13 @@ export default function ProposeCommunity() {
             <div className="w-14 h-14 bg-indigo-50 rounded-2xl flex items-center justify-center text-indigo-600 mb-6 border border-indigo-100">
               <Sparkles className="w-7 h-7" />
             </div>
-            <h1 className="text-3xl font-bold text-gray-900 mb-2">Lead a Community</h1>
+            <h1 className="text-3xl font-bold text-gray-900 mb-2">
+              {user?.role === 'org' ? 'Create Official Community' : 'Lead a Community'}
+            </h1>
             <p className="text-gray-500">
-              Propose a new group to the platform. Build a space for your peers, host events, and grow your network.
+              {user?.role === 'org' 
+                ? "Create a dedicated space for your organization, host events, and build your community network."
+                : "Propose a new group to the platform. Build a space for your peers, host events, and grow your network."}
             </p>
           </div>
 
@@ -172,7 +183,7 @@ export default function ProposeCommunity() {
                       disabled={loading || formData.description.length < 10}
                       className="flex-1 py-3.5 bg-indigo-600 text-white font-bold rounded-xl flex items-center justify-center gap-2 disabled:opacity-50 hover:bg-indigo-700 transition-colors shadow-lg shadow-indigo-600/20"
                     >
-                      {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : "Submit for Review"}
+                      {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : (user?.role === 'org' ? "Create Community" : "Submit for Review")}
                     </button>
                   </div>
                 </motion.div>

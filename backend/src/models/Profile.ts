@@ -13,13 +13,31 @@ export interface IEducation {
   endYear?: number;
 }
 
+export interface IExperience {
+  title: string;
+  company: string;
+  startDate?: string;
+  endDate?: string;
+  description?: string;
+}
+
+export interface ICertification {
+  name: string;
+  issuer: string;
+  issueDate?: string;
+  credentialId?: string;
+}
+
 export interface IProfile extends Document {
   userId: mongoose.Types.ObjectId;
   name?: string;
   handle: string;
+  phone?: string;
   avatarUrl: string;
   about: string;
+  experience: IExperience[];
   education: IEducation[];
+  certifications: ICertification[];
   skills: ISkill[];
   interests: string[];
   lookingFor: string[];
@@ -57,8 +75,18 @@ const ProfileSchema: Schema = new Schema(
     userId: { type: Schema.Types.ObjectId, ref: 'User', required: true },
     name: { type: String },
     handle: { type: String, required: true, unique: true },
+    phone: { type: String },
     avatarUrl: { type: String, default: '' },
     about: { type: String, default: '' },
+    experience: [
+      {
+        title: { type: String, required: true },
+        company: { type: String, required: true },
+        startDate: { type: String },
+        endDate: { type: String },
+        description: { type: String }
+      }
+    ],
     education: [
       {
         institution: { type: String, required: true },
@@ -66,6 +94,14 @@ const ProfileSchema: Schema = new Schema(
         fieldOfStudy: { type: String },
         startYear: { type: Number },
         endYear: { type: Number },
+      }
+    ],
+    certifications: [
+      {
+        name: { type: String, required: true },
+        issuer: { type: String, required: true },
+        issueDate: { type: String },
+        credentialId: { type: String }
       }
     ],
     skills: [

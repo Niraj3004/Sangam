@@ -2,8 +2,9 @@
 
 import { useEffect, useState } from "react";
 import { useAuthStore } from "@/store/auth.store";
-import { useRouter, usePathname } from "next/navigation";
+import { useRouter, usePathname, useSearchParams } from "next/navigation";
 import Link from "next/link";
+import { api } from "@/lib/api";
 import { 
   Compass, 
   Briefcase, 
@@ -17,17 +18,31 @@ import {
   Bell,
   Sparkles,
   FileText,
-  Rocket
+  Rocket,
+  Building,
+  GraduationCap,
+  Globe,
+  FolderKanban,
+  UserSearch,
+  Network
 } from "lucide-react";
 
 export default function AppLayout({ children }: { children: React.ReactNode }) {
   const { isAuthenticated, user, logout } = useAuthStore();
   const router = useRouter();
   const pathname = usePathname();
+  const searchParams = useSearchParams();
   const [mounted, setMounted] = useState(false);
+  const [searchQuery, setSearchQuery] = useState(searchParams.get("q") || "");
+  const [hasUnread, setHasUnread] = useState(false);
 
   useEffect(() => {
     setMounted(true);
+    // Basic unread check
+    api.get("/notifications").then(res => {
+      const unread = res.data.data.some((n: any) => !n.isRead);
+      setHasUnread(unread);
+    }).catch(() => {});
   }, []);
 
   useEffect(() => {
@@ -49,22 +64,28 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
       title: "Discover",
       items: [
         { name: "Dashboard", href: "/dashboard", icon: <LayoutDashboard className="w-5 h-5" /> },
+        { name: "Discover People", href: "/discover", icon: <UserSearch className="w-5 h-5" /> },
         { name: "Opportunity Feed", href: "/feed", icon: <Compass className="w-5 h-5" /> },
         { name: "Ideas Board", href: "/ideas", icon: <Lightbulb className="w-5 h-5" /> },
+        { name: "Organizations", href: "/organizations", icon: <Building className="w-5 h-5" /> },
       ]
     },
     {
       title: "Career",
       items: [
         { name: "AI Copilot", href: "/copilot", icon: <Sparkles className="w-5 h-5" /> },
-        { name: "Resume & Portfolio", href: "/resume", icon: <FileText className="w-5 h-5" /> },
+        { name: "Resume Builder", href: "/resume", icon: <FileText className="w-5 h-5" /> },
         { name: "Jobs & Internships", href: "/jobs", icon: <Briefcase className="w-5 h-5" /> },
+        { name: "Mentorship Hub", href: "/mentorship", icon: <GraduationCap className="w-5 h-5" /> },
+        { name: "My Portfolio", href: `/portfolio/${user?.handle}`, icon: <Globe className="w-5 h-5" /> },
       ]
     },
     {
       title: "Network",
       items: [
         { name: "Peer Matching", href: "/matches", icon: <Rocket className="w-5 h-5" /> },
+        { name: "My Network", href: "/network", icon: <Network className="w-5 h-5" /> },
+        { name: "Project Workspace", href: "/projects", icon: <FolderKanban className="w-5 h-5" /> },
         { name: "Communities", href: "/communities", icon: <Users className="w-5 h-5" /> },
         { name: "Messages", href: "/messages", icon: <MessageSquare className="w-5 h-5" /> },
       ]
@@ -105,50 +126,64 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
           ))}
         </div>
 
-        <div className="p-4 border-t border-border">
-          <Link href={`/u/${user.handle || 'me'}`} className="flex items-center gap-3 p-2 rounded-lg hover:bg-slate-50 transition-colors mb-2">
-            <div className="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center text-primary font-bold overflow-hidden">
-              {user.profilePic ? (
-                <img src={user.profilePic} alt="Avatar" className="w-full h-full object-cover" />
-              ) : (
-                user.email.charAt(0).toUpperCase()
-              )}
-            </div>
-            <div className="flex-1 min-w-0">
-              <p className="text-sm font-medium text-foreground truncate">{user.handle || "Student"}</p>
-              <p className="text-xs text-muted truncate">{user.verifyTier === 'unverified' ? 'Unverified' : 'Verified'}</p>
-            </div>
-          </Link>
-          
-          <div className="flex gap-1 mt-2">
-            <Link href="/settings" className="flex-1 flex justify-center items-center p-2 rounded-lg text-muted hover:bg-slate-50 hover:text-foreground transition-colors">
-              <Settings className="w-5 h-5" />
-            </Link>
-            <button onClick={handleLogout} className="flex-1 flex justify-center items-center p-2 rounded-lg text-red-500 hover:bg-red-50 transition-colors">
-              <LogOut className="w-5 h-5" />
-            </button>
-          </div>
-        </div>
+
       </aside>
 
       {/* Main Content Area */}
       <main className="flex-1 ml-64 flex flex-col min-h-screen">
         {/* Topbar */}
         <header className="h-16 bg-white border-b border-border sticky top-0 z-10 flex items-center justify-between px-8">
-          <div className="flex items-center bg-secondary rounded-full px-4 py-2 w-96 border border-transparent focus-within:border-primary/30 focus-within:bg-white transition-all">
+          <form 
+            onSubmit={(e) => {
+              e.preventDefault();
+              if (searchQuery.trim()) router.push(`/search?q=${encodeURIComponent(searchQuery.trim())}`);
+            }}
+            className="flex items-center bg-slate-50 rounded-full px-4 py-2 w-96 border border-border focus-within:border-primary/40 focus-within:ring-2 focus-within:ring-primary/10 focus-within:bg-white transition-all shadow-sm"
+          >
             <Search className="w-4 h-4 text-muted mr-2" />
             <input 
               type="text" 
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Search people, projects, opportunities..." 
-              className="bg-transparent border-none outline-none text-sm w-full"
+              className="bg-transparent border-none outline-none text-sm w-full font-medium text-slate-900 placeholder:text-slate-400"
             />
-          </div>
+          </form>
           
-          <div className="flex items-center gap-4">
-            <button className="w-10 h-10 rounded-full bg-secondary flex items-center justify-center text-muted hover:text-foreground transition-colors relative">
+          <div className="flex items-center gap-6">
+            <Link href="/notifications" className="w-10 h-10 rounded-full bg-slate-50 border border-slate-100 flex items-center justify-center text-slate-500 hover:text-primary hover:bg-primary/5 transition-colors relative shadow-sm">
               <Bell className="w-5 h-5" />
-              <span className="absolute top-2 right-2 w-2 h-2 rounded-full bg-rose-500 border border-white" />
-            </button>
+              {hasUnread && (
+                <span className="absolute top-2 right-2 w-2 h-2 rounded-full bg-rose-500 border border-white" />
+              )}
+            </Link>
+
+            <div className="h-8 w-[1px] bg-border"></div>
+
+            <div className="flex items-center gap-4">
+              <Link href={`/u/${user.handle || 'me'}`} className="flex items-center gap-3 hover:opacity-80 transition-opacity">
+                <div className="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center text-primary font-bold overflow-hidden shadow-sm border border-primary/10">
+                  {user.profilePic ? (
+                    <img src={user.profilePic} alt="Avatar" className="w-full h-full object-cover" />
+                  ) : (
+                    user.email.charAt(0).toUpperCase()
+                  )}
+                </div>
+                <div className="hidden md:block">
+                  <p className="text-sm font-bold text-foreground leading-tight">{user.handle || "Student"}</p>
+                  <p className="text-[10px] font-semibold text-emerald-600 uppercase tracking-wider">{user.verifyTier === 'unverified' ? 'Unverified' : 'Verified Student'}</p>
+                </div>
+              </Link>
+              
+              <div className="flex items-center gap-1">
+                <Link href="/settings" className="w-9 h-9 rounded-full flex items-center justify-center text-slate-400 hover:text-slate-600 hover:bg-slate-50 transition-colors">
+                  <Settings className="w-4 h-4" />
+                </Link>
+                <button onClick={handleLogout} className="w-9 h-9 rounded-full flex items-center justify-center text-rose-400 hover:text-rose-600 hover:bg-rose-50 transition-colors" title="Logout">
+                  <LogOut className="w-4 h-4" />
+                </button>
+              </div>
+            </div>
           </div>
         </header>
 

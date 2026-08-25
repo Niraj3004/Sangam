@@ -194,6 +194,44 @@ export default async function PublicProfilePage({ params }: { params: Promise<{ 
                 )}
               </section>
 
+              <section>
+                <h3 className="text-xl font-bold text-foreground mb-6 flex items-center gap-2">
+                  <div className="w-8 h-8 rounded-lg bg-orange-50 text-orange-600 flex items-center justify-center">
+                    <Code className="w-5 h-5" />
+                  </div>
+                  Portfolio Projects
+                </h3>
+                {profile.githubRepositories && profile.githubRepositories.length > 0 ? (
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {profile.githubRepositories.map((proj: any, i: number) => (
+                      <div key={i} className="p-5 border border-border bg-white rounded-2xl shadow-sm hover:shadow-md transition-shadow flex flex-col h-full">
+                        <div className="flex justify-between items-start mb-2">
+                          <h4 className="font-bold text-foreground text-lg">{proj.name}</h4>
+                          {proj.url && (
+                            <a href={proj.url} target="_blank" rel="noreferrer" className="text-muted hover:text-primary transition-colors">
+                              <Link2 className="w-4 h-4" />
+                            </a>
+                          )}
+                        </div>
+                        {proj.description && (
+                          <p className="text-muted text-sm mb-4 flex-1 line-clamp-3 leading-relaxed">
+                            {proj.description}
+                          </p>
+                        )}
+                        {proj.language && (
+                          <div className="inline-flex items-center mt-auto self-start">
+                            <span className="w-2 h-2 rounded-full bg-primary mr-2" />
+                            <span className="text-xs font-semibold text-muted">{proj.language}</span>
+                          </div>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <p className="text-muted italic">No portfolio projects added yet.</p>
+                )}
+              </section>
+
             </div>
 
             {/* Right Column (Looking For) */}

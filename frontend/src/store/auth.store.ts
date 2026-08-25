@@ -19,11 +19,13 @@ interface AuthState {
   accessToken: string | null;
   refreshToken: string | null;
   isAuthenticated: boolean;
+  isInitialized: boolean;
   
   // Actions
   setAuth: (user: User, accessToken: string, refreshToken: string, orgType?: string, orgId?: string) => void;
   logout: () => void;
   updateUser: (data: Partial<User>) => void;
+  setInitialized: (status: boolean) => void;
 }
 
 export const useAuthStore = create<AuthState>()(
@@ -33,6 +35,7 @@ export const useAuthStore = create<AuthState>()(
       accessToken: null,
       refreshToken: null,
       isAuthenticated: false,
+      isInitialized: false,
       orgType: null as string | null,
       orgId: null as string | null,
 
@@ -48,6 +51,8 @@ export const useAuthStore = create<AuthState>()(
       updateUser: (data) => set((state) => ({
         user: state.user ? { ...state.user, ...data } : null
       })),
+
+      setInitialized: (status) => set({ isInitialized: status }),
 
       logout: async () => {
         const state = useAuthStore.getState();
@@ -71,6 +76,11 @@ export const useAuthStore = create<AuthState>()(
       // We store tokens in localStorage for now (since it's an MVP client), 
       // but in production we'd want HttpOnly cookies handled by Next.js SSR.
       storage: createJSONStorage(() => localStorage),
+      onRehydrateStorage: () => (state) => {
+        if (state) {
+          state.setInitialized(true);
+        }
+      }
     }
   )
 );

@@ -15,10 +15,16 @@ router.post('/generate', validate(resumeValidation.generateResumeSchema), asyncE
 // Get all saved resumes
 router.get('/', asyncErrorHandler(resumeController.getResumes));
 
+// Get specific resume
+router.get('/:id', asyncErrorHandler(resumeController.getResumeById));
+
 // Update a resume draft
 router.patch('/:id', validate(resumeValidation.updateResumeSchema), asyncErrorHandler(resumeController.updateResume));
 
 // Export resume
 router.post('/:id/export', asyncErrorHandler(resumeController.exportResume));
+
+// Delete resume
+router.delete('/:id', asyncErrorHandler(resumeController.deleteResume));
 
 export default router;

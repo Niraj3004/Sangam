@@ -5,6 +5,7 @@ export const generateResumeSchema = z.object({
     targetJobId: z.string().regex(/^[0-9a-fA-F]{24}$/, 'Invalid job ID format').optional(),
     targetRole: z.string().optional(),
     title: z.string().optional(),
+    additionalContext: z.string().optional(),
   }),
 });
 

@@ -22,7 +22,8 @@ export default function MatchesPage() {
     setIsLoading(true);
     try {
       const endpoint = activeTab === "people" ? '/match/people' : '/match/projects';
-      const { data } = await api.get(endpoint);
+      // Backend expects POST for algorithmic matches to pass optional filters
+      const { data } = await api.post(endpoint, {});
       setMatches((Array.isArray(data.data) ? data.data : (Object.values(data.data || {}).find(Array.isArray) || [])));
     } catch (err: any) {
       console.error(err);

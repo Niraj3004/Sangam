@@ -3,13 +3,18 @@ import * as resumeService from './resume.service';
 import { sendSuccess } from '../../utils/response';
 
 export const generateResume = async (req: Request, res: Response) => {
-  const resume = await resumeService.generateResume(req.user!.userId, req.body.targetJobId, req.body.targetRole, req.body.title);
+  const resume = await resumeService.generateResume(req.user!.userId, req.body.targetJobId, req.body.targetRole, req.body.title, req.body.additionalContext);
   sendSuccess(res, resume, 201);
 };
 
 export const getResumes = async (req: Request, res: Response) => {
   const resumes = await resumeService.getResumes(req.user!.userId);
   sendSuccess(res, resumes, 200);
+};
+
+export const getResumeById = async (req: Request, res: Response) => {
+  const resume = await resumeService.getResumeById(req.user!.userId, req.params.id as string);
+  sendSuccess(res, resume, 200);
 };
 
 export const updateResume = async (req: Request, res: Response) => {
@@ -19,5 +24,10 @@ export const updateResume = async (req: Request, res: Response) => {
 
 export const exportResume = async (req: Request, res: Response) => {
   const result = await resumeService.exportResume(req.user!.userId, req.params.id as string);
+  sendSuccess(res, result, 200);
+};
+
+export const deleteResume = async (req: Request, res: Response) => {
+  const result = await resumeService.deleteResume(req.user!.userId, req.params.id as string);
   sendSuccess(res, result, 200);
 };
