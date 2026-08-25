@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useAuthStore } from "@/store/auth.store";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { api } from "@/lib/api";
 import { 
   Sparkles, 
@@ -25,6 +25,39 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 
+const SPONSORED_ADS = [
+  {
+    id: 1,
+    title: "Google STEP Internship 2026",
+    description: "Applications are now open for 1st and 2nd year students. Get 12 weeks of hands-on technical training and mentorship.",
+    logo: "https://upload.wikimedia.org/wikipedia/commons/2/2f/Google_2015_logo.svg",
+    link: "/jobs?q=google",
+    bgColor: "from-slate-900 via-slate-800 to-slate-900",
+    accentColor: "bg-emerald-500/10",
+    badgeColor: "bg-emerald-500/20 text-emerald-400 border-emerald-500/30"
+  },
+  {
+    id: 2,
+    title: "Master of Data Science at TU",
+    description: "Accelerate your career with Tribhuvan University's new industry-aligned Data Science curriculum. Admissions open for Fall.",
+    logo: "https://upload.wikimedia.org/wikipedia/en/thumb/3/30/Tribhuvan_University_logo.svg/1200px-Tribhuvan_University_logo.svg.png",
+    link: "/communities",
+    bgColor: "from-blue-900 via-indigo-900 to-blue-900",
+    accentColor: "bg-blue-500/10",
+    badgeColor: "bg-blue-500/20 text-blue-400 border-blue-500/30"
+  },
+  {
+    id: 3,
+    title: "Microsoft Imagine Cup",
+    description: "Build with AI, win $100k, and get mentorship from industry leaders. Register your student team today!",
+    logo: "https://upload.wikimedia.org/wikipedia/commons/4/44/Microsoft_logo.svg",
+    link: "/hackathons",
+    bgColor: "from-slate-800 via-slate-900 to-black",
+    accentColor: "bg-purple-500/10",
+    badgeColor: "bg-purple-500/20 text-purple-400 border-purple-500/30"
+  }
+];
+
 export default function StudentDashboard() {
   const { user } = useAuthStore();
   const [mounted, setMounted] = useState(false);
@@ -38,6 +71,14 @@ export default function StudentDashboard() {
   const [orgs, setOrgs] = useState<any[]>([]);
   const [hackathons, setHackathons] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [currentAdIndex, setCurrentAdIndex] = useState(0);
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setCurrentAdIndex((prev) => (prev + 1) % SPONSORED_ADS.length);
+    }, 5000);
+    return () => clearInterval(timer);
+  }, []);
 
   useEffect(() => {
     setMounted(true);
@@ -179,34 +220,59 @@ export default function StudentDashboard() {
           
 
 
-          {/* Partner Spotlight / Featured */}
+          {/* Partner Spotlight / Featured - Dynamic Carousel */}
           <motion.section
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.15 }}
             className="mb-8"
           >
-            <div className="bg-gradient-to-r from-slate-900 via-slate-800 to-slate-900 rounded-3xl p-1 shadow-md relative overflow-hidden group">
-              <div className="absolute inset-0 opacity-10" style={{ backgroundImage: "url('data:image/svg+xml,%3Csvg width=\\'60\\' height=\\'60\\' viewBox=\\'0 0 60 60\\' xmlns=\\'http://www.w3.org/2000/svg\\'%3E%3Cg fill=\\'none\\' fill-rule=\\'evenodd\\'%3E%3Cg fill=\\'%23ffffff\\' fill-opacity=\\'1\\'%3E%3Cpath d=\\'M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z\\'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E')" }}></div>
-              <div className="absolute top-0 right-0 w-64 h-64 bg-emerald-500/10 rounded-full blur-3xl -mr-20 -mt-20"></div>
-              
-              <div className="bg-slate-900/50 backdrop-blur-md rounded-[26px] p-6 relative z-10 flex flex-col md:flex-row md:items-center gap-6 border border-slate-700/50">
-                <div className="w-16 h-16 rounded-2xl bg-white flex items-center justify-center shrink-0 shadow-md p-3">
-                  <img src="https://upload.wikimedia.org/wikipedia/commons/2/2f/Google_2015_logo.svg" alt="Google" className="w-full h-full object-contain" />
-                </div>
-                <div className="flex-1">
-                  <div className="flex items-center gap-2 mb-2">
-                    <span className="px-2.5 py-0.5 bg-emerald-500/20 text-emerald-400 text-[10px] font-black uppercase tracking-widest rounded-md border border-emerald-500/30">Sponsored Opportunity</span>
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={currentAdIndex}
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: 20 }}
+                transition={{ duration: 0.5 }}
+                className={`bg-gradient-to-r ${SPONSORED_ADS[currentAdIndex].bgColor} rounded-3xl p-1 shadow-md relative overflow-hidden group`}
+              >
+                <div className="absolute inset-0 opacity-10" style={{ backgroundImage: "url('data:image/svg+xml,%3Csvg width=\\'60\\' height=\\'60\\' viewBox=\\'0 0 60 60\\' xmlns=\\'http://www.w3.org/2000/svg\\'%3E%3Cg fill=\\'none\\' fill-rule=\\'evenodd\\'%3E%3Cg fill=\\'%23ffffff\\' fill-opacity=\\'1\\'%3E%3Cpath d=\\'M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z\\'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E')" }}></div>
+                <div className={`absolute top-0 right-0 w-64 h-64 ${SPONSORED_ADS[currentAdIndex].accentColor} rounded-full blur-3xl -mr-20 -mt-20 transition-colors duration-1000`}></div>
+                
+                <div className="bg-slate-900/50 backdrop-blur-md rounded-[26px] p-6 relative z-10 flex flex-col md:flex-row md:items-center gap-6 border border-slate-700/50">
+                  <div className="w-16 h-16 rounded-2xl bg-white flex items-center justify-center shrink-0 shadow-md p-3">
+                    <img src={SPONSORED_ADS[currentAdIndex].logo} alt="Sponsor" className="w-full h-full object-contain" />
                   </div>
-                  <h3 className="text-xl font-bold text-white mb-1">Google STEP Internship 2026</h3>
-                  <p className="text-sm text-slate-300 line-clamp-2">Applications are now open for 1st and 2nd year students. Get 12 weeks of hands-on technical training and mentorship.</p>
+                  <div className="flex-1">
+                    <div className="flex items-center gap-2 mb-2">
+                      <span className={`px-2.5 py-0.5 text-[10px] font-black uppercase tracking-widest rounded-md border ${SPONSORED_ADS[currentAdIndex].badgeColor} transition-colors duration-1000`}>
+                        Sponsored Opportunity
+                      </span>
+                    </div>
+                    <h3 className="text-xl font-bold text-white mb-1">{SPONSORED_ADS[currentAdIndex].title}</h3>
+                    <p className="text-sm text-slate-300 line-clamp-2">{SPONSORED_ADS[currentAdIndex].description}</p>
+                  </div>
+                  <div className="shrink-0 mt-2 md:mt-0">
+                    <Link href={SPONSORED_ADS[currentAdIndex].link} className="inline-flex items-center justify-center gap-2 px-6 py-3 bg-white text-slate-900 rounded-xl font-bold text-sm hover:bg-slate-100 transition-colors shadow-sm group-hover:scale-105 transform duration-300">
+                      Learn More <ArrowRight className="w-4 h-4" />
+                    </Link>
+                  </div>
                 </div>
-                <div className="shrink-0 mt-2 md:mt-0">
-                  <Link href="/jobs" className="inline-flex items-center justify-center gap-2 px-6 py-3 bg-white text-slate-900 rounded-xl font-bold text-sm hover:bg-slate-100 transition-colors shadow-sm group-hover:scale-105 transform duration-300">
-                    Apply Now <ArrowRight className="w-4 h-4" />
-                  </Link>
-                </div>
-              </div>
+              </motion.div>
+            </AnimatePresence>
+            
+            {/* Carousel Indicators */}
+            <div className="flex justify-center gap-2 mt-4">
+              {SPONSORED_ADS.map((_, idx) => (
+                <button
+                  key={idx}
+                  onClick={() => setCurrentAdIndex(idx)}
+                  className={`w-2 h-2 rounded-full transition-all ${
+                    idx === currentAdIndex ? "bg-slate-800 w-6" : "bg-slate-300 hover:bg-slate-400"
+                  }`}
+                  aria-label={`Go to slide ${idx + 1}`}
+                />
+              ))}
             </div>
           </motion.section>
 
