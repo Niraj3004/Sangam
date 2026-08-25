@@ -11,7 +11,7 @@ export interface IIdea extends Document {
   problem: string;
   solution: string;
   bannerUrl: string;
-  stage: 'concept' | 'research' | 'prototype' | 'building';
+  stage: 'concept' | 'research' | 'prototype' | 'building' | 'prototyping' | 'mvp' | 'growth';
   skillsRequired: string[];
   lookingFor: string[];
   visibility: 'public' | 'private';
@@ -30,7 +30,7 @@ const IdeaSchema: Schema = new Schema(
     problem: { type: String, required: true },
     solution: { type: String, required: true },
     bannerUrl: { type: String, default: '' },
-    stage: { type: String, enum: ['concept', 'research', 'prototype', 'building'], default: 'concept' },
+    stage: { type: String, enum: ['concept', 'research', 'prototype', 'building', 'prototyping', 'mvp', 'growth'], default: 'concept' },
     skillsRequired: [{ type: String }],
     lookingFor: [{ type: String }],
     visibility: { type: String, enum: ['public', 'private'], default: 'public' },

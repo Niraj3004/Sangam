@@ -53,9 +53,22 @@ export default function FeedPage() {
         await api.post(`/opportunities/${id}/unsave`);
       } else {
         await api.post(`/opportunities/${id}/save`);
+        handleInteraction(id, 'save');
       }
     } catch (error: any) {
       console.error(error);
+    }
+  };
+
+  const handleInteraction = async (opportunityId: string, actionType: 'view' | 'click' | 'save') => {
+    try {
+      await api.post('/feed/interactions', {
+        itemId: opportunityId,
+        itemType: 'Opportunity',
+        actionType
+      });
+    } catch (error) {
+      // Background request, fail silently
     }
   };
 
@@ -136,7 +149,11 @@ export default function FeedPage() {
                             </span>
                           )}
                         </div>
-                        <Link href={`/o/${opp._id}`} className="hover:text-primary transition-colors">
+                        <Link 
+                          href={`/o/${opp._id}`} 
+                          onClick={() => handleInteraction(opp._id, 'click')}
+                          className="hover:text-primary transition-colors"
+                        >
                           <h2 className="text-xl font-bold text-foreground leading-tight">{opp.title}</h2>
                         </Link>
                         <p className="text-muted flex items-center gap-1.5 mt-2 text-sm">

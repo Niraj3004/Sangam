@@ -3,14 +3,14 @@
 import { useState, useEffect } from "react";
 import { api } from "@/lib/api";
 import { VerifiedBadge } from "@/components/ui/VerifiedBadge";
-import { Sparkles, Users, FolderKanban, Loader2, UserPlus, ArrowRight } from "lucide-react";
+import { Sparkles, Users, FolderKanban, Loader2, UserPlus, ArrowRight, Lightbulb } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
 import { useAuthStore } from "@/store/auth.store";
 
 export default function MatchesPage() {
   const { user } = useAuthStore();
-  const [activeTab, setActiveTab] = useState<"people" | "projects">("people");
+  const [activeTab, setActiveTab] = useState<"people" | "projects" | "ideas">("people");
   const [matches, setMatches] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -21,9 +21,12 @@ export default function MatchesPage() {
   const fetchMatches = async () => {
     setIsLoading(true);
     try {
-      const endpoint = activeTab === "people" ? '/match/people' : '/match/projects';
-      // Backend expects POST for algorithmic matches to pass optional filters
-      const { data } = await api.post(endpoint, {});
+      let endpoint = '/match/people';
+      if (activeTab === "projects") endpoint = '/match/projects';
+      else if (activeTab === "ideas") endpoint = '/match/ideas';
+      
+      const res = activeTab === "ideas" ? await api.get(endpoint) : await api.post(endpoint, {});
+      const data = res.data;
       setMatches((Array.isArray(data.data) ? data.data : (Object.values(data.data || {}).find(Array.isArray) || [])));
     } catch (err: any) {
       console.error(err);
@@ -57,22 +60,30 @@ export default function MatchesPage() {
         </p>
       </div>
 
-      <div className="bg-white rounded-2xl p-2 border border-border shadow-sm flex items-center mb-8 max-w-md mx-auto">
+      <div className="bg-white rounded-2xl p-2 border border-border shadow-sm flex flex-col sm:flex-row items-center mb-8 max-w-2xl mx-auto gap-2">
         <button
           onClick={() => setActiveTab("people")}
-          className={`flex-1 flex items-center justify-center gap-2 py-3 px-4 rounded-xl font-medium transition-all ${
+          className={`flex-1 w-full flex items-center justify-center gap-2 py-3 px-4 rounded-xl font-medium transition-all ${
             activeTab === "people" ? "bg-primary text-white shadow-md" : "text-muted hover:bg-slate-50"
           }`}
         >
-          <Users className="w-4 h-4" /> People for you
+          <Users className="w-4 h-4" /> People
         </button>
         <button
           onClick={() => setActiveTab("projects")}
-          className={`flex-1 flex items-center justify-center gap-2 py-3 px-4 rounded-xl font-medium transition-all ${
+          className={`flex-1 w-full flex items-center justify-center gap-2 py-3 px-4 rounded-xl font-medium transition-all ${
             activeTab === "projects" ? "bg-primary text-white shadow-md" : "text-muted hover:bg-slate-50"
           }`}
         >
-          <FolderKanban className="w-4 h-4" /> Projects for you
+          <FolderKanban className="w-4 h-4" /> Projects
+        </button>
+        <button
+          onClick={() => setActiveTab("ideas")}
+          className={`flex-1 w-full flex items-center justify-center gap-2 py-3 px-4 rounded-xl font-medium transition-all ${
+            activeTab === "ideas" ? "bg-emerald-600 text-white shadow-md" : "text-muted hover:bg-slate-50"
+          }`}
+        >
+          <Lightbulb className="w-4 h-4" /> Startup Ideas
         </button>
       </div>
 
@@ -206,6 +217,59 @@ export default function MatchesPage() {
                         >
                           View Open Roles <ArrowRight className="w-4 h-4" />
                         </Link>
+                      </div>
+                    </div>
+                  </motion.div>
+                );
+              } else if (activeTab === "ideas") {
+                const idea = match.idea || match; // the object structure might vary
+                return (
+                  <motion.div
+                    key={idea._id}
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.3, delay: index * 0.05 }}
+                    className="bg-white rounded-2xl border border-border overflow-hidden shadow-sm hover:shadow-md transition-shadow p-6 relative"
+                  >
+                    {match.score && (
+                      <div className="absolute top-0 right-0 bg-emerald-50 text-emerald-700 text-xs font-bold px-4 py-1.5 rounded-bl-2xl rounded-tr-2xl border-b border-l border-emerald-100 flex items-center gap-1.5">
+                        <Sparkles className="w-3 h-3" />
+                        {match.score}% Match
+                      </div>
+                    )}
+                    
+                    <div className="flex items-start gap-4">
+                      <div className="w-12 h-12 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center border border-amber-100 shrink-0">
+                        <Lightbulb className="w-6 h-6" />
+                      </div>
+                      <div className="flex-1">
+                        <h3 className="text-xl font-bold text-gray-900 mb-2 pr-24">{idea.title}</h3>
+                        <p className="text-gray-600 text-sm mb-4 leading-relaxed line-clamp-3">{idea.description}</p>
+                        
+                        <div className="flex flex-wrap gap-2 mb-4">
+                          {idea.tags?.map((tag: string) => (
+                            <span key={tag} className="px-2.5 py-1 bg-slate-50 border border-slate-200 text-slate-600 text-xs font-semibold rounded-lg">
+                              {tag}
+                            </span>
+                          ))}
+                        </div>
+
+                        {match.explanation && (
+                          <div className="bg-indigo-50/50 p-4 rounded-xl border border-indigo-100 mb-4">
+                            <h4 className="text-xs font-bold text-indigo-900 uppercase tracking-wider mb-2 flex items-center gap-1.5">
+                              <Sparkles className="w-3 h-3" /> Why this idea
+                            </h4>
+                            <p className="text-sm text-indigo-950 font-medium leading-relaxed">
+                              {match.explanation}
+                            </p>
+                          </div>
+                        )}
+                        
+                        <div className="flex justify-end pt-4 border-t border-slate-100">
+                          <Link href={`/ideas`} className="flex items-center gap-2 text-primary font-bold text-sm hover:text-primary-hover transition-colors">
+                            Explore Ideas <ArrowRight className="w-4 h-4" />
+                          </Link>
+                        </div>
                       </div>
                     </div>
                   </motion.div>

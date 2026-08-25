@@ -19,8 +19,8 @@ import {
   Loader2,
   Lightbulb,
   Terminal,
-  Activity,
-  Building
+  Building,
+  ArrowRight
 } from "lucide-react";
 import Link from "next/link";
 
@@ -156,6 +156,37 @@ export default function StudentDashboard() {
                     </div>
                   </div>
                   <ChevronRight className="w-5 h-5 text-indigo-300 group-hover:translate-x-1 transition-transform" />
+                </div>
+              </div>
+            </div>
+          </motion.section>
+
+          {/* Partner Spotlight / Featured */}
+          <motion.section
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.15 }}
+            className="mb-8"
+          >
+            <div className="bg-gradient-to-r from-slate-900 via-slate-800 to-slate-900 rounded-3xl p-1 shadow-md relative overflow-hidden group">
+              <div className="absolute inset-0 opacity-10" style={{ backgroundImage: "url('data:image/svg+xml,%3Csvg width=\\'60\\' height=\\'60\\' viewBox=\\'0 0 60 60\\' xmlns=\\'http://www.w3.org/2000/svg\\'%3E%3Cg fill=\\'none\\' fill-rule=\\'evenodd\\'%3E%3Cg fill=\\'%23ffffff\\' fill-opacity=\\'1\\'%3E%3Cpath d=\\'M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z\\'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E')" }}></div>
+              <div className="absolute top-0 right-0 w-64 h-64 bg-emerald-500/10 rounded-full blur-3xl -mr-20 -mt-20"></div>
+              
+              <div className="bg-slate-900/50 backdrop-blur-md rounded-[26px] p-6 relative z-10 flex flex-col md:flex-row md:items-center gap-6 border border-slate-700/50">
+                <div className="w-16 h-16 rounded-2xl bg-white flex items-center justify-center shrink-0 shadow-md p-3">
+                  <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/2/2f/Google_2015_logo.svg/2560px-Google_2015_logo.svg.png" alt="Google" className="w-full h-full object-contain" />
+                </div>
+                <div className="flex-1">
+                  <div className="flex items-center gap-2 mb-2">
+                    <span className="px-2.5 py-0.5 bg-emerald-500/20 text-emerald-400 text-[10px] font-black uppercase tracking-widest rounded-md border border-emerald-500/30">Partner Spotlight</span>
+                  </div>
+                  <h3 className="text-xl font-bold text-white mb-1">Google STEP Internship 2026</h3>
+                  <p className="text-sm text-slate-300 line-clamp-2">Applications are now open for 1st and 2nd year students. Get 12 weeks of hands-on technical training and mentorship.</p>
+                </div>
+                <div className="shrink-0 mt-2 md:mt-0">
+                  <Link href="/jobs" className="inline-flex items-center justify-center gap-2 px-6 py-3 bg-white text-slate-900 rounded-xl font-bold text-sm hover:bg-slate-100 transition-colors shadow-sm group-hover:scale-105 transform duration-300">
+                    Apply Now <ArrowRight className="w-4 h-4" />
+                  </Link>
                 </div>
               </div>
             </div>

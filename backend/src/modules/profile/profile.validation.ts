@@ -41,7 +41,6 @@ export const patchProfileSchema = z.object({
       linkedin: z.string().optional(),
       portfolio: z.string().optional(),
     }).optional(),
-    achievements: z.array(z.string()).optional(),
     careerGoal: z.enum(['internship', 'job', 'startup', 'scholarship', 'higher_study', 'hackathon', 'freelance', 'networking']).optional(),
   }),
 });

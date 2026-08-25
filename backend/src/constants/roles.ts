@@ -7,7 +7,7 @@ export const ROLES = {
   ORG: 'org',
 } as const;
 
-export type Role = typeof ROLES[keyof typeof ROLES];
+export type Role = (typeof ROLES)[keyof typeof ROLES];
 
 export const VERIFY_TIERS = {
   EMAIL: 'email',
@@ -15,4 +15,4 @@ export const VERIFY_TIERS = {
   MANUAL: 'manual',
 } as const;
 
-export type VerifyTier = typeof VERIFY_TIERS[keyof typeof VERIFY_TIERS];
+export type VerifyTier = (typeof VERIFY_TIERS)[keyof typeof VERIFY_TIERS];

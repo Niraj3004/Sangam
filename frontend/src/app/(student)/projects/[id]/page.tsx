@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { api } from "@/lib/api";
 import { VerifiedBadge } from "@/components/ui/VerifiedBadge";
-import { Loader2, ArrowLeft, Users, Code, Globe, Briefcase, CheckCircle2, XCircle, UserPlus, X } from "lucide-react";
+import { Loader2, ArrowLeft, Users, Code, Globe, Briefcase, CheckCircle2, XCircle, UserPlus, X, Sparkles, Send } from "lucide-react";
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import { useAuthStore } from "@/store/auth.store";
@@ -22,16 +22,27 @@ export default function ProjectDetailPage() {
   const [selectedRole, setSelectedRole] = useState<any>(null);
   const [applyMessage, setApplyMessage] = useState("");
   const [isApplying, setIsApplying] = useState(false);
+  
+  // AI Candidates state
+  const [aiCandidates, setAiCandidates] = useState<any[]>([]);
+  const [isInviting, setIsInviting] = useState<string | null>(null);
 
   const fetchProject = async () => {
     try {
       const { data } = await api.get(`/projects/${params.id}`);
       setProject(data.data);
       
-      // If owner, fetch applications
+      // If owner, fetch applications and AI candidates
       if (user?._id === data.data.owner?._id) {
         const appsRes = await api.get(`/projects/${params.id}/applications`);
         setApplications(appsRes.data.data || []);
+        
+        try {
+          const candidatesRes = await api.get(`/match/teams/${params.id}/candidates`);
+          setAiCandidates(candidatesRes.data.data || []);
+        } catch (e) {
+          console.error("Failed to fetch AI candidates");
+        }
       }
     } catch (err: any) {
       console.error(err);
@@ -46,6 +57,18 @@ export default function ProjectDetailPage() {
       fetchProject();
     }
   }, [params.id, user]);
+
+  const handleInvite = async (candidateId: string) => {
+    setIsInviting(candidateId);
+    try {
+      await api.post(`/match/teams/${params.id}/invite`, { candidateId, message: "Hi! Sangam AI matched your profile with our open project role. We'd love to have you on the team." });
+      alert("Invitation sent successfully!");
+    } catch (err: any) {
+      alert(err.response?.data?.error?.message || "Failed to send invite.");
+    } finally {
+      setIsInviting(null);
+    }
+  };
 
   const handleApply = async () => {
     if (!selectedRole) return;
@@ -283,6 +306,50 @@ export default function ProjectDetailPage() {
                             <XCircle className="w-3 h-3" /> Decline
                           </button>
                         </div>
+                      </div>
+                    ))}
+                  </div>
+                </section>
+              )}
+
+              {/* AI Candidates Panel */}
+              {isOwner && aiCandidates.length > 0 && (
+                <section className="bg-emerald-50/50 p-6 rounded-2xl border border-emerald-100">
+                  <h3 className="text-lg font-bold text-emerald-900 mb-4 flex items-center gap-2">
+                    <Sparkles className="w-5 h-5 text-emerald-600" /> AI Candidates
+                  </h3>
+                  <div className="space-y-4">
+                    {aiCandidates.map(match => (
+                      <div key={match.user._id} className="bg-white p-4 rounded-xl border border-emerald-100 shadow-sm relative overflow-hidden">
+                        <div className="absolute top-0 right-0 bg-emerald-100 text-emerald-700 text-[10px] font-bold px-2 py-1 rounded-bl-xl">
+                          {match.score}% Match
+                        </div>
+                        <div className="flex items-center gap-3 mb-3 pt-2">
+                          <div className="w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center text-sm font-bold text-primary overflow-hidden shrink-0">
+                            {match.user.profilePic ? (
+                              <img src={match.user.profilePic} alt={match.user.handle} className="w-full h-full object-cover" />
+                            ) : (
+                              match.user.handle?.charAt(0).toUpperCase()
+                            )}
+                          </div>
+                          <div>
+                            <Link href={`/u/${match.user.handle}`} className="text-sm font-bold text-foreground hover:text-primary transition-colors flex items-center gap-1">
+                              {match.user.handle}
+                            </Link>
+                            <span className="text-[10px] text-emerald-600 font-semibold uppercase tracking-wider block">Recommended</span>
+                          </div>
+                        </div>
+                        <p className="text-xs text-foreground/80 mb-3 bg-slate-50 p-2 rounded-lg border border-border">
+                          {match.explanation}
+                        </p>
+                        <button 
+                          onClick={() => handleInvite(match.user._id)}
+                          disabled={isInviting === match.user._id}
+                          className="w-full bg-emerald-600 text-white text-xs font-bold py-2 rounded-lg hover:bg-emerald-700 transition-colors flex items-center justify-center gap-1.5 disabled:opacity-50"
+                        >
+                          {isInviting === match.user._id ? <Loader2 className="w-3 h-3 animate-spin" /> : <Send className="w-3 h-3" />}
+                          Send Invite
+                        </button>
                       </div>
                     ))}
                   </div>
