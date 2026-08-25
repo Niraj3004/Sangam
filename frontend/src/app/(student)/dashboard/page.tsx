@@ -152,12 +152,12 @@ export default function StudentDashboard() {
 
       <div className="grid grid-cols-1 xl:grid-cols-3 gap-8 mb-8">
         
-        {/* Partner Spotlight / Featured - Dynamic Carousel (Left Side) */}
+        {/* Partner Spotlight / Featured - Dynamic Carousel (Full Width Hero) */}
         <motion.section
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.15 }}
-          className="xl:col-span-2 flex flex-col relative group h-full"
+          className="xl:col-span-3 flex flex-col relative group h-full"
         >
           <AnimatePresence mode="wait">
             <motion.div
@@ -209,66 +209,6 @@ export default function StudentDashboard() {
           </div>
         </motion.section>
 
-        {/* Top Banner (Combined AI Copilot + Quick Launch) */}
-        <motion.section 
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.1 }}
-          className="xl:col-span-1 flex flex-col h-full"
-        >
-          <div className="bg-gradient-to-br from-indigo-900 via-indigo-800 to-purple-900 rounded-[2rem] p-6 text-white relative overflow-hidden shadow-2xl shadow-indigo-900/20 flex flex-col gap-6 flex-1 w-full h-full">
-            <div className="absolute top-0 right-0 p-4 opacity-10">
-              <Sparkles className="w-48 h-48" />
-            </div>
-            
-            <div className="relative z-10">
-              <div className="flex items-center gap-2 mb-3">
-                <Sparkles className="w-4 h-4 text-indigo-300" />
-                <span className="text-xs font-bold tracking-widest text-indigo-300 uppercase">AI Copilot</span>
-              </div>
-              <h2 className="text-xl font-bold mb-2">Ready to Boost Profile?</h2>
-              <p className="text-indigo-200 text-sm mb-4">Complete these high-impact tasks to boost your visibility.</p>
-              
-              <div className="flex flex-col gap-2">
-                <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl px-4 py-3 flex items-center gap-3 hover:bg-white/20 transition-colors cursor-pointer group">
-                  <FileText className="w-4 h-4 text-indigo-200 group-hover:text-white transition-colors" />
-                  <div>
-                    <h4 className="font-bold text-xs">Generate AI Resume</h4>
-                  </div>
-                </div>
-                
-                <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl px-4 py-3 flex items-center gap-3 hover:bg-white/20 transition-colors cursor-pointer group">
-                  <Briefcase className="w-4 h-4 text-indigo-200 group-hover:text-white transition-colors" />
-                  <div>
-                    <h4 className="font-bold text-xs">Apply to F1Soft</h4>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <div className="relative z-10 w-full mt-auto bg-white/5 backdrop-blur-md border border-white/10 rounded-2xl p-4">
-              <h3 className="font-bold mb-4 flex items-center gap-2 text-indigo-100 text-sm uppercase tracking-wider">
-                <Rocket className="w-4 h-4 text-indigo-300" /> Quick Launch
-              </h3>
-              <div className="flex flex-col gap-2">
-                <Link href="/copilot" className="flex items-center gap-3 bg-white/5 hover:bg-white/10 p-3 rounded-xl transition-colors border border-white/5 group">
-                  <div className="bg-white/10 p-2 rounded-lg text-white group-hover:scale-110 transition-transform"><Sparkles className="w-4 h-4" /></div>
-                  <div className="flex-1 pr-6">
-                    <p className="text-sm font-bold text-white group-hover:text-white transition-colors">AI Chat</p>
-                  </div>
-                  <ChevronRight className="w-4 h-4 text-white/50 group-hover:text-white group-hover:translate-x-1 transition-all" />
-                </Link>
-                <Link href="/matches" className="flex items-center gap-3 bg-white/5 hover:bg-white/10 p-3 rounded-xl transition-colors border border-white/5 group">
-                  <div className="bg-white/10 p-2 rounded-lg text-white group-hover:scale-110 transition-transform"><Users className="w-4 h-4" /></div>
-                  <div className="flex-1 pr-6">
-                    <p className="text-sm font-bold text-white group-hover:text-white transition-colors">Peer Match</p>
-                  </div>
-                  <ChevronRight className="w-4 h-4 text-white/50 group-hover:text-white group-hover:translate-x-1 transition-all" />
-                </Link>
-              </div>
-            </div>
-          </div>
-        </motion.section>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
