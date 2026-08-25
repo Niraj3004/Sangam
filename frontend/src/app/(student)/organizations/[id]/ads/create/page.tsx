@@ -19,8 +19,8 @@ export default function CreateAdCampaignPage() {
     callToActionUrl: "",
     type: "Sponsored", // Default type
     targetSkills: "",
-    totalBudget: 100,
-    costPerClick: 0.50,
+    totalBudget: 1000,
+    costPerClick: 10,
     paymentReceiptUrl: ""
   });
 
@@ -157,10 +157,10 @@ export default function CreateAdCampaignPage() {
               </h2>
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-foreground mb-1.5">Total Campaign Budget ($)</label>
+                  <label className="block text-sm font-medium text-foreground mb-1.5">Total Campaign Budget (NPR)</label>
                   <input 
                     type="number" 
-                    min="10"
+                    min="500"
                     required
                     value={formData.totalBudget}
                     onChange={e => setFormData({...formData, totalBudget: Number(e.target.value)})}
@@ -168,11 +168,11 @@ export default function CreateAdCampaignPage() {
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-foreground mb-1.5">Max CPC Bid ($)</label>
+                  <label className="block text-sm font-medium text-foreground mb-1.5">Max CPC Bid (NPR)</label>
                   <input 
                     type="number" 
-                    min="0.10"
-                    step="0.05"
+                    min="10"
+                    step="5"
                     required
                     value={formData.costPerClick}
                     onChange={e => setFormData({...formData, costPerClick: Number(e.target.value)})}
@@ -191,7 +191,7 @@ export default function CreateAdCampaignPage() {
               
               <div className="bg-white/10 rounded-xl p-4 mb-6 border border-white/20">
                 <p className="text-sm text-slate-300 mb-2">Total Amount Due:</p>
-                <p className="text-3xl font-black">${formData.totalBudget.toFixed(2)}</p>
+                <p className="text-3xl font-black">Rs. {formData.totalBudget.toLocaleString()}</p>
                 
                 <div className="mt-4 pt-4 border-t border-white/20">
                   <p className="text-sm font-semibold mb-2">Payment Instructions:</p>

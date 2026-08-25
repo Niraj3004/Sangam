@@ -68,15 +68,20 @@ export class AdController {
   static async updateCampaignStatus(req: Request, res: Response) {
     try {
       const { id } = req.params;
-      const { status } = req.body;
+      const { status, approvedBudget } = req.body;
 
       if (!['active', 'rejected'].includes(status)) {
         return res.status(400).json({ success: false, message: 'Invalid status' });
       }
 
+      const updateData: any = { status };
+      if (status === 'active' && approvedBudget) {
+        updateData.totalBudget = approvedBudget;
+      }
+
       const campaign = await AdCampaign.findByIdAndUpdate(
         id,
-        { status },
+        updateData,
         { new: true }
       );
 

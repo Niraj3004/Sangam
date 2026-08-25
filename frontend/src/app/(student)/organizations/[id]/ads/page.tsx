@@ -68,8 +68,8 @@ export default function OrganizationAdsDashboard() {
             <DollarSign className="w-6 h-6" />
           </div>
           <div>
-            <p className="text-sm font-medium text-muted">Total Spent</p>
-            <p className="text-2xl font-bold text-foreground">${totalSpent.toFixed(2)}</p>
+            <p className="text-sm font-medium text-muted">Total Spent (NPR)</p>
+            <p className="text-2xl font-bold text-foreground">Rs. {totalSpent.toLocaleString()}</p>
           </div>
         </div>
         
@@ -143,7 +143,7 @@ export default function OrganizationAdsDashboard() {
                           <img src={campaign.imageUrl} alt="" className="w-10 h-10 rounded-lg object-cover bg-slate-100" />
                           <div>
                             <p className="font-semibold text-foreground line-clamp-1">{campaign.title}</p>
-                            <p className="text-xs text-muted">Max CPC: ${campaign.costPerClick}</p>
+                            <p className="text-xs text-muted">Max CPC: Rs. {campaign.costPerClick}</p>
                           </div>
                         </div>
                       </td>
@@ -151,6 +151,7 @@ export default function OrganizationAdsDashboard() {
                         <span className={`px-2.5 py-1 rounded-md text-xs font-bold uppercase tracking-wider ${
                           campaign.status === 'active' ? 'bg-emerald-100 text-emerald-700' :
                           campaign.status === 'exhausted' ? 'bg-rose-100 text-rose-700' :
+                          campaign.status === 'pending_payment' ? 'bg-amber-100 text-amber-700' :
                           'bg-slate-100 text-slate-700'
                         }`}>
                           {campaign.status}
@@ -164,7 +165,7 @@ export default function OrganizationAdsDashboard() {
                           ></div>
                         </div>
                         <p className="text-xs text-muted mt-1 font-medium">
-                          ${campaign.budgetSpent.toFixed(2)} / ${campaign.totalBudget}
+                          Rs. {campaign.budgetSpent.toLocaleString()} / Rs. {campaign.totalBudget.toLocaleString()}
                         </p>
                       </td>
                       <td className="px-6 py-4 font-medium text-foreground">{campaign.impressions.toLocaleString()}</td>

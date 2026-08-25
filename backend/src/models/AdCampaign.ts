@@ -40,8 +40,8 @@ const AdCampaignSchema: Schema = new Schema(
     targetSkills: [{ type: String }],
     targetLocations: [{ type: String }],
     
-    totalBudget: { type: Number, required: true, min: 10 },
-    costPerClick: { type: Number, required: true, min: 0.1 },
+    totalBudget: { type: Number, required: true, min: 500 }, // Min 500 NPR
+    costPerClick: { type: Number, required: true, min: 10 }, // Min 10 NPR CPC
     budgetSpent: { type: Number, default: 0 },
     paymentReceiptUrl: { type: String },
     status: { type: String, enum: ['pending_payment', 'active', 'paused', 'exhausted', 'rejected'], default: 'pending_payment' },

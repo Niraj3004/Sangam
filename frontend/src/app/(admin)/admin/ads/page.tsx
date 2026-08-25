@@ -7,6 +7,7 @@ import { Loader2, ShieldCheck, XCircle, ExternalLink, Receipt } from "lucide-rea
 export default function AdminAdsDashboard() {
   const [campaigns, setCampaigns] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [approvedBudgets, setApprovedBudgets] = useState<Record<string, number>>({});
 
   useEffect(() => {
     fetchPendingCampaigns();
@@ -25,9 +26,18 @@ export default function AdminAdsDashboard() {
 
   const updateStatus = async (id: string, status: 'active' | 'rejected') => {
     try {
-      await api.put(`/admin/${id}/status`, { status });
+      const payload: any = { status };
+      if (status === 'active' && approvedBudgets[id]) {
+        payload.approvedBudget = approvedBudgets[id];
+      }
+      
+      await api.put(`/admin/${id}/status`, payload);
       // Remove from list after approval/rejection
       setCampaigns(campaigns.filter(c => c._id !== id));
+      
+      const newBudgets = { ...approvedBudgets };
+      delete newBudgets[id];
+      setApprovedBudgets(newBudgets);
     } catch (error) {
       console.error("Failed to update status", error);
       alert("Failed to update status. Check console.");
@@ -86,8 +96,8 @@ export default function AdminAdsDashboard() {
                       </div>
                     </td>
                     <td className="px-6 py-4">
-                      <p className="font-bold text-foreground">${campaign.totalBudget}</p>
-                      <p className="text-xs text-muted">CPC: ${campaign.costPerClick}</p>
+                      <p className="font-bold text-foreground">Requested: Rs. {campaign.totalBudget}</p>
+                      <p className="text-xs text-muted">CPC: Rs. {campaign.costPerClick}</p>
                     </td>
                     <td className="px-6 py-4">
                       {campaign.paymentReceiptUrl ? (
@@ -95,13 +105,26 @@ export default function AdminAdsDashboard() {
                           href={campaign.paymentReceiptUrl} 
                           target="_blank" 
                           rel="noreferrer"
-                          className="flex items-center gap-1.5 text-indigo-600 font-semibold hover:underline text-sm bg-indigo-50 px-3 py-1.5 rounded-lg w-fit"
+                          className="flex items-center gap-1.5 text-indigo-600 font-semibold hover:underline text-sm bg-indigo-50 px-3 py-1.5 rounded-lg w-fit mb-2"
                         >
                           <Receipt className="w-4 h-4" /> View Receipt <ExternalLink className="w-3 h-3" />
                         </a>
                       ) : (
-                        <span className="text-muted text-sm italic">No receipt provided</span>
+                        <span className="text-muted text-sm italic mb-2 block">No receipt provided</span>
                       )}
+                      
+                      <div className="flex flex-col mt-2">
+                        <label className="text-xs font-semibold text-muted mb-1">Confirm Final Budget (Rs.):</label>
+                        <input 
+                          type="number"
+                          className="border border-border rounded-lg px-2 py-1 text-sm w-32 focus:outline-none focus:ring-1 focus:ring-primary"
+                          value={approvedBudgets[campaign._id] ?? campaign.totalBudget}
+                          onChange={(e) => setApprovedBudgets({
+                            ...approvedBudgets, 
+                            [campaign._id]: Number(e.target.value)
+                          })}
+                        />
+                      </div>
                     </td>
                     <td className="px-6 py-4 text-right">
                       <div className="flex items-center justify-end gap-2">
