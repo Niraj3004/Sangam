@@ -29,7 +29,7 @@ export default function OrganizationsPage() {
   const fetchOrgs = async () => {
     setIsLoading(true);
     try {
-      const { data } = await api.get('/orgs');
+      const { data } = await api.get('/organizations');
       setOrgs((Array.isArray(data.data) ? data.data : (Object.values(data.data || {}).find(Array.isArray) || [])));
     } catch (err: any) {
       console.error(err);
@@ -44,7 +44,7 @@ export default function OrganizationsPage() {
     
     setIsSubmitting(true);
     try {
-      const { data } = await api.post('/orgs', formData);
+      const { data } = await api.post('/organizations', formData);
       setOrgs([data.data, ...orgs]);
       setIsModalOpen(false);
       setFormData({ name: "", description: "", website: "", industry: "" });

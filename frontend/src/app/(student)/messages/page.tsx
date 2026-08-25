@@ -106,7 +106,7 @@ export default function MessagesPage() {
 
     try {
       // Send via REST fallback (or Socket if implemented backend side, but REST is reliable)
-      const { data } = await api.post('/messages/send', payload);
+      const { data } = await api.post(`/messages/${activeChat._id}`, payload);
       
       // Update local state immediately for snappy UI
       setMessages(prev => [...prev, data.data]);

@@ -95,7 +95,7 @@ export default function StudentDashboard() {
         api.get('/ideas'), // Using /ideas instead of /projects
         api.get('/connections/pending'), // Fixed 404: /connections/requests -> /connections/pending
         api.get('/communities?limit=3'),
-        api.get('/orgs?limit=3'),
+        api.get('/organizations?limit=3'),
         api.get('/opportunities?type=hackathon&limit=2')
       ]);
 
