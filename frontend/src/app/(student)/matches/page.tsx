@@ -48,8 +48,10 @@ export default function MatchesPage() {
   };
 
   return (
-    <div className="max-w-5xl mx-auto pb-20">
+    <div className="max-w-7xl mx-auto pb-20 grid grid-cols-1 lg:grid-cols-4 gap-8">
       
+      {/* Main Content */}
+      <div className="lg:col-span-3">
       <div className="flex flex-col items-center text-center mb-10">
         <div className="w-16 h-16 rounded-2xl bg-primary/10 flex items-center justify-center text-primary mb-4 shadow-sm border border-primary/20">
           <Sparkles className="w-8 h-8" />
@@ -269,14 +271,248 @@ export default function MatchesPage() {
                           </Link>
                         </div>
                       </div>
-                    </div>
-                  </motion.div>
-                );
-              }
-            })}
-          </AnimatePresence>
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <div className="lg:col-span-2">
+          {isLoading ? (
+            <div className="flex justify-center py-20">
+              <Loader2 className="w-8 h-8 animate-spin text-primary" />
+            </div>
+          ) : matches.length === 0 ? (
+            <div className="text-center py-32 bg-white border border-border rounded-2xl border-dashed">
+              <Sparkles className="w-12 h-12 text-slate-300 mx-auto mb-4" />
+              <h3 className="text-xl font-semibold text-foreground">Not enough data</h3>
+              <p className="text-muted mt-2 max-w-md mx-auto">
+                We need more information about your skills and interests to generate accurate AI matches. Try completing your profile.
+              </p>
+              <Link href="/profile/edit" className="inline-flex items-center gap-2 mt-6 bg-primary text-white px-6 py-2.5 rounded-xl font-medium hover:bg-primary-hover transition-colors shadow-sm">
+                Complete Profile <ArrowRight className="w-4 h-4" />
+              </Link>
+            </div>
+          ) : (
+            <div className="space-y-6">
+              <AnimatePresence>
+                {matches.map((match, index) => {
+                  
+                  if (activeTab === "people") {
+                    const person = match.user; // The matched profile
+                    return (
+                      <motion.div
+                        key={person._id}
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.3, delay: index * 0.05 }}
+                        className="bg-white rounded-2xl border border-border overflow-hidden shadow-sm hover:shadow-md transition-shadow p-6 flex flex-col md:flex-row gap-6 relative"
+                      >
+                        <div className="absolute top-0 right-0 bg-emerald-50 text-emerald-700 text-xs font-bold px-4 py-1.5 rounded-bl-2xl rounded-tr-2xl border-b border-l border-emerald-100 flex items-center gap-1.5">
+                          <Sparkles className="w-3 h-3" />
+                          {match.score}% Match
+                        </div>
+
+                        <div className="flex-shrink-0 flex flex-col items-center">
+                          <div className="w-24 h-24 rounded-full border-4 border-slate-50 bg-slate-100 flex items-center justify-center text-3xl font-bold text-primary overflow-hidden shadow-sm mb-3">
+                            {person.user?.profilePic ? (
+                              <img src={person.user.profilePic} alt={person.user.handle} className="w-full h-full object-cover" />
+                            ) : (
+                              person.user?.handle?.charAt(0).toUpperCase()
+                            )}
+                          </div>
+                          <Link href={`/u/${person.user?.handle}`} className="text-sm font-bold text-foreground hover:text-primary transition-colors flex items-center gap-1">
+                            {person.user?.handle}
+                            <VerifiedBadge tier={person.user?.verifyTier} />
+                          </Link>
+                        </div>
+
+                        <div className="flex-1 flex flex-col pt-2">
+                          <div className="bg-indigo-50/50 p-4 rounded-xl border border-indigo-100 mb-4 flex-1">
+                            <h4 className="text-xs font-bold text-indigo-900 uppercase tracking-wider mb-2 flex items-center gap-1.5">
+                              <Sparkles className="w-3 h-3" /> Why you match
+                            </h4>
+                            <p className="text-sm text-indigo-950 font-medium leading-relaxed">
+                              {match.explanation}
+                            </p>
+                          </div>
+
+                          <div className="flex items-center justify-between mt-auto border-t border-border pt-4">
+                            <div className="flex flex-wrap gap-2">
+                              {person.skills?.slice(0, 3).map((s: any, i: number) => (
+                                <span key={i} className="px-2.5 py-1 bg-slate-50 border border-border text-xs font-medium text-muted rounded-md">
+                                  {s.name}
+                                </span>
+                              ))}
+                            </div>
+                            <button 
+                              onClick={() => handleConnect(person.user?._id)}
+                              className="bg-primary text-white px-5 py-2 rounded-xl text-sm font-medium hover:bg-primary-hover transition-colors shadow-sm flex items-center gap-1.5"
+                            >
+                              <UserPlus className="w-4 h-4" /> Connect
+                            </button>
+                          </div>
+                        </div>
+                      </motion.div>
+                    );
+                  } else if (activeTab === "projects") {
+                    // Projects
+                    const project = match.project;
+                    return (
+                      <motion.div
+                        key={project._id}
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.3, delay: index * 0.05 }}
+                        className="bg-white rounded-2xl border border-border overflow-hidden shadow-sm hover:shadow-md transition-shadow flex flex-col md:flex-row relative"
+                      >
+                        <div className="absolute top-0 right-0 z-10 bg-emerald-50 text-emerald-700 text-xs font-bold px-4 py-1.5 rounded-bl-2xl rounded-tr-2xl border-b border-l border-emerald-100 flex items-center gap-1.5">
+                          <Sparkles className="w-3 h-3" />
+                          {match.score}% Match
+                        </div>
+
+                        <div className="w-full md:w-1/3 h-48 md:h-auto bg-slate-100 relative">
+                          {project.coverImage ? (
+                            <img src={project.coverImage} alt={project.title} className="w-full h-full object-cover" />
+                          ) : (
+                            <div className="w-full h-full bg-gradient-to-br from-primary/10 to-indigo-600/10" />
+                          )}
+                        </div>
+
+                        <div className="p-6 md:p-8 flex-1 flex flex-col">
+                          <Link href={`/projects/${project._id}`} className="hover:text-primary transition-colors">
+                            <h3 className="text-xl font-bold text-foreground mb-3 pr-24">{project.title}</h3>
+                          </Link>
+
+                          <div className="bg-indigo-50/50 p-4 rounded-xl border border-indigo-100 mb-6 flex-1">
+                            <h4 className="text-xs font-bold text-indigo-900 uppercase tracking-wider mb-2 flex items-center gap-1.5">
+                              <Sparkles className="w-3 h-3" /> Why this project fits you
+                            </h4>
+                            <p className="text-sm text-indigo-950 font-medium leading-relaxed">
+                              {match.explanation}
+                            </p>
+                          </div>
+
+                          <div className="flex items-center justify-between border-t border-border pt-4 mt-auto">
+                            <div className="flex items-center gap-2">
+                              <span className="text-xs font-semibold text-foreground flex items-center gap-1">
+                                Lead by {project.owner?.handle}
+                                <VerifiedBadge tier={project.owner?.verifyTier} />
+                              </span>
+                            </div>
+                            <Link 
+                              href={`/projects/${project._id}`}
+                              className="bg-secondary text-foreground px-5 py-2 rounded-xl text-sm font-medium hover:bg-slate-200 transition-colors border border-border flex items-center gap-1.5"
+                            >
+                              View Open Roles <ArrowRight className="w-4 h-4" />
+                            </Link>
+                          </div>
+                        </div>
+                      </motion.div>
+                    );
+                  } else if (activeTab === "ideas") {
+                    const idea = match.idea || match; // the object structure might vary
+                    return (
+                      <motion.div
+                        key={idea._id}
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.3, delay: index * 0.05 }}
+                        className="bg-white rounded-2xl border border-border overflow-hidden shadow-sm hover:shadow-md transition-shadow p-6 relative"
+                      >
+                        {match.score && (
+                          <div className="absolute top-0 right-0 bg-emerald-50 text-emerald-700 text-xs font-bold px-4 py-1.5 rounded-bl-2xl rounded-tr-2xl border-b border-l border-emerald-100 flex items-center gap-1.5">
+                            <Sparkles className="w-3 h-3" />
+                            {match.score}% Match
+                          </div>
+                        )}
+                        
+                        <div className="flex items-start gap-4">
+                          <div className="w-12 h-12 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center border border-amber-100 shrink-0">
+                            <Lightbulb className="w-6 h-6" />
+                          </div>
+                          <div className="flex-1">
+                            <h3 className="text-xl font-bold text-gray-900 mb-2 pr-24">{idea.title}</h3>
+                            <p className="text-gray-600 text-sm mb-4 leading-relaxed line-clamp-3">{idea.description}</p>
+                            
+                            <div className="flex flex-wrap gap-2 mb-4">
+                              {idea.tags?.map((tag: string) => (
+                                <span key={tag} className="px-2.5 py-1 bg-slate-50 border border-slate-200 text-slate-600 text-xs font-semibold rounded-lg">
+                                  {tag}
+                                </span>
+                              ))}
+                            </div>
+
+                            {match.explanation && (
+                              <div className="bg-indigo-50/50 p-4 rounded-xl border border-indigo-100 mb-4">
+                                <h4 className="text-xs font-bold text-indigo-900 uppercase tracking-wider mb-2 flex items-center gap-1.5">
+                                  <Sparkles className="w-3 h-3" /> Why this idea
+                                </h4>
+                                <p className="text-sm text-indigo-950 font-medium leading-relaxed">
+                                  {match.explanation}
+                                </p>
+                              </div>
+                            )}
+                            
+                            <div className="flex justify-end pt-4 border-t border-slate-100">
+                              <Link href={`/ideas`} className="flex items-center gap-2 text-primary font-bold text-sm hover:text-primary-hover transition-colors">
+                                Explore Ideas <ArrowRight className="w-4 h-4" />
+                              </Link>
+                            </div>
+                          </div>
+                        </div>
+                      </motion.div>
+                    );
+                  }
+                })}
+              </AnimatePresence>
+            </div>
+          )}
         </div>
-      )}
+
+        {/* Right Sidebar - Contextual Ads */}
+        <div className="lg:col-span-1 space-y-6">
+          {/* Contextual Ad Widget */}
+          <div className="bg-white border border-border rounded-2xl p-6 shadow-sm relative overflow-hidden group">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="font-bold text-foreground">Featured Tools</h3>
+              <span className="text-[9px] font-black uppercase tracking-widest text-slate-400 bg-slate-100 px-2 py-1 rounded-md">Ad</span>
+            </div>
+            
+            <div className="bg-slate-50 border border-slate-100 rounded-xl p-4 hover:border-primary/30 transition-colors mb-4">
+              <div className="flex items-center gap-3 mb-2">
+                <div className="w-10 h-10 rounded-lg bg-indigo-600 text-white flex items-center justify-center font-bold text-xl shadow-sm">
+                  V
+                </div>
+                <div>
+                  <h4 className="font-bold text-sm">Vercel Pro</h4>
+                  <p className="text-xs text-muted">For Student Devs</p>
+                </div>
+              </div>
+              <p className="text-xs text-slate-600 mb-3">
+                Deploy your hackathon projects faster with 6 months of free Vercel Pro for verified students.
+              </p>
+              <Link href="#sponsored" className="text-xs font-bold text-primary hover:underline flex items-center gap-1">
+                Claim Offer <ArrowRight className="w-3 h-3" />
+              </Link>
+            </div>
+
+            <div className="bg-slate-50 border border-slate-100 rounded-xl p-4 hover:border-primary/30 transition-colors">
+              <div className="flex items-center gap-3 mb-2">
+                <div className="w-10 h-10 rounded-lg bg-emerald-600 text-white flex items-center justify-center shadow-sm">
+                  <Lightbulb className="w-5 h-5" />
+                </div>
+                <div>
+                  <h4 className="font-bold text-sm">YC Startup School</h4>
+                  <p className="text-xs text-muted">Free Course</p>
+                </div>
+              </div>
+              <p className="text-xs text-slate-600 mb-3">
+                Learn how to build a startup from the founders who did it. Join the upcoming cohort.
+              </p>
+              <Link href="#sponsored" className="text-xs font-bold text-primary hover:underline flex items-center gap-1">
+                Learn More <ArrowRight className="w-3 h-3" />
+              </Link>
+            </div>
+          </div>
+        </div>
+
+      </div>
     </div>
   );
 }

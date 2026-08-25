@@ -77,6 +77,31 @@ export default function SearchPage() {
       ) : (
         <div className="space-y-12">
           
+          {/* Sponsored Result */}
+          <section className="bg-slate-50 border border-slate-200 rounded-2xl p-6 relative overflow-hidden shadow-sm hover:shadow-md transition-shadow">
+            <div className="flex items-center gap-2 mb-3">
+              <span className="text-[10px] font-black uppercase tracking-widest text-slate-500 bg-slate-200/50 px-2.5 py-1 rounded-md border border-slate-200">
+                Sponsored Result
+              </span>
+            </div>
+            <div className="flex items-start gap-4">
+              <div className="w-12 h-12 rounded-xl bg-white flex items-center justify-center font-bold text-xl text-emerald-600 shadow-sm border border-slate-100 shrink-0">
+                C
+              </div>
+              <div>
+                <h3 className="text-lg font-bold text-foreground mb-1 hover:text-primary transition-colors cursor-pointer">
+                  Coursera - Master AI & Machine Learning
+                </h3>
+                <p className="text-sm text-slate-600 mb-3 line-clamp-2">
+                  Build the skills you need to get hired as a Machine Learning Engineer. Start your 7-day free trial today and learn from industry experts.
+                </p>
+                <Link href="#sponsored" className="inline-flex items-center gap-1.5 text-sm font-bold text-primary hover:underline">
+                  Start Free Trial <ArrowRight className="w-4 h-4" />
+                </Link>
+              </div>
+            </div>
+          </section>
+
           {/* Users */}
           {results.users?.length > 0 && (
             <section>

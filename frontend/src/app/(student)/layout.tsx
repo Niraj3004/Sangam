@@ -124,8 +124,20 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
               })}
             </div>
           ))}
+          
+          <div className="space-y-1 pt-4 border-t border-slate-100">
+            <div className="px-3 mb-2 text-[10px] font-bold text-slate-400 uppercase tracking-wider flex items-center justify-between">
+              Sponsored Partners <span className="bg-slate-100 px-1.5 py-0.5 rounded text-[8px]">AD</span>
+            </div>
+            <Link 
+              href="#sponsored"
+              className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-slate-600 hover:bg-slate-50 hover:text-slate-900 transition-all group"
+            >
+              <Briefcase className="w-5 h-5 text-slate-400 group-hover:text-primary transition-colors" />
+              Apply to F1Soft
+            </Link>
+          </div>
         </div>
-
 
       </aside>
 

@@ -115,7 +115,26 @@ export default function FeedPage() {
             </div>
           ) : (
             <AnimatePresence>
-              {opportunities.map((item, index) => {
+              {(() => {
+                const SPONSORED_FEED_AD = {
+                  _id: 'sponsored_ad_1',
+                  type: 'Bootcamp',
+                  isRemote: true,
+                  title: 'Full-Stack Web Development Bootcamp',
+                  organizationName: 'CodeAcademy',
+                  description: 'Master full-stack development with our comprehensive 12-week bootcamp. Includes mentorship, career coaching, and a job guarantee. Apply now to kickstart your tech career.',
+                  link: '#sponsored',
+                  isSponsored: true
+                };
+                
+                const itemsWithAds = [...opportunities];
+                if (itemsWithAds.length >= 2) {
+                  itemsWithAds.splice(1, 0, SPONSORED_FEED_AD);
+                } else {
+                  itemsWithAds.push(SPONSORED_FEED_AD);
+                }
+
+                return itemsWithAds.map((item, index) => {
                 // Handle both raw opportunity objects (latest) and wrapped scored objects (foryou)
                 const opp = item.item || item;
                 const score = item.score;
@@ -140,6 +159,11 @@ export default function FeedPage() {
                     <div className="flex items-start justify-between gap-4 mb-4">
                       <div>
                         <div className="flex items-center gap-2 mb-2">
+                          {opp.isSponsored && (
+                            <span className="px-2.5 py-1 bg-slate-900 text-white text-[10px] font-black rounded-md uppercase tracking-widest border border-slate-700 shadow-sm">
+                              Sponsored
+                            </span>
+                          )}
                           <span className="px-2.5 py-1 bg-indigo-50 text-indigo-700 text-xs font-semibold rounded-md uppercase tracking-wider">
                             {opp.type}
                           </span>
@@ -178,34 +202,52 @@ export default function FeedPage() {
                         <div className="w-6 h-6 rounded-full bg-indigo-100 flex items-center justify-center flex-shrink-0 mt-0.5">
                           <Sparkles className="w-3 h-3 text-indigo-600" />
                         </div>
-                        <p className="text-sm text-indigo-900 font-medium">{matchReason}</p>
+                        <div>
+                          <h4 className="text-xs font-bold text-indigo-900 uppercase tracking-wider mb-1">
+                            Why this fits you
+                          </h4>
+                          <p className="text-sm text-indigo-950 font-medium">
+                            {matchReason}
+                          </p>
+                        </div>
                       </div>
                     )}
 
-                    <div className="flex flex-wrap items-center justify-between gap-4 pt-4 border-t border-border">
-                      <div className="flex gap-4">
-                        {opp.location && (
-                          <div className="flex items-center gap-1.5 text-sm text-muted">
-                            <MapPin className="w-4 h-4" /> {opp.location}
+                    <div className="flex items-center justify-between border-t border-border pt-4">
+                      <div className="flex items-center gap-4 text-sm text-muted font-medium">
+                        {!opp.isSponsored && (
+                          <div className="flex items-center gap-1.5">
+                            <Clock className="w-4 h-4" />
+                            {new Date(opp.createdAt || Date.now()).toLocaleDateString()}
                           </div>
                         )}
-                        {opp.deadline && (
-                          <div className="flex items-center gap-1.5 text-sm text-rose-600 font-medium">
-                            <Calendar className="w-4 h-4" /> 
-                            Deadline: {new Date(opp.deadline).toLocaleDateString()}
+                        {opp.stipend && opp.stipend.amount > 0 && (
+                          <div className="flex items-center gap-1.5 text-emerald-600">
+                            <DollarSign className="w-4 h-4" />
+                            {opp.stipend.amount} {opp.stipend.currency}/{opp.stipend.period}
                           </div>
                         )}
                       </div>
-                      <Link 
-                        href={`/o/${opp._id}`}
-                        className="px-5 py-2 bg-secondary text-foreground hover:bg-slate-200 rounded-lg text-sm font-medium transition-colors"
-                      >
-                        View Details
-                      </Link>
+                      
+                      {opp.isSponsored ? (
+                        <Link 
+                          href={opp.link || '#'}
+                          className="bg-slate-900 text-white px-6 py-2.5 rounded-xl text-sm font-bold hover:bg-slate-800 transition-colors shadow-md flex items-center gap-2"
+                        >
+                          Learn More <ArrowRight className="w-4 h-4" />
+                        </Link>
+                      ) : (
+                        <Link 
+                          href={`/o/${opp._id}`}
+                          className="bg-secondary text-foreground px-5 py-2 rounded-xl text-sm font-medium hover:bg-slate-200 transition-colors border border-border flex items-center gap-1.5"
+                        >
+                          View Details <ArrowRight className="w-4 h-4" />
+                        </Link>
+                      )}
                     </div>
                   </motion.div>
                 );
-              })}
+              })()}
             </AnimatePresence>
           )}
         </div>
