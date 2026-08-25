@@ -88,10 +88,11 @@ export default function StudentDashboard() {
   return (
     <div className="pb-12">
       {/* Header Section */}
+      {/* Header Section */}
       <motion.div 
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="flex items-center justify-between mb-8"
+        className="flex items-center justify-between mb-6"
       >
         <div>
           <h1 className="text-3xl font-bold text-slate-900 tracking-tight">
@@ -108,59 +109,75 @@ export default function StudentDashboard() {
         )}
       </motion.div>
 
+      {/* Top Banner (Combined AI Copilot + Quick Launch) */}
+      <motion.section 
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.1 }}
+        className="mb-8"
+      >
+        <div className="bg-gradient-to-r from-indigo-900 via-indigo-800 to-purple-900 rounded-[2rem] p-8 text-white relative overflow-hidden shadow-2xl shadow-indigo-900/20 flex flex-col md:flex-row items-center justify-between gap-8">
+          <div className="absolute top-0 right-1/4 p-8 opacity-10">
+            <Sparkles className="w-64 h-64" />
+          </div>
+          
+          <div className="relative z-10 flex-1">
+            <div className="flex items-center gap-2 mb-3">
+              <Sparkles className="w-5 h-5 text-indigo-300" />
+              <span className="text-sm font-bold tracking-widest text-indigo-300 uppercase">AI Copilot</span>
+            </div>
+            <h2 className="text-2xl md:text-3xl font-bold mb-3">2 steps to "Internship Ready"</h2>
+            <p className="text-indigo-200 max-w-lg mb-6">Our AI analyzed your profile. Complete these high-impact tasks to boost your visibility to employers.</p>
+            
+            <div className="flex flex-col sm:flex-row gap-3">
+              <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl px-5 py-3 flex items-center gap-4 hover:bg-white/20 transition-colors cursor-pointer group">
+                <FileText className="w-5 h-5 text-indigo-200 group-hover:text-white transition-colors" />
+                <div>
+                  <h4 className="font-bold text-sm">Generate AI Resume</h4>
+                  <p className="text-[10px] text-indigo-200">Takes 2 minutes</p>
+                </div>
+              </div>
+              
+              <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl px-5 py-3 flex items-center gap-4 hover:bg-white/20 transition-colors cursor-pointer group">
+                <Briefcase className="w-5 h-5 text-indigo-200 group-hover:text-white transition-colors" />
+                <div>
+                  <h4 className="font-bold text-sm">Apply to F1Soft</h4>
+                  <p className="text-[10px] text-indigo-200">High match based on skills</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div className="relative z-10 w-full md:w-auto shrink-0 bg-white/5 backdrop-blur-md border border-white/10 rounded-3xl p-6">
+            <h3 className="font-bold mb-4 flex items-center gap-2 text-indigo-100 text-sm uppercase tracking-wider">
+              <Rocket className="w-4 h-4 text-indigo-300" /> Quick Launch
+            </h3>
+            <div className="flex flex-col gap-2">
+              <Link href="/copilot" className="flex items-center gap-3 bg-white/5 hover:bg-white/10 p-3 rounded-xl transition-colors border border-white/5 group">
+                <div className="bg-white/10 p-2 rounded-lg text-white group-hover:scale-110 transition-transform"><Sparkles className="w-4 h-4" /></div>
+                <div className="flex-1 pr-6">
+                  <p className="text-sm font-bold text-white group-hover:text-white transition-colors">AI Chat</p>
+                </div>
+                <ChevronRight className="w-4 h-4 text-white/50 group-hover:text-white group-hover:translate-x-1 transition-all" />
+              </Link>
+              <Link href="/matches" className="flex items-center gap-3 bg-white/5 hover:bg-white/10 p-3 rounded-xl transition-colors border border-white/5 group">
+                <div className="bg-white/10 p-2 rounded-lg text-white group-hover:scale-110 transition-transform"><Users className="w-4 h-4" /></div>
+                <div className="flex-1 pr-6">
+                  <p className="text-sm font-bold text-white group-hover:text-white transition-colors">Peer Match</p>
+                </div>
+                <ChevronRight className="w-4 h-4 text-white/50 group-hover:text-white group-hover:translate-x-1 transition-all" />
+              </Link>
+            </div>
+          </div>
+        </div>
+      </motion.section>
+
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         
         {/* Left Column (Wider) */}
         <div className="lg:col-span-2 space-y-8">
           
-          {/* AI Career Copilot Widget */}
-          <motion.section 
-            initial={{ opacity: 0, scale: 0.95 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ delay: 0.1 }}
-            className="bg-gradient-to-br from-indigo-900 via-indigo-800 to-purple-900 rounded-3xl p-8 text-white relative overflow-hidden shadow-2xl shadow-indigo-900/20"
-          >
-            <div className="absolute top-0 right-0 p-8 opacity-10">
-              <Sparkles className="w-48 h-48" />
-            </div>
-            
-            <div className="relative z-10">
-              <div className="flex items-center gap-2 mb-4">
-                <Sparkles className="w-5 h-5 text-indigo-300" />
-                <span className="text-sm font-bold tracking-widest text-indigo-300 uppercase">AI Copilot Plan</span>
-              </div>
-              <h2 className="text-2xl font-bold mb-2">You are 2 steps away from being "Internship Ready"</h2>
-              <p className="text-indigo-200 mb-6 max-w-md">Our AI analyzed your profile. Complete these high-impact tasks to boost your visibility to employers.</p>
-              
-              <div className="space-y-3">
-                <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl p-4 flex items-center justify-between hover:bg-white/20 transition-colors cursor-pointer group">
-                  <div className="flex items-center gap-4">
-                    <div className="w-8 h-8 rounded-full bg-indigo-500/50 flex items-center justify-center">
-                      <FileText className="w-4 h-4" />
-                    </div>
-                    <div>
-                      <h4 className="font-bold">Generate AI Resume</h4>
-                      <p className="text-xs text-indigo-200">Takes 2 minutes</p>
-                    </div>
-                  </div>
-                  <ChevronRight className="w-5 h-5 text-indigo-300 group-hover:translate-x-1 transition-transform" />
-                </div>
-                
-                <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl p-4 flex items-center justify-between hover:bg-white/20 transition-colors cursor-pointer group">
-                  <div className="flex items-center gap-4">
-                    <div className="w-8 h-8 rounded-full bg-indigo-500/50 flex items-center justify-center">
-                      <Briefcase className="w-4 h-4" />
-                    </div>
-                    <div>
-                      <h4 className="font-bold">Apply to F1Soft Internship</h4>
-                      <p className="text-xs text-indigo-200">High match based on your skills</p>
-                    </div>
-                  </div>
-                  <ChevronRight className="w-5 h-5 text-indigo-300 group-hover:translate-x-1 transition-transform" />
-                </div>
-              </div>
-            </div>
-          </motion.section>
+
 
           {/* Partner Spotlight / Featured */}
           <motion.section
@@ -179,7 +196,7 @@ export default function StudentDashboard() {
                 </div>
                 <div className="flex-1">
                   <div className="flex items-center gap-2 mb-2">
-                    <span className="px-2.5 py-0.5 bg-emerald-500/20 text-emerald-400 text-[10px] font-black uppercase tracking-widest rounded-md border border-emerald-500/30">Partner Spotlight</span>
+                    <span className="px-2.5 py-0.5 bg-emerald-500/20 text-emerald-400 text-[10px] font-black uppercase tracking-widest rounded-md border border-emerald-500/30">Sponsored Opportunity</span>
                   </div>
                   <h3 className="text-xl font-bold text-white mb-1">Google STEP Internship 2026</h3>
                   <p className="text-sm text-slate-300 line-clamp-2">Applications are now open for 1st and 2nd year students. Get 12 weeks of hands-on technical training and mentorship.</p>
@@ -330,48 +347,6 @@ export default function StudentDashboard() {
         {/* Right Column (Narrow) */}
         <div className="space-y-8">
           
-          {/* Quick Launchpad */}
-          <motion.section 
-            initial={{ opacity: 0, x: 20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ delay: 0.2 }}
-            className="bg-gradient-to-br from-indigo-500 to-purple-600 rounded-3xl p-6 shadow-md text-white relative overflow-hidden"
-          >
-            <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full blur-2xl -mr-10 -mt-10"></div>
-            
-            <h3 className="font-bold mb-4 flex items-center gap-2">
-              <Rocket className="w-5 h-5 text-white" /> Quick Launch
-            </h3>
-            
-            <div className="grid grid-cols-1 gap-2 relative z-10">
-              <Link href="/copilot" className="flex items-center gap-3 bg-white/10 hover:bg-white/20 p-3 rounded-xl transition-colors border border-white/10 backdrop-blur-sm group">
-                <div className="bg-white/20 p-2 rounded-lg text-white group-hover:scale-110 transition-transform"><Sparkles className="w-4 h-4" /></div>
-                <div className="flex-1">
-                  <p className="text-sm font-bold text-white group-hover:text-white transition-colors">AI Copilot</p>
-                  <p className="text-[10px] text-white/70">Your career mentor</p>
-                </div>
-                <ChevronRight className="w-4 h-4 text-white/50 group-hover:text-white group-hover:translate-x-1 transition-all" />
-              </Link>
-              
-              <Link href="/resume" className="flex items-center gap-3 bg-white/10 hover:bg-white/20 p-3 rounded-xl transition-colors border border-white/10 backdrop-blur-sm group">
-                <div className="bg-white/20 p-2 rounded-lg text-white group-hover:scale-110 transition-transform"><FileText className="w-4 h-4" /></div>
-                <div className="flex-1">
-                  <p className="text-sm font-bold text-white group-hover:text-white transition-colors">Resume Builder</p>
-                  <p className="text-[10px] text-white/70">Create ATS resumes</p>
-                </div>
-                <ChevronRight className="w-4 h-4 text-white/50 group-hover:text-white group-hover:translate-x-1 transition-all" />
-              </Link>
-              
-              <Link href="/matches" className="flex items-center gap-3 bg-white/10 hover:bg-white/20 p-3 rounded-xl transition-colors border border-white/10 backdrop-blur-sm group">
-                <div className="bg-white/20 p-2 rounded-lg text-white group-hover:scale-110 transition-transform"><Users className="w-4 h-4" /></div>
-                <div className="flex-1">
-                  <p className="text-sm font-bold text-white group-hover:text-white transition-colors">Peer Matching</p>
-                  <p className="text-[10px] text-white/70">Find teammates</p>
-                </div>
-                <ChevronRight className="w-4 h-4 text-white/50 group-hover:text-white group-hover:translate-x-1 transition-all" />
-              </Link>
-            </div>
-          </motion.section>
 
           {/* Career Readiness Score */}
           <motion.section 
